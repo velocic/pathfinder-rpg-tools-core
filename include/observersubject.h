@@ -4,13 +4,18 @@
 #include <string>
 #include <observer.h>
 
-class ObserverSubject
+namespace RulesEngine
 {
-    public:
-        virtual ~ObserverSubject() {}
-        virtual void notifyObservers(const std::string& fieldName) = 0;
-        virtual void registerObserver(const std::string& observerName, Observer* observer) = 0;
-        virtual void unregisterObserver(const std::string& observerName) = 0;
-};
+    class ObserverSubject
+    {
+        private:
+            virtual void notifyObservers(const std::string& fieldName) = 0;
+
+        public:
+            virtual ~ObserverSubject() {}
+            virtual void registerObserver(const std::string& observerName, Observer* observer) = 0;
+            virtual void unregisterObserver(const std::string& observerName) = 0;
+    };
+}
 
 #endif

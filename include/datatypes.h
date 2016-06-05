@@ -30,34 +30,6 @@ enum class SizeCategories
 //     std::string modifierDescription;
 // };
 //
-// enum class AttributeTypes
-// {
-//     STR,
-//     DEX,
-//     CON,
-//     INT,
-//     WIZ,
-//     CHA
-// };
-//
-// struct Attribute
-// {
-//     int abilityScore;
-//     int abilityModifier;
-//     int tempAdjustment;
-//     std::vector<Modifier> modifiers;
-// };
-//
-// struct Attributes
-// {
-//     Attribute strength;
-//     Attribute dexterity;
-//     Attribute constitution;
-//     Attribute intelligence;
-//     Attribute wisdom;
-//     Attribute charisma;
-// };
-//
 // struct Hitpoints
 // {
 //     int total;

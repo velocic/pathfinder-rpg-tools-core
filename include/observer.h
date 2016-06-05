@@ -3,15 +3,18 @@
 
 #include <string>
 
-//Forward declare to avoid circular dependency
-class ObserverSubject;
-
-class Observer
+namespace RulesEngine
 {
-    public:
-        virtual ~Observer() {}
+    //Forward declare to avoid circular dependency
+    class ObserverSubject;
 
-        virtual void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) = 0;
-};
+    class Observer
+    {
+        public:
+            virtual ~Observer() {}
+
+            virtual void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) = 0;
+    };
+}
 
 #endif
