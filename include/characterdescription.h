@@ -38,13 +38,13 @@ class CharacterDescription :
         SizeCategories sizeCategory = SizeCategories::Medium; //Needs to be able subscribe for updates
         std::unordered_map<std::string, Observer*> observers;
 
-        void notifyObservers();
+        void notifyObservers(std::string fieldName);
 
     public:
         CharacterDescription() {};
 
         void registerObserver(std::string observerName, Observer* observer);
-        void unregisterObserver(std::string observerName, Observer* observer);
+        void unregisterObserver(std::string observerName);
         void addClass(std::string className);
         void setCharacterName(std::string name);
         void setAlignment(std::string alignment);
@@ -67,7 +67,7 @@ class CharacterDescription :
         std::string getCharacterName();
         std::string getAlignment();
         std::string getPlayer();
-        CharacterClass getClass();
+        CharacterClass getClass(std::string className);
 
         std::string getDeity();
         std::string getHomeland();

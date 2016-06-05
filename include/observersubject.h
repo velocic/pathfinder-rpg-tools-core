@@ -7,7 +7,7 @@ class ObserverSubject
 {
     public:
         virtual ~ObserverSubject() {}
-        virtual void notifyObservers() = 0;
+        virtual void notifyObservers(std::string fieldName) = 0;
         virtual void registerObserver(std::string observerName, Observer* observer) = 0;
         virtual void unregisterObserver(std::string observerName, Observer* observer) = 0;
 };
