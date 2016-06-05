@@ -1,8 +1,9 @@
 #ifndef CHARACTERCLASS_H
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <datatypes.h>
 #include <observersubject.h>
@@ -38,47 +39,49 @@ class CharacterDescription :
         SizeCategories sizeCategory = SizeCategories::Medium; //Needs to be able subscribe for updates
         std::unordered_map<std::string, Observer*> observers;
 
-        void notifyObservers(std::string fieldName);
+        void notifyObservers(const std::string& fieldName) override;
 
     public:
-        CharacterDescription() {};
+        CharacterDescription() {}
+        ~CharacterDescription() {}
 
-        void registerObserver(std::string observerName, Observer* observer);
-        void unregisterObserver(std::string observerName);
-        void addClass(std::string className);
-        void setCharacterName(std::string name);
-        void setAlignment(std::string alignment);
-        void setPlayer(std::string playerName);
-        void setClassLevel(std::string className, unsigned int classLevel);
-        void setClassHitDieSize(std::string className, unsigned int hitDieSize);
-        void setClassSkillPoints(std::string className, unsigned int skillPointsPerLevel);
-        void setClass(std::string className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel);
-        void setDeity(std::string deityName);
-        void setHomeland(std::string homeland);
-        void setRace(std::string race);
-        void setGender(std::string gender);
-        void setHeight(std::string height);
-        void setHair(std::string hair);
-        void setEyes(std::string eyes);
+        void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
+        void registerObserver(const std::string& observerName, Observer* observer) override;
+        void unregisterObserver(const std::string& observerName) override;
+        void addClass(const std::string& className);
+
+        void setCharacterName(const std::string& name);
+        void setAlignment(const std::string& alignment);
+        void setPlayer(const std::string& playerName);
+        void setClassLevel(const std::string& className, unsigned int classLevel);
+        void setClassHitDieSize(const std::string& className, unsigned int hitDieSize);
+        void setClassSkillPoints(const std::string& className, unsigned int skillPointsPerLevel);
+        void setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel);
+        void setDeity(const std::string& deityName);
+        void setHomeland(const std::string& homeland);
+        void setRace(const std::string& race);
+        void setGender(const std::string& gender);
+        void setHeight(const std::string& height);
+        void setHair(const std::string& hair);
+        void setEyes(const std::string& eyes);
         void setAge(unsigned int age);
         void setWeight(unsigned int weight);
         void setSizeCategory(SizeCategories size); //must notify observers of change
 
-        std::string getCharacterName();
-        std::string getAlignment();
-        std::string getPlayer();
-        CharacterClass getClass(std::string className);
-
-        std::string getDeity();
-        std::string getHomeland();
-        std::string getRace();
-        std::string getGender();
-        std::string getHeight();
-        std::string getHair();
-        std::string getEyes();
-        unsigned int getAge();
-        unsigned int getWeight();
-        SizeCategories getSizeCategory();
+        std::string getCharacterName() const;
+        std::string getAlignment() const;
+        std::string getPlayer() const;
+        CharacterClass getClass(const std::string& className) const;
+        std::string getDeity() const;
+        std::string getHomeland() const;
+        std::string getRace() const;
+        std::string getGender() const;
+        std::string getHeight() const;
+        std::string getHair() const;
+        std::string getEyes() const;
+        unsigned int getAge() const;
+        unsigned int getWeight() const;
+        SizeCategories getSizeCategory() const;
 };
 
 

@@ -1,25 +1,30 @@
 #include <characterdescription.h>
 
-void CharacterDescription::notifyObservers(std::string fieldName)
+void CharacterDescription::notifyObservers(const std::string& fieldName)
 {
     for (auto observer : observers) {
-        observer->second->receiveNotification(this, fieldName);
+        observer.second->receiveNotification(this, fieldName);
     }
 }
 
-void CharacterDescription::registerObserver(std::string observerName, Observer* observer)
+void CharacterDescription::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
+{
+    //Update dependent fields when notified from other systems once implemented
+}
+
+void CharacterDescription::registerObserver(const std::string& observerName, Observer* observer)
 {
     observers.insert(
-        std::make_pair<std::string, Observer*>(observerName, observer)
+        std::make_pair(observerName, observer)
     );
 }
 
-void CharacterDescription::unregisterObserver(std::string observerName)
+void CharacterDescription::unregisterObserver(const std::string& observerName)
 {
     observers.erase(observerName);
 }
 
-void addClass(std::string className)
+void CharacterDescription::addClass(const std::string& className)
 {
     CharacterClass newClass;
     newClass.className = className;
@@ -28,41 +33,41 @@ void addClass(std::string className)
     newClass.skillPointsPerLevel = 2;
 
     classInfo.insert(
-        std::make_pair<std::string, CharacterClass>(newClass)
+        std::make_pair(className, newClass)
     );
 }
 
-void CharacterDescription::setCharacterName(std::string name)
+void CharacterDescription::setCharacterName(const std::string& name)
 {
     characterName = name;
 }
 
-void CharacterDescription::setAlignment(std::string alignment)
+void CharacterDescription::setAlignment(const std::string& alignment)
 {
     this->alignment = alignment;
 }
 
-void CharacterDescription::setPlayer(std::string playerName)
+void CharacterDescription::setPlayer(const std::string& playerName)
 {
     player = playerName;
 }
 
-void CharacterDescription::setClassLevel(std::string className, unsigned int classLevel)
+void CharacterDescription::setClassLevel(const std::string& className, unsigned int classLevel)
 {
     classInfo.find(className)->second.classLevel = classLevel;
 }
 
-void CharacterDescription::setClassHitDieSize(std::string className, unsigned int hitDieSize)
+void CharacterDescription::setClassHitDieSize(const std::string& className, unsigned int hitDieSize)
 {
     classInfo.find(className)->second.hitDieSize = hitDieSize;
 }
 
-void CharacterDescription::setClassSkillPoints(std::string className, unsigned int skillPointsPerLevel)
+void CharacterDescription::setClassSkillPoints(const std::string& className, unsigned int skillPointsPerLevel)
 {
     classInfo.find(className)->second.skillPointsPerLevel = skillPointsPerLevel;
 }
 
-void CharacterDescription::setClass(std::string className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel)
+void CharacterDescription::setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel)
 {
     CharacterClass& classToUpdate = classInfo.find(className)->second;
     classToUpdate.classLevel = classLevel;
@@ -70,37 +75,37 @@ void CharacterDescription::setClass(std::string className, unsigned int classLev
     classToUpdate.skillPointsPerLevel = skillPointsPerLevel;
 }
 
-void CharacterDescription::setDeity(std::string deityName)
+void CharacterDescription::setDeity(const std::string& deityName)
 {
     deity = deityName;
 }
 
-void CharacterDescription::setHomeland(std::string homeland)
+void CharacterDescription::setHomeland(const std::string& homeland)
 {
     this->homeland = homeland;
 }
 
-void CharacterDescription::setRace(std::string race)
+void CharacterDescription::setRace(const std::string& race)
 {
     this->race = race;
 }
 
-void CharacterDescription::setGender(std::string gender)
+void CharacterDescription::setGender(const std::string& gender)
 {
     this->gender = gender;
 }
 
-void CharacterDescription::setHeight(std::string height)
+void CharacterDescription::setHeight(const std::string& height)
 {
     this->height = height;
 }
 
-void CharacterDescription::setHair(std::string hair)
+void CharacterDescription::setHair(const std::string& hair)
 {
     this->hair = hair;
 }
 
-void CharacterDescription::setEyes(std::string eyes)
+void CharacterDescription::setEyes(const std::string& eyes)
 {
     this->eyes = eyes;
 }
@@ -120,72 +125,72 @@ void CharacterDescription::setSizeCategory(SizeCategories size)
     sizeCategory = size;
 }
 
-std::string CharacterDescription::getCharacterName()
+std::string CharacterDescription::getCharacterName() const
 {
     return characterName;
 }
 
-std::string CharacterDescription::getAlignment()
+std::string CharacterDescription::getAlignment() const
 {
     return alignment;
 }
 
-std::string CharacterDescription::getPlayer()
+std::string CharacterDescription::getPlayer() const
 {
     return player;
 }
 
-CharacterClass CharacterDescription::getClass(std::string className)
+CharacterClass CharacterDescription::getClass(const std::string& className) const
 {
     return classInfo.find(className)->second;
 }
 
-std::string CharacterDescription::getDeity()
+std::string CharacterDescription::getDeity() const
 {
     return deity;
 }
 
-std::string CharacterDescription::getHomeland()
+std::string CharacterDescription::getHomeland() const
 {
     return homeland;
 }
 
-std::string CharacterDescription::getRace()
+std::string CharacterDescription::getRace() const
 {
     return race;
 }
 
-std::string CharacterDescription::getGender()
+std::string CharacterDescription::getGender() const
 {
     return gender;
 }
 
-std::string CharacterDescription::getHeight()
+std::string CharacterDescription::getHeight() const
 {
     return height;
 }
 
-std::string CharacterDescription::getHair()
+std::string CharacterDescription::getHair() const
 {
     return hair;
 }
 
-std::string CharacterDescription::getEyes()
+std::string CharacterDescription::getEyes() const
 {
     return eyes;
 }
 
-unsigned int CharacterDescription::getAge()
+unsigned int CharacterDescription::getAge() const
 {
     return age;
 }
 
-unsigned int CharacterDescription::getWeight()
+unsigned int CharacterDescription::getWeight() const
 {
     return weight;
 }
 
-SizeCategories CharacterDescription::getSizeCategory()
+SizeCategories CharacterDescription::getSizeCategory() const
 {
     return sizeCategory;
 }
