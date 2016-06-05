@@ -5,6 +5,19 @@
 #include <vector>
 #include <utility>
 
+enum class SizeCategories
+{
+    Fine,
+    Diminutive,
+    Tiny,
+    Small,
+    Medium,
+    Large,
+    Huge,
+    Gargantuan,
+    Colossal
+};
+
 enum class ModifierTypes
 {
 };
@@ -15,32 +28,6 @@ struct Modifier
     std::string sourceName;
     int modifierValue;
     std::string modifierDescription;
-};
-
-struct CharacterClass
-{
-    std::string className;
-    unsigned int classLevel;
-    unsigned int hitDieSize;
-    unsigned int skillPointsPerLevel;
-};
-
-struct CharacterDescription
-{
-    std::string characterName;
-    std::string alignment;
-    std::string player;
-    std::vector<CharacterClass> classLevels;
-    std::string deity;
-    std::string homeland;
-    std::string race;
-    char size;
-    std::string gender;
-    unsigned int age;
-    std::string height;
-    unsigned int weight;
-    std::string hair;
-    std::string eyes;
 };
 
 enum class AttributeTypes
