@@ -47,6 +47,8 @@ namespace RulesEngine
 
             public:
                 CharacterDescription() {}
+
+                //Unregister from modules we're observing
                 ~CharacterDescription() {}
 
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;

@@ -32,7 +32,7 @@ namespace RulesEngine
             std::unordered_map<std::string, AbilityScoreBonus> tempModifiers;
             std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
             std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
-            std::unordered_map<std::string, AbilityScorePenalties> abilityPenalties;
+            std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
         };
 
         struct AbilityScoreBonus
@@ -61,7 +61,7 @@ namespace RulesEngine
 
         //Like ability damage, but cannot cause you to fall unconscious or die,
         //cannot decrease ability score to less than 1
-        struct AbilityScorePenalties
+        struct AbilityScorePenalty
         {
             AbilityScoreTypes affectedScore;
             std::string sourceName;
@@ -83,13 +83,31 @@ namespace RulesEngine
                 std::unordered_map<std::string, Observer*> observers;
 
                 void notifyObservers(const std::string& fieldName) override;
+                void updateTotalAbilityScore(AbilityScoreTypes ability);
+                void updateBaseAbilityModifier(AbilityScoreTypes ability);
+                void updateTotalTempAbilityScoreAdjustment(AbilityScoreTypes ability);
+                void updateTotalTempAbilityScoreModifier(AbilityScoreTypes ability);
             public:
                 AbilityScores() {}
+
+                //Unregister from modules we're observing
                 ~AbilityScores() {}
 
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
+
+                void addAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+                void addAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+                void addAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+                void addAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+
+                void removeAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+                void removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
+                void removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
+                void removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
+
+                void setBaseAbilityScore(AbilityScoreTypes ability, int baseScore);
         };
     }
 }
