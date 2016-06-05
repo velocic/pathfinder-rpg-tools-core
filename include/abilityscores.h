@@ -10,7 +10,7 @@ namespace RulesEngine
 {
     namespace Character
     {
-        enum class AbilityScoreTypes
+        enum class AbilityScoreTypes : int
         {
             STR,
             DEX,
@@ -26,8 +26,8 @@ namespace RulesEngine
             int totalScore; //Should not be adjusted directly by user, derived from all modifiers
             int baseModifier; //Only derived from baseScore
             int totalAbilityModifier; //Should not be adjusted directly by user, derived from all modifiers
-            int totalTempAdjustment;
-            int totalTempModifier;
+            int totalTempAdjustment; //Number of ability points added or subtracted to/from base score to derive total score
+            int totalTempModifier; //Number of ability points added or subtracted to/from base modifier to derive total modifier
             std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
             std::unordered_map<std::string, AbilityScoreBonus> tempModifiers;
             std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
@@ -74,12 +74,7 @@ namespace RulesEngine
             Observer
         {
             private:
-                AbilityScore strength;
-                AbilityScore dexterity;
-                AbilityScore constitution;
-                AbilityScore intelligence;
-                AbilityScore wisdom;
-                AbilityScore charisma;
+                std::unordered_map<int, AbilityScore> abilityScores;
                 std::unordered_map<std::string, Observer*> observers;
 
                 void notifyObservers(const std::string& fieldName) override;
