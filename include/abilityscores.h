@@ -20,6 +20,14 @@ namespace RulesEngine
             CHA
         };
 
+        enum class SpecialAbilityScoreValues : int
+        {
+            Unconscious = -100, //If Strength, Wisdom, or Charisma falls to 0
+            Immobile = -99, //If Dexterity falls to 0
+            Dead = -98, //If Constitution falls to 0
+            Comatose = -97, //If Intelligence falls to 0
+        };
+
         struct AbilityScore
         {
             int baseScore; //Initial score selected & modified by user only
@@ -29,7 +37,6 @@ namespace RulesEngine
             int totalTempAdjustment; //Number of ability points added or subtracted to/from base score to derive total score
             int totalTempModifier; //Number of ability points added or subtracted to/from base modifier to derive total modifier
             std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
-            std::unordered_map<std::string, AbilityScoreBonus> tempModifiers;
             std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
             std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
             std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;

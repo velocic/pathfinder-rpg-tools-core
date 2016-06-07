@@ -65,10 +65,64 @@ namespace RulesEngine
             targetAbility.totalScore = baseScore + totalTempAdjustment;
         }
 
-        // void updateBaseAbilityModifier(AbilityScoreTypes ability);
-        // void updateTotalTempAbilityScoreAdjustment(AbilityScoreTypes ability);
-        // void updateTotalTempAbilityScoreModifier(AbilityScoreTypes ability);
-        //
+        //Dependent on totalScore & its' dependencies
+        void AbilityScores::updateBaseAbilityModifier(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+
+            if (targetAbility.baseScore <= 0) {
+                if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
+                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Unconscious);
+                } else if (ability == AbilityScoreTypes::DEX) {
+                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Immobile);
+                } else if (ability == AbilityScoreTypes::INT) {
+                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Comatose);
+                } else {
+                    //AbilityScoreTypes::CON
+                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Dead);
+                }
+            } else {
+                targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
+            }
+        }
+
+        //Dependent on target ability score's tempAdjustments being fully populated
+        void AbilityScores::updateTotalTempAbilityScoreAdjustment(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+
+            int totalTempAdjustment = 0;
+
+            for (auto& modifier : targetAbility.tempAdjustments) {
+                totalTempAdjustment += modifier.second.modifierValue;
+            }
+
+            targetAbility.totalTempAdjustment = totalTempAdjustment;
+        }
+
+        //Dependent on baseScore and totalAbilityModifier
+        void AbilityScores::updateTotalTempAbilityScoreModifier(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+
+            //Need to factor in temp score adjustment being odd and base score being odd. i.e.
+            //Base STR: 15
+            //Base STR Modifier: +2
+            //Temp STR Bonus: 3
+            //Temp STR Modifier: +2 (factors in the hanging odd str point from base to roll up temp bonus to a +2 instead
+            //  of just +1
+
+            int tempAdjustmentScore = 0;
+
+            if (targetAbility.baseScore % 2 != 0) {
+                tempAdjustmentScore = 1;
+            }
+
+            tempAdjustmentScore += targetAbility.totalTempAdjustment;
+
+            targetAbility.totalTempModifier = tempAdjustmentScore / 2;
+        }
+        
         // void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
         // void registerObserver(const std::string& observerName, Observer* observer) override;
         // void unregisterObserver(const std::string& observerName) override;
