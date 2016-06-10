@@ -42,9 +42,19 @@ namespace RulesEngine
             std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
         };
 
+        enum class AbilityScoreModifiers
+        {
+            Alchemical,
+            Enhancement,
+            Inherent,
+            Morale,
+            Size
+        };
+
         struct AbilityScoreBonus
         {
             AbilityScoreTypes affectedScore;
+            AbilityScoreModifiers modifierType
             std::string sourceName;
             int modifierValue;
             std::string description;

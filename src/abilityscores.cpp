@@ -93,6 +93,11 @@ namespace RulesEngine
 
             int totalTempAdjustment = 0;
 
+            //Need to fix. Can't just sum them all. Most bonuses from same source type don't stack
+            //May also need to revisit. Some items (i.e. int headband) give "Permanent" increases
+            //once 24hr have passed. Which means some gear-based bonuses increase skills, hp, etc, while others
+            //don't. Probably should solve that in the equipment section by having "Permanent" and "Temporary" modifiers
+            //on gear be in separate categories
             for (auto& modifier : targetAbility.tempAdjustments) {
                 totalTempAdjustment += modifier.second.modifierValue;
             }
