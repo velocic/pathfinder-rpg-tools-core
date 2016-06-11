@@ -58,74 +58,122 @@ namespace RulesEngine
             }
         }
 
-        //Dependent on baseScore & totalTempAdjustment being up to date
-        void AbilityScores::updateTotalAbilityScore(AbilityScoreTypes ability)
+        //Dependent on baseScore & totalAdjustment being up to date
+        void AbilityScores::calculateTotalAbilityScore(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
-            targetAbility.totalScore = baseScore + totalTempAdjustment;
+            targetAbility.totalScore = baseScore + totalAdjustment;
         }
 
-        //Dependent on totalScore & its' dependencies
-        void AbilityScores::updateBaseAbilityModifier(AbilityScoreTypes ability)
+        //Dependent on baseScore
+        void AbilityScores::calculateBaseAbilityModifier(AbilityScoreTypes ability)
+        {
+            targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
+        }
+
+        //Dependent on baseScoreWithPermanentAdjusments being up-to-date
+        void AbilityScores::calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
 
-            if (targetAbility.baseScore <= 0) {
+            if (targetAbility.baseScoreWithPermanentAdjustments <= 0) {
                 if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
-                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Unconscious);
+                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Unconscious);
                 } else if (ability == AbilityScoreTypes::DEX) {
-                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Immobile);
+                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Immobile);
                 } else if (ability == AbilityScoreTypes::INT) {
-                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Comatose);
+                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Comatose);
                 } else {
                     //AbilityScoreTypes::CON
-                    targetAbility.baseModifier = static_cast<int>(SpecialAbilityScoreValues::Dead);
+                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Dead);
                 }
             } else {
-                targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
+                targetAbility.baseModifierWithPermanentAdjustments = (targetAbility.baseScoreWithPermanentAdjustments - 10) / 2;
             }
         }
 
-        //Dependent on target ability score's tempAdjustments being fully populated
-        void AbilityScores::updateTotalTempAbilityScoreAdjustment(AbilityScoreTypes ability)
+        //Dependent on target ability score's tempAdjustments & permanentAdjustments being fully populated
+        void AbilityScores::calculateTotalAbilityScoreAdjustment(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
 
-            int totalTempAdjustment = 0;
+            std::vector<AbilityScoreBonus> contributingTemporaryBonuses = getContributingBonusesFromRawBonusList(targetAbility.temporaryAdjustments);
+            std::vector<AbilityScoreBonus> contributingBonuses = getContributingBonusesFromRawBonusList(contributingTemporaryBonuses, targetAbility.permanentAdjustments);
 
-            //Need to fix. Can't just sum them all. Most bonuses from same source type don't stack
-            //May also need to revisit. Some items (i.e. int headband) give "Permanent" increases
-            //once 24hr have passed. Which means some gear-based bonuses increase skills, hp, etc, while others
-            //don't. Probably should solve that in the equipment section by having "Permanent" and "Temporary" modifiers
-            //on gear be in separate categories
-            for (auto& modifier : targetAbility.tempAdjustments) {
-                totalTempAdjustment += modifier.second.modifierValue;
+            targetAbility.contributingAdjustments = contributingBonuses;
+
+            int totalAdjustment = 0;
+
+            for (auto& bonus : contributingBonuses) {
+                totalAdjustment += bonus.modifierValue;
             }
 
-            targetAbility.totalTempAdjustment = totalTempAdjustment;
+            targetAbility.totalAdjustment = totalBonus;
         }
 
-        //Dependent on baseScore and totalAbilityModifier
-        void AbilityScores::updateTotalTempAbilityScoreModifier(AbilityScoreTypes ability)
+        //Dependent on totalScore
+        void AbilityScores::calculateTotalAbilityScoreModifier(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
 
-            //Need to factor in temp score adjustment being odd and base score being odd. i.e.
-            //Base STR: 15
-            //Base STR Modifier: +2
-            //Temp STR Bonus: 3
-            //Temp STR Modifier: +2 (factors in the hanging odd str point from base to roll up temp bonus to a +2 instead
-            //  of just +1
+            targetAbility.totalAbilityModifier = totalScore / 2;
+        }
 
-            int tempAdjustmentScore = 0;
+        void calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+            std::vector<AbilityScoreBonus> bonuses = getContributingBonusesFromRawBonusList(targetAbility.permanentAdjustments);
 
-            if (targetAbility.baseScore % 2 != 0) {
-                tempAdjustmentScore = 1;
+            int total = 0;
+
+            for (auto& bonus : bonuses) {
+                total += bonus.modifierValue;
             }
 
-            tempAdjustmentScore += targetAbility.totalTempAdjustment;
+            targetAbility.baseScoreWithPermanentAdjustments = total + targetAbility.baseScore;
+        }
 
-            targetAbility.totalTempModifier = tempAdjustmentScore / 2;
+        std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& mergeList, const std::vector<AbilityScoreBonus>& rawBonusList)
+        {
+            std::vector<AbilityScoreBonus> contributingBonuses = mergeList;
+
+            //For each registered bonus
+            for (auto& adjustment : rawBonusList) {
+
+                //Untyped bonuses always stack, so add them blindly
+                if (adjustment.modifierType == AbilityScoreModifiers::Untyped) {
+                    contributingBonuses.push_back(adjustment);
+                    continue;
+                }
+
+                //Search to see if we're already factoring in a bonus with the same type as the current adjustment
+                auto contributingBonusesIterator = std::find_if(
+                    contributingBonuses.begin(),
+                    contributingBonuses.end(),
+                    [&](const AbilityScoreBonus& contributingBonus){
+                        return contributingBonus.modifierType == adjustment.modifierType;
+                    }
+                );
+
+                //Didn't find a bonus with the same type as the current one,
+                //so add current bonus to the contributingBonuses list
+                if (contributingBonusesIterator == contributingBonuses.end()) {
+                    contributingBonuses.push_back(adjustment);
+                } else { 
+                    //Found a bonus that the current one can't stack with.
+                    //Replace it if the current bonus is greater than the existing one. 
+                    if (adjustment.modifierValue > contributingBonusesIterator->modifierValue) {
+                        (*contributingBonusesIterator) = adjustment;
+                    }
+                }
+            }
+
+            return contributingBonuses;
+        }
+
+        std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& rawBonusList)
+        {
+            return getContributingBonusesFromRawBonusList(std::vector<AbilityScoreBonus>(), rawBonusList);
         }
         
         // void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;

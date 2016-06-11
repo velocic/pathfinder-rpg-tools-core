@@ -31,49 +31,75 @@ namespace RulesEngine
         struct AbilityScore
         {
             int baseScore; //Initial score selected & modified by user only
-            int totalScore; //Should not be adjusted directly by user, derived from all modifiers
+            int baseScoreWithPermanentAdjustments; //baseScore + totalPermanentAdjustment
+            int totalScore; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
+
             int baseModifier; //Only derived from baseScore
+            int baseModifierWithPermanentAdjustments; //derived from baseScoreWithPermanentBonuses
             int totalAbilityModifier; //Should not be adjusted directly by user, derived from all modifiers
-            int totalTempAdjustment; //Number of ability points added or subtracted to/from base score to derive total score
-            int totalTempModifier; //Number of ability points added or subtracted to/from base modifier to derive total modifier
+
+            //Number of ability points add or subtracted to/from base score to derive
+            //total score. Both temp & permanent bonuses are factored int, with
+            //non-stacking bonuses filtered out
+            int totalAdjustment; 
+
             std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
+            std::unordered_map<std::string, AbilityScoreBonus> permanentAdjustments;
+
+            std::vector<AbilityScoreBonus> contributingAdjustments; //For display purposes. List of permanent & temporary bonuses w/ non-stacking bonuses filtered out
+
             std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
             std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
             std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
         };
 
-        enum class AbilityScoreModifiers
+        enum class AbilityScoreModifiers : int
         {
-            Alchemical,
-            Enhancement,
-            Inherent,
-            Morale,
-            Size
+            Alchemical, //No stacking info. Assume doesn't stack
+            Enhancement, //No stacking, only highest applies
+            Inherent, //No stacking, only highest applies
+            Morale, //Doesn't stack
+            Size, //Only one should exist, as creatures can only be a single size
+            Untyped //Stacks. Examples include class features like Dragon Disciple's strength bonus
         };
 
         struct AbilityScoreBonus
         {
-            AbilityScoreTypes affectedScore;
             AbilityScoreModifiers modifierType
+            AbilityScoreTypes affectedScore;
+            std::string description;
             std::string sourceName;
             int modifierValue;
-            std::string description;
+            bool enabled;
         };
 
+        //From d20pfsrd.com:
+        //"For every 2 points of damage you take to a single ability, apply a -1
+        //penalty to skills and statistics listed with the relevant ability. If the
+        //amount of ability damage you have taken equals or exceeds your ability
+        //score, you immediately fall unconscious until the damage is less than 
+        //your ability score. The only exception to this is your Constitution score.
+        //If the damage to your Constitution is equal to or greater than your
+        //Constitution score, you die."
         struct AbilityScoreDamage
         {
             AbilityScoreTypes affectedScore;
+            std::string description;
             std::string sourceName;
             int modifierValue;
-            std::string description;
+            bool enabled;
         };
 
+        //Actually reduces the ability score, like an inverse permanent bonus.
+        //Stats derived from the ability score should be reduced (like skill ranks,
+        //max HP, etc)
         struct AbilityScoreDrain
         {
             AbilityScoreTypes affectedScore;
+            std::string description;
             std::string sourceName;
             int modifierValue;
-            std::string description;
+            bool enabled;
         };
 
         //Like ability damage, but cannot cause you to fall unconscious or die,
@@ -81,9 +107,10 @@ namespace RulesEngine
         struct AbilityScorePenalty
         {
             AbilityScoreTypes affectedScore;
+            std::string description;
             std::string sourceName;
             int modifierValue;
-            std::string description;
+            bool enabled;
         };
 
         class AbilityScores :
@@ -95,10 +122,16 @@ namespace RulesEngine
                 std::unordered_map<std::string, Observer*> observers;
 
                 void notifyObservers(const std::string& fieldName) override;
-                void updateTotalAbilityScore(AbilityScoreTypes ability);
-                void updateBaseAbilityModifier(AbilityScoreTypes ability);
-                void updateTotalTempAbilityScoreAdjustment(AbilityScoreTypes ability);
-                void updateTotalTempAbilityScoreModifier(AbilityScoreTypes ability);
+                void calculateTotalAbilityScore(AbilityScoreTypes ability);
+                void calculateBaseAbilityModifier(AbilityScoreTypes ability);
+                void calculateTotalAbilityScoreAdjustment(AbilityScoreTypes ability);
+                void calculateTotalAbilityScoreModifier(AbilityScoreTypes ability);
+                void calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability);
+                void calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability);
+
+                //Helper function to strip non-stacking bonuses
+                std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& rawBonusList);
+                std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& mergeList, const std::vector<AbilityScoreBonus>& rawBonusList);
             public:
                 AbilityScores() {}
 
