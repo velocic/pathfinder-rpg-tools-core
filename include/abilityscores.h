@@ -6,6 +6,9 @@
 #include <utility>
 #include <vector>
 
+#include <observersubject.h>
+#include <observer.h>
+
 namespace RulesEngine
 {
     namespace Character
@@ -28,31 +31,6 @@ namespace RulesEngine
             Comatose = -97, //If Intelligence falls to 0
         };
 
-        struct AbilityScore
-        {
-            int baseScore; //Initial score selected & modified by user only
-            int baseScoreWithPermanentAdjustments; //baseScore + totalPermanentAdjustment
-            int totalScore; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
-
-            int baseModifier; //Only derived from baseScore
-            int baseModifierWithPermanentAdjustments; //derived from baseScoreWithPermanentBonuses
-            int totalAbilityModifier; //Should not be adjusted directly by user, derived from all modifiers
-
-            //Number of ability points add or subtracted to/from base score to derive
-            //total score. Both temp & permanent bonuses are factored int, with
-            //non-stacking bonuses filtered out
-            int totalAdjustment; 
-
-            std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
-            std::unordered_map<std::string, AbilityScoreBonus> permanentAdjustments;
-
-            std::vector<AbilityScoreBonus> contributingAdjustments; //For display purposes. List of permanent & temporary bonuses w/ non-stacking bonuses filtered out
-
-            std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
-            std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
-            std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
-        };
-
         enum class AbilityScoreModifiers : int
         {
             Alchemical, //No stacking info. Assume doesn't stack
@@ -65,7 +43,7 @@ namespace RulesEngine
 
         struct AbilityScoreBonus
         {
-            AbilityScoreModifiers modifierType
+            AbilityScoreModifiers modifierType;
             AbilityScoreTypes affectedScore;
             std::string description;
             std::string sourceName;
@@ -113,6 +91,31 @@ namespace RulesEngine
             bool enabled;
         };
 
+        struct AbilityScore
+        {
+            int baseScore; //Initial score selected & modified by user only
+            int baseScoreWithPermanentAdjustments; //baseScore + totalPermanentAdjustment
+            int totalScore; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
+
+            int baseModifier; //Only derived from baseScore
+            int baseModifierWithPermanentAdjustments; //derived from baseScoreWithPermanentBonuses
+            int totalAbilityModifier; //Should not be adjusted directly by user, derived from all modifiers
+
+            //Number of ability points add or subtracted to/from base score to derive
+            //total score. Both temp & permanent bonuses are factored int, with
+            //non-stacking bonuses filtered out
+            int totalAdjustment; 
+
+            std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
+            std::unordered_map<std::string, AbilityScoreBonus> permanentAdjustments;
+
+            std::vector<AbilityScoreBonus> contributingAdjustments; //For display purposes. List of permanent & temporary bonuses w/ non-stacking bonuses filtered out
+
+            std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
+            std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
+            std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
+        };
+
         class AbilityScores :
             ObserverSubject,
             Observer
@@ -133,7 +136,7 @@ namespace RulesEngine
                 std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& rawBonusList);
                 std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& mergeList, const std::vector<AbilityScoreBonus>& rawBonusList);
             public:
-                AbilityScores() {}
+                AbilityScores();
 
                 //Unregister from modules we're observing
                 ~AbilityScores() {}

@@ -61,20 +61,21 @@ namespace RulesEngine
         //Dependent on baseScore & totalAdjustment being up to date
         void AbilityScores::calculateTotalAbilityScore(AbilityScoreTypes ability)
         {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
-            targetAbility.totalScore = baseScore + totalAdjustment;
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+            targetAbility.totalScore = targetAbility.baseScore + targetAbility.totalAdjustment;
         }
 
         //Dependent on baseScore
         void AbilityScores::calculateBaseAbilityModifier(AbilityScoreTypes ability)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
             targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
         }
 
         //Dependent on baseScoreWithPermanentAdjusments being up-to-date
         void AbilityScores::calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability)
         {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             if (targetAbility.baseScoreWithPermanentAdjustments <= 0) {
                 if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
@@ -95,7 +96,7 @@ namespace RulesEngine
         //Dependent on target ability score's tempAdjustments & permanentAdjustments being fully populated
         void AbilityScores::calculateTotalAbilityScoreAdjustment(AbilityScoreTypes ability)
         {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             std::vector<AbilityScoreBonus> contributingTemporaryBonuses = getContributingBonusesFromRawBonusList(targetAbility.temporaryAdjustments);
             std::vector<AbilityScoreBonus> contributingBonuses = getContributingBonusesFromRawBonusList(contributingTemporaryBonuses, targetAbility.permanentAdjustments);
