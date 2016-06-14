@@ -1,6 +1,7 @@
 #ifndef ABILITYSCORES_H
 #define ABILITYSCORES_H
 
+#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -133,8 +134,8 @@ namespace RulesEngine
                 void calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability);
 
                 //Helper function to strip non-stacking bonuses
-                std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& rawBonusList);
-                std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& mergeList, const std::vector<AbilityScoreBonus>& rawBonusList);
+                std::unordered_map<std::string, AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList);
+                std::unordered_map<std::string, AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& mergeList, const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList);
             public:
                 AbilityScores();
 

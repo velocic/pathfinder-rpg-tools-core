@@ -98,52 +98,56 @@ namespace RulesEngine
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            std::vector<AbilityScoreBonus> contributingTemporaryBonuses = getContributingBonusesFromRawBonusList(targetAbility.temporaryAdjustments);
-            std::vector<AbilityScoreBonus> contributingBonuses = getContributingBonusesFromRawBonusList(contributingTemporaryBonuses, targetAbility.permanentAdjustments);
+            std::unordered_map<std::string, AbilityScoreBonus> contributingTemporaryBonuses = getContributingBonusesFromRawBonusList(targetAbility.tempAdjustments);
+            std::unordered_map<std::string, AbilityScoreBonus> contributingBonuses = getContributingBonusesFromRawBonusList(contributingTemporaryBonuses, targetAbility.permanentAdjustments);
 
-            targetAbility.contributingAdjustments = contributingBonuses;
+            std::vector<AbilityScoreBonus> flattenedContributingBonuses;
 
             int totalAdjustment = 0;
 
             for (auto& bonus : contributingBonuses) {
-                totalAdjustment += bonus.modifierValue;
+                flattenedContributingBonuses.push_back(bonus.second);
+                totalAdjustment += bonus.second.modifierValue;
             }
 
-            targetAbility.totalAdjustment = totalBonus;
+            targetAbility.contributingAdjustments = flattenedContributingBonuses;
+
+            targetAbility.totalAdjustment = totalAdjustment;
         }
 
         //Dependent on totalScore
         void AbilityScores::calculateTotalAbilityScoreModifier(AbilityScoreTypes ability)
         {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            targetAbility.totalAbilityModifier = totalScore / 2;
+            targetAbility.totalAbilityModifier = targetAbility.totalScore / 2;
         }
 
-        void calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)
+        void AbilityScores::calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)
         {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability)).second;
-            std::vector<AbilityScoreBonus> bonuses = getContributingBonusesFromRawBonusList(targetAbility.permanentAdjustments);
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+            std::unordered_map<std::string, AbilityScoreBonus> bonuses = getContributingBonusesFromRawBonusList(targetAbility.permanentAdjustments);
 
             int total = 0;
 
             for (auto& bonus : bonuses) {
-                total += bonus.modifierValue;
+                total += bonus.second.modifierValue;
             }
 
             targetAbility.baseScoreWithPermanentAdjustments = total + targetAbility.baseScore;
         }
 
-        std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& mergeList, const std::vector<AbilityScoreBonus>& rawBonusList)
+        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& mergeList, const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList)
         {
-            std::vector<AbilityScoreBonus> contributingBonuses = mergeList;
+            std::unordered_map<std::string, AbilityScoreBonus> contributingBonuses = mergeList;
 
             //For each registered bonus
-            for (auto& adjustment : rawBonusList) {
+            for (auto& bonus : rawBonusList) {
+                auto& adjustment = bonus.second;
 
                 //Untyped bonuses always stack, so add them blindly
                 if (adjustment.modifierType == AbilityScoreModifiers::Untyped) {
-                    contributingBonuses.push_back(adjustment);
+                    contributingBonuses.insert(bonus);
                     continue;
                 }
 
@@ -151,20 +155,21 @@ namespace RulesEngine
                 auto contributingBonusesIterator = std::find_if(
                     contributingBonuses.begin(),
                     contributingBonuses.end(),
-                    [&](const AbilityScoreBonus& contributingBonus){
-                        return contributingBonus.modifierType == adjustment.modifierType;
+                    [&](const std::pair<std::string, AbilityScoreBonus>& contributingBonus){
+                        return contributingBonus.second.modifierType == adjustment.modifierType;
                     }
                 );
 
                 //Didn't find a bonus with the same type as the current one,
                 //so add current bonus to the contributingBonuses list
                 if (contributingBonusesIterator == contributingBonuses.end()) {
-                    contributingBonuses.push_back(adjustment);
+                    contributingBonuses.insert(bonus);
                 } else { 
                     //Found a bonus that the current one can't stack with.
                     //Replace it if the current bonus is greater than the existing one. 
-                    if (adjustment.modifierValue > contributingBonusesIterator->modifierValue) {
-                        (*contributingBonusesIterator) = adjustment;
+                    if (adjustment.modifierValue > contributingBonusesIterator->second.modifierValue) {
+                        contributingBonuses.erase(contributingBonusesIterator);
+                        contributingBonuses.insert(bonus);
                     }
                 }
             }
@@ -172,9 +177,9 @@ namespace RulesEngine
             return contributingBonuses;
         }
 
-        std::vector<AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::vector<AbilityScoreBonus>& rawBonusList)
+        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList)
         {
-            return getContributingBonusesFromRawBonusList(std::vector<AbilityScoreBonus>(), rawBonusList);
+            return getContributingBonusesFromRawBonusList(std::unordered_map<std::string, AbilityScoreBonus>(), rawBonusList);
         }
         
         // void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
