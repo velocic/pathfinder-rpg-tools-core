@@ -72,25 +72,34 @@ namespace RulesEngine
             targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
         }
 
+        SpecialAbilityScoreValues AbilityScores::determineCharacterStatus(AbilityScoreTypes ability, int damageValue)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            if ((targetAbility.baseScoreWithPermanentAdjustments - damageValue) > 0) {
+                return SpecialAbilityScoreValues::Normal;
+            }
+
+            if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
+                return SpecialAbilityScoreValues::Unconscious;
+            } else if (ability == AbilityScoreTypes::DEX) {
+                return SpecialAbilityScoreValues::Immobile;
+            } else if (ability == AbilityScoreTypes::INT) {
+                return SpecialAbilityScoreValues::Comatose;
+            } else {
+                //AbilityScoreTypes::CON
+                return SpecialAbilityScoreValues::Dead;
+            }
+        }
+
         //Dependent on baseScoreWithPermanentAdjusments being up-to-date
         void AbilityScores::calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            if (targetAbility.baseScoreWithPermanentAdjustments <= 0) {
-                if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
-                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Unconscious);
-                } else if (ability == AbilityScoreTypes::DEX) {
-                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Immobile);
-                } else if (ability == AbilityScoreTypes::INT) {
-                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Comatose);
-                } else {
-                    //AbilityScoreTypes::CON
-                    targetAbility.baseModifierWithPermanentAdjustments = static_cast<int>(SpecialAbilityScoreValues::Dead);
-                }
-            } else {
-                targetAbility.baseModifierWithPermanentAdjustments = (targetAbility.baseScoreWithPermanentAdjustments - 10) / 2;
-            }
+            targetAbility.baseModifierWithPermanentAdjustments = (targetAbility.baseScoreWithPermanentAdjustments - 10) / 2;
+
+            targetAbility.characterStatus = determineCharacterStatus(ability, 0);
         }
 
         //Dependent on target ability score's tempAdjustments & permanentAdjustments being fully populated
@@ -115,6 +124,53 @@ namespace RulesEngine
             targetAbility.totalAdjustment = totalAdjustment;
         }
 
+        void AbilityScores::calculateTotalAbilityScoreDamage(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            int totalDamage = 0;
+
+            for (auto& damage : targetAbility.abilityDamage) {
+                totalDamage += damage.second.modifierValue;
+            }
+
+            targetAbility.totalAbilityDamage = totalDamage;
+            targetAbility.characterStatus = determineCharacterStatus(ability, totalDamage);
+        }
+
+        void AbilityScores::calculateTotalAbilityScoreDrain(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            int totalDrain = 0;
+
+            for (auto& drain : targetAbility.abilityPenalties) {
+                totalDrain += drain.second.modifierValue;
+            }
+
+            targetAbility.totalAbilityDrain = totalDrain;
+            targetAbility.characterStatus = determineCharacterStatus(ability, totalDrain);
+        }
+
+        void AbilityScores::calculateTotalAbilityScorePenalties(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            int totalPenalty = 0;
+
+            for (auto& penalty : targetAbility.abilityPenalties) {
+                totalPenalty += penalty.second.modifierValue;
+            }
+
+            //Penalties can never reduce a stat below 1, otherwise follows same rules as Ability Damage
+            if ((targetAbility.baseScoreWithPermanentAdjustments - totalPenalty) < 1) {
+                totalPenalty = targetAbility.baseScoreWithPermanentAdjustments - 1;
+            }
+
+            targetAbility.totalAbilityPenalty = totalPenalty;
+        }
+
+
         //Dependent on totalScore
         void AbilityScores::calculateTotalAbilityScoreModifier(AbilityScoreTypes ability)
         {
@@ -128,13 +184,14 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
             std::unordered_map<std::string, AbilityScoreBonus> bonuses = getContributingBonusesFromRawBonusList(targetAbility.permanentAdjustments);
 
-            int total = 0;
+            int totalBonus = 0;
 
             for (auto& bonus : bonuses) {
-                total += bonus.second.modifierValue;
+                totalBonus += bonus.second.modifierValue;
             }
 
-            targetAbility.baseScoreWithPermanentAdjustments = total + targetAbility.baseScore;
+            targetAbility.baseScoreWithPermanentAdjustments = totalBonus + targetAbility.baseScore - targetAbility.totalAbilityDrain;
+            targetAbility.characterStatus = determineCharacterStatus(ability, 0);
         }
 
         std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& mergeList, const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList)

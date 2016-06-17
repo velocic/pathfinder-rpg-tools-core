@@ -26,10 +26,11 @@ namespace RulesEngine
 
         enum class SpecialAbilityScoreValues : int
         {
-            Unconscious = -100, //If Strength, Wisdom, or Charisma falls to 0
-            Immobile = -99, //If Dexterity falls to 0
-            Dead = -98, //If Constitution falls to 0
-            Comatose = -97, //If Intelligence falls to 0
+            Unconscious, //If Strength, Wisdom, or Charisma falls to 0
+            Immobile, //If Dexterity falls to 0
+            Dead, //If Constitution falls to 0
+            Comatose, //If Intelligence falls to 0
+            Normal //None of the above apply, character is fine
         };
 
         enum class AbilityScoreModifiers : int
@@ -53,6 +54,9 @@ namespace RulesEngine
         };
 
         //From d20pfsrd.com:
+        //"Does not actually reduce an ability, but it does apply a penalty to the
+        //skills and statistics that are based on that ability"
+        //
         //"For every 2 points of damage you take to a single ability, apply a -1
         //penalty to skills and statistics listed with the relevant ability. If the
         //amount of ability damage you have taken equals or exceeds your ability
@@ -94,18 +98,19 @@ namespace RulesEngine
 
         struct AbilityScore
         {
-            int baseScore; //Initial score selected & modified by user only
-            int baseScoreWithPermanentAdjustments; //baseScore + totalPermanentAdjustment
-            int totalScore; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
+            SpecialAbilityScoreValues characterStatus = SpecialAbilityScoreValues::Normal;
+            int baseScore = 0; //Initial score selected & modified by user only
+            int baseScoreWithPermanentAdjustments = 0; //baseScore + totalPermanentAdjustment - totalAbilityDrain
+            int totalScore = 0; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
 
-            int baseModifier; //Only derived from baseScore
-            int baseModifierWithPermanentAdjustments; //derived from baseScoreWithPermanentBonuses
-            int totalAbilityModifier; //Should not be adjusted directly by user, derived from all modifiers
+            int baseModifier = 0; //Only derived from baseScore
+            int baseModifierWithPermanentAdjustments = 0; //derived from baseScoreWithPermanentBonuses
+            int totalAbilityModifier = 0; //Should not be adjusted directly by user, derived from all modifiers
 
             //Number of ability points add or subtracted to/from base score to derive
             //total score. Both temp & permanent bonuses are factored int, with
             //non-stacking bonuses filtered out
-            int totalAdjustment; 
+            int totalAdjustment = 0; 
 
             std::unordered_map<std::string, AbilityScoreBonus> tempAdjustments;
             std::unordered_map<std::string, AbilityScoreBonus> permanentAdjustments;
@@ -113,8 +118,13 @@ namespace RulesEngine
             std::vector<AbilityScoreBonus> contributingAdjustments; //For display purposes. List of permanent & temporary bonuses w/ non-stacking bonuses filtered out
 
             std::unordered_map<std::string, AbilityScoreDamage> abilityDamage;
+            int totalAbilityDamage = 0;
+
             std::unordered_map<std::string, AbilityScoreDrain> abilityDrain;
+            int totalAbilityDrain = 0;
+
             std::unordered_map<std::string, AbilityScorePenalty> abilityPenalties;
+            int totalAbilityPenalty = 0;
         };
 
         class AbilityScores :
@@ -125,13 +135,17 @@ namespace RulesEngine
                 std::unordered_map<int, AbilityScore> abilityScores;
                 std::unordered_map<std::string, Observer*> observers;
 
-                void notifyObservers(const std::string& fieldName) override;
                 void calculateTotalAbilityScore(AbilityScoreTypes ability);
                 void calculateBaseAbilityModifier(AbilityScoreTypes ability);
                 void calculateTotalAbilityScoreAdjustment(AbilityScoreTypes ability);
                 void calculateTotalAbilityScoreModifier(AbilityScoreTypes ability);
                 void calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability);
                 void calculateBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability);
+                void calculateTotalAbilityScoreDamage(AbilityScoreTypes ability);
+                void calculateTotalAbilityScoreDrain(AbilityScoreTypes ability);
+                void calculateTotalAbilityScorePenalties(AbilityScoreTypes ability);
+                SpecialAbilityScoreValues determineCharacterStatus(AbilityScoreTypes ability, int damageValue);
+                void notifyObservers(const std::string& fieldName) override;
 
                 //Helper function to strip non-stacking bonuses
                 std::unordered_map<std::string, AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList);
