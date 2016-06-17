@@ -49,8 +49,8 @@ namespace RulesEngine
             AbilityScoreTypes affectedScore;
             std::string description;
             std::string sourceName;
-            int modifierValue;
-            bool enabled;
+            int modifierValue = 0;
+            bool enabled = false;
         };
 
         //From d20pfsrd.com:
@@ -69,8 +69,8 @@ namespace RulesEngine
             AbilityScoreTypes affectedScore;
             std::string description;
             std::string sourceName;
-            int modifierValue;
-            bool enabled;
+            int modifierValue = 0;
+            bool enabled = false;
         };
 
         //Actually reduces the ability score, like an inverse permanent bonus.
@@ -81,8 +81,8 @@ namespace RulesEngine
             AbilityScoreTypes affectedScore;
             std::string description;
             std::string sourceName;
-            int modifierValue;
-            bool enabled;
+            int modifierValue = 0;
+            bool enabled = false;
         };
 
         //Like ability damage, but cannot cause you to fall unconscious or die,
@@ -92,8 +92,8 @@ namespace RulesEngine
             AbilityScoreTypes affectedScore;
             std::string description;
             std::string sourceName;
-            int modifierValue;
-            bool enabled;
+            int modifierValue = 0;
+            bool enabled = false;
         };
 
         struct AbilityScore
@@ -145,6 +145,7 @@ namespace RulesEngine
                 void calculateTotalAbilityScoreDrain(AbilityScoreTypes ability);
                 void calculateTotalAbilityScorePenalties(AbilityScoreTypes ability);
                 SpecialAbilityScoreValues determineCharacterStatus(AbilityScoreTypes ability, int damageValue);
+                std::string mapAbilityScoreEnumToString(AbilityScoreTypes ability);
                 void notifyObservers(const std::string& fieldName) override;
 
                 //Helper function to strip non-stacking bonuses
@@ -160,15 +161,31 @@ namespace RulesEngine
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
 
-                void addAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+                void addTemporaryAbilityScoreBonus(AbilityScoreModifiers modifierType, AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
+                void addPermanentAbilityScoreBonus(AbilityScoreModifiers modifierType, AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
                 void addAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
                 void addAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
                 void addAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
 
-                void removeAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+                //Utilityies to detect if we are going to overwrite an effect source or not. Will be useful for GUI prompts
+                bool doesTemporaryAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+                bool doesPermanentAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+                bool doesAbilityScoreDamageSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+                bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+                bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+
+                void removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+                void removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
                 void removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
                 void removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
                 void removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
+
+                //Enable or disable an ability effect source from counting torwards relevant statistics
+                void toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+                void togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+                void toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
+                void toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
+                void toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
 
                 void setBaseAbilityScore(AbilityScoreTypes ability, int baseScore);
         };

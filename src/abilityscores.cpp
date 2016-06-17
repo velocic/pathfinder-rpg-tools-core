@@ -170,6 +170,25 @@ namespace RulesEngine
             targetAbility.totalAbilityPenalty = totalPenalty;
         }
 
+        std::string AbilityScores::mapAbilityScoreEnumToString(AbilityScoreTypes ability)
+        {
+            switch (ability) {
+                case AbilityScoreTypes::STR:
+                    return "strength";
+                case AbilityScoreTypes::DEX:
+                    return "dexterity";
+                case AbilityScoreTypes::CON:
+                    return "constitution";
+                case AbilityScoreTypes::INT:
+                    return "intelligence";
+                case AbilityScoreTypes::WIS:
+                    return "wisdom";
+                case AbilityScoreTypes::CHA:
+                    return "charisma";
+            }
+
+            return "Unknown Ability Score Type";
+        }
 
         //Dependent on totalScore
         void AbilityScores::calculateTotalAbilityScoreModifier(AbilityScoreTypes ability)
@@ -239,20 +258,153 @@ namespace RulesEngine
             return getContributingBonusesFromRawBonusList(std::unordered_map<std::string, AbilityScoreBonus>(), rawBonusList);
         }
         
-        // void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
-        // void registerObserver(const std::string& observerName, Observer* observer) override;
-        // void unregisterObserver(const std::string& observerName) override;
-        //
-        // void addAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
-        // void addAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
-        // void addAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
-        // void addAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description);
-        //
-        // void removeAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
-        // void removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
-        // void removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
-        // void removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
-        //
-        // void setBaseAbilityScore(AbilityScoreTypes ability, int baseScore);
+        void AbilityScores::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
+        {
+            //Subscribe to updates here, & recalculate as needed
+        }
+
+        void AbilityScores::registerObserver(const std::string& observerName, Observer* observer)
+        {
+            observers.insert(std::make_pair(observerName, observer));
+        }
+
+        void AbilityScores::unregisterObserver(const std::string& observerName)
+        {
+            observers.erase(observerName);
+        }
+
+        void AbilityScores::addTemporaryAbilityScoreBonus(AbilityScoreModifiers modifierType, AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            AbilityScoreBonus bonus;
+            bonus.modifierType = modifierType;
+            bonus.affectedScore = ability;
+            bonus.description = description;
+            bonus.sourceName = sourceName;
+            bonus.modifierValue = modifierValue;
+            bonus.enabled = true;
+
+            targetAbility.tempAdjustments.insert(std::make_pair(sourceName, bonus));
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
+        }
+
+        void AbilityScores::addPermanentAbilityScoreBonus(AbilityScoreModifiers modifierType, AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            AbilityScoreBonus bonus;
+            bonus.modifierType = modifierType;
+            bonus.affectedScore = ability;
+            bonus.description = description;
+            bonus.sourceName = sourceName;
+            bonus.modifierValue = modifierValue;
+            bonus.enabled = true;
+
+            targetAbility.permanentAdjustments.insert(std::make_pair(sourceName, bonus));
+
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
+        }
+
+        void AbilityScores::addAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            AbilityScoreDamage damage;
+            damage.affectedScore = ability;
+            damage.description = description;
+            damage.sourceName = sourceName;
+            damage.modifierValue = modifierValue;
+            damage.enabled = true;
+
+            targetAbility.abilityDamage.insert(std::make_pair(sourceName, damage));
+
+            calculateTotalAbilityScoreDamage(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
+        }
+
+        void AbilityScores::addAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            AbilityScoreDrain drain;
+            drain.affectedScore = ability;
+            drain.description = description;
+            drain.sourceName = sourceName;
+            drain.modifierValue = modifierValue;
+            drain.enabled = true;
+
+            targetAbility.abilityDrain.insert(std::make_pair(sourceName, drain));
+
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
+        }
+
+        void AbilityScores::addAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName, int modifierValue, const std::string& description)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            AbilityScorePenalty penalty;
+            penalty.affectedScore = ability;
+            penalty.description = description;
+            penalty.sourceName = sourceName;
+            penalty.modifierValue = modifierValue;
+            penalty.enabled = true;
+
+            targetAbility.abilityPenalties.insert(std::make_pair(sourceName, penalty));
+        }
+
+        // bool doesTemporaryAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+        // bool doesPermanentAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+        // bool doesAbilityScoreDamageSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+        // bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+        // bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+
+        void AbilityScores::removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::setBaseAbilityScore(AbilityScoreTypes ability, int baseScore)
+        {
+        }
+
+        // void toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+        // void togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
+        // void toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
+        // void toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
+        // void toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
     }
 }
