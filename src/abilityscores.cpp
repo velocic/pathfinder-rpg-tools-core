@@ -369,32 +369,110 @@ namespace RulesEngine
             penalty.enabled = true;
 
             targetAbility.abilityPenalties.insert(std::make_pair(sourceName, penalty));
+
+            calculateTotalAbilityScorePenalties(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
-        // bool doesTemporaryAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
-        // bool doesPermanentAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
-        // bool doesAbilityScoreDamageSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
-        // bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
-        // bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
+        bool AbilityScores::doesTemporaryAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto tempAdjustmentIterator = targetAbility.tempAdjustments.find(sourceName);
+
+            if (tempAdjustmentIterator == targetAbility.tempAdjustments.end()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool AbilityScores::doesPermanentAbilityScoreBonusSourceExist(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto permanentAdjustmentIterator = targetAbility.permanentAdjustments.find(sourceName);
+
+            if (permanentAdjustmentIterator == targetAbility.permanentAdjustments.end()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool AbilityScores::doesAbilityScoreDamageSourceExist(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto damageIterator = targetAbility.abilityDamage.find(sourceName);
+
+            if (damageIterator == targetAbility.abilityDamage.end()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool AbilityScores::doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto drainIterator = targetAbility.abilityDrain.find(sourceName);
+
+            if (drainIterator == targetAbility.abilityDrain.end()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool AbilityScores::doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto penaltyIterator = targetAbility.abilityPenalties.find(sourceName);
+
+            if (penaltyIterator == targetAbility.abilityPenalties.end()) {
+                return false;
+            }
+
+            return true;
+        }
 
         void AbilityScores::removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.tempAdjustments.erase(sourceName);
         }
 
         void AbilityScores::removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.permanentAdjustments.erase(sourceName);
         }
 
         void AbilityScores::removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.abilityDamage.erase(sourceName);
         }
 
         void AbilityScores::removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.abilityDrain.erase(sourceName);
         }
 
         void AbilityScores::removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.abilityPenalties.erase(sourceName);
         }
 
         void AbilityScores::setBaseAbilityScore(AbilityScoreTypes ability, int baseScore)
