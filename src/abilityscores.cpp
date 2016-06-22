@@ -131,6 +131,11 @@ namespace RulesEngine
             int totalDamage = 0;
 
             for (auto& damage : targetAbility.abilityDamage) {
+                //ignore damage entries marked disabled by the user
+                if (damage.second.enabled == false) {
+                    continue;
+                }
+
                 totalDamage += damage.second.modifierValue;
             }
 
@@ -145,6 +150,11 @@ namespace RulesEngine
             int totalDrain = 0;
 
             for (auto& drain : targetAbility.abilityPenalties) {
+                //ignore drain entries marked disabled by the user
+                if (drain.second.enabled == false) {
+                    continue;
+                }
+
                 totalDrain += drain.second.modifierValue;
             }
 
@@ -159,6 +169,11 @@ namespace RulesEngine
             int totalPenalty = 0;
 
             for (auto& penalty : targetAbility.abilityPenalties) {
+                //ignore penalty entries marked disabled by the user
+                if (penalty.second.enabled == false) {
+                    continue;
+                }
+
                 totalPenalty += penalty.second.modifierValue;
             }
 
@@ -219,6 +234,11 @@ namespace RulesEngine
 
             //For each registered bonus
             for (auto& bonus : rawBonusList) {
+                //Ignore bonuses disabled by the user
+                if (bonus.second.enabled == false) {
+                    continue;
+                }
+
                 auto& adjustment = bonus.second;
 
                 //Untyped bonuses always stack, so add them blindly
@@ -477,12 +497,30 @@ namespace RulesEngine
 
         void AbilityScores::setBaseAbilityScore(AbilityScoreTypes ability, int baseScore)
         {
+            //Only configured by user, so simple to just set directly.
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            targetAbility.baseScore = baseScore;
         }
 
-        // void toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
-        // void togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
-        // void toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);
-        // void toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName);
-        // void toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName);
+        void AbilityScores::toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
+
+        void AbilityScores::toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
+        {
+        }
     }
 }
