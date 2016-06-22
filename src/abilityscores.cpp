@@ -505,22 +505,67 @@ namespace RulesEngine
 
         void AbilityScores::toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto& tempBonus = targetAbility.tempAdjustments.find(sourceName)->second;
+
+            if (tempBonus.enabled == true) {
+                tempBonus.enabled = false;
+            } else {
+                tempBonus.enabled = true;
+            }
         }
 
         void AbilityScores::togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto& permanentBonus = targetAbility.permanentAdjustments.find(sourceName)->second;
+
+            if (permanentBonus.enabled == true) {
+                permanentBonus.enabled = false;
+            } else {
+                permanentBonus.enabled = true;
+            }
         }
 
         void AbilityScores::toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto& abilityDamage = targetAbility.abilityDamage.find(sourceName)->second;
+
+            if (abilityDamage.enabled == true) {
+                abilityDamage.enabled = false;
+            } else {
+                abilityDamage.enabled = true;
+            }
         }
 
         void AbilityScores::toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto& abilityDrain = targetAbility.abilityDrain.find(sourceName)->second;
+
+            if (abilityDrain.enabled == true) {
+                abilityDrain.enabled = false;
+            } else {
+                abilityDrain.enabled = true;
+            }
         }
 
         void AbilityScores::toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
         {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            auto& abilityPenalty = targetAbility.abilityPenalties.find(sourceName)->second;
+
+            if (abilityPenalty.enabled == true) {
+                abilityPenalty.enabled = false;
+            } else {
+                abilityPenalty.enabled = true;
+            }
         }
     }
 }
