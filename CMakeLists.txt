@@ -19,12 +19,21 @@ add_executable(
     src/testmain.cpp
 )
 
-target_link_libraries(ApiDemoConsumer ${PROJECT_NAME})
-
-install(
-    TARGETS
-        ${PROJECT_NAME}
-        ApiDemoConsumer
-    DESTINATION
-        bin
+add_executable(
+    Tests
+    tests/abilityscoretests.cpp
 )
+
+target_link_libraries(ApiDemoConsumer ${PROJECT_NAME})
+target_link_libraries(Tests ${PROJECT_NAME} gtest gtest_main pthread)
+
+# Leaving this out for now. Thought bin would be relative to the project path, but
+# it wants to install into /usr/local
+# install(
+#     TARGETS
+#         ${PROJECT_NAME}
+#         ApiDemoConsumer
+#         Tests
+#     DESTINATION
+#         bin
+# )
