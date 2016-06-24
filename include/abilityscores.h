@@ -174,6 +174,8 @@ namespace RulesEngine
                 bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
                 bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
 
+                int getBaseAbilityScore(AbilityScoreTypes ability);
+
                 void removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
                 void removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
                 void removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName);

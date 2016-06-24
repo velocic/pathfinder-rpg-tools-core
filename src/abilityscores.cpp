@@ -460,6 +460,13 @@ namespace RulesEngine
             return true;
         }
 
+        int AbilityScores::getBaseAbilityScore(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.baseScore;
+        }
+
         void AbilityScores::removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
