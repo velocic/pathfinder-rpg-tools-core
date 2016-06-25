@@ -460,11 +460,158 @@ namespace RulesEngine
             return true;
         }
 
+        SpecialAbilityScoreValues AbilityScores::getCharacterStatus(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.characterStatus;
+        }
+
         int AbilityScores::getBaseAbilityScore(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.baseScore;
+        }
+
+        int AbilityScores::getBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.baseScoreWithPermanentAdjustments;
+        }
+
+        int AbilityScores::getTotalScore(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalScore;
+        }
+
+        int AbilityScores::getBaseModifier(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.baseModifier;
+        }
+        
+        int AbilityScores::getBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.baseModifierWithPermanentAdjustments;
+        }
+
+        int AbilityScores::getTotalAbilityModifier(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalAbilityModifier;
+        }
+
+        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getTemporaryAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.tempAdjustments;
+        }
+
+        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getPermanentAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.permanentAdjustments;
+        }
+
+        std::vector<AbilityScoreBonus> AbilityScores::getContributingAdjustments(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.contributingAdjustments;
+        }
+
+        std::unordered_map<std::string, AbilityScoreDamage> AbilityScores::getAbilityDamage(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityDamage;
+        }
+
+        std::unordered_map<std::string, AbilityScoreDrain> AbilityScores::getAbilityDrain(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityDrain;
+        }
+
+        std::unordered_map<std::string, AbilityScorePenalty> AbilityScores::getAbilityPenalties(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityPenalties;
+        }
+
+        AbilityScoreBonus AbilityScores::getTemporaryAdjustment(AbilityScoreTypes ability, std::string sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.tempAdjustments.find(sourceName)->second;
+        }
+        
+        AbilityScoreBonus AbilityScores::getPermanentAdjustment(AbilityScoreTypes ability, std::string sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.permanentAdjustments.find(sourceName)->second;
+        }
+        
+        AbilityScoreDamage AbilityScores::getAbilityDamage(AbilityScoreTypes ability, std::string sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityDamage.find(sourceName)->second;
+        }
+        
+        AbilityScoreDrain AbilityScores::getAbilityDrain(AbilityScoreTypes ability, std::string sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityDrain.find(sourceName)->second;
+        }
+        
+        AbilityScorePenalty AbilityScores::getAbilityPenalty(AbilityScoreTypes ability, std::string sourceName)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.abilityPenalties.find(sourceName)->second;
+        }
+
+        int AbilityScores::getTotalAdjustment(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalAdjustment;
+        }
+
+        int AbilityScores::getTotalAbilityDamage(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalAbilityDamage;
+        }
+
+        int AbilityScores::getTotalAbilityDrain(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalAbilityDrain;
+        }
+
+        int AbilityScores::getTotalAbilityPenalty(AbilityScoreTypes ability)
+        {
+            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
+
+            return targetAbility.totalAbilityPenalty;
         }
 
         void AbilityScores::removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)

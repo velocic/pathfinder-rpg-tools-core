@@ -174,7 +174,28 @@ namespace RulesEngine
                 bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
                 bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
 
+                SpecialAbilityScoreValues getCharacterStatus(AbilityScoreTypes ability);
                 int getBaseAbilityScore(AbilityScoreTypes ability);
+                int getBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability);
+                int getTotalScore(AbilityScoreTypes ability);
+                int getBaseModifier(AbilityScoreTypes ability);
+                int getBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability);
+                int getTotalAbilityModifier(AbilityScoreTypes ability);
+                std::unordered_map<std::string, AbilityScoreBonus> getTemporaryAdjustments(AbilityScoreTypes ability);
+                std::unordered_map<std::string, AbilityScoreBonus> getPermanentAdjustments(AbilityScoreTypes ability);
+                std::vector<AbilityScoreBonus> getContributingAdjustments(AbilityScoreTypes ability);
+                std::unordered_map<std::string, AbilityScoreDamage> getAbilityDamage(AbilityScoreTypes ability);
+                std::unordered_map<std::string, AbilityScoreDrain> getAbilityDrain(AbilityScoreTypes ability);
+                std::unordered_map<std::string, AbilityScorePenalty> getAbilityPenalties(AbilityScoreTypes ability);
+                AbilityScoreBonus getTemporaryAdjustment(AbilityScoreTypes ability, std::string sourceName);
+                AbilityScoreBonus getPermanentAdjustment(AbilityScoreTypes ability, std::string sourceName);
+                AbilityScoreDamage getAbilityDamage(AbilityScoreTypes ability, std::string sourceName);
+                AbilityScoreDrain getAbilityDrain(AbilityScoreTypes ability, std::string sourceName);
+                AbilityScorePenalty getAbilityPenalty(AbilityScoreTypes ability, std::string sourceName);
+                int getTotalAdjustment(AbilityScoreTypes ability);
+                int getTotalAbilityDamage(AbilityScoreTypes ability);
+                int getTotalAbilityDrain(AbilityScoreTypes ability);
+                int getTotalAbilityPenalty(AbilityScoreTypes ability);
 
                 void removeTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
                 void removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName);
