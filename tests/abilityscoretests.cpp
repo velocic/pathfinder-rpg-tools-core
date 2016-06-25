@@ -76,6 +76,51 @@ TEST_P(TemporaryAbilityScoreBonus, AddActuallyAddsBonusToList)
 
 TEST_P(TemporaryAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto tempAdjustmentsCount = abilityScores.getTemporaryAdjustments(abilityScoreType).size();
+
+    //Ensure list of tempAdjustments is empty at astart
+    EXPECT_EQ(0, tempAdjustmentsCount);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus2",
+        6,
+        "bonus2description"
+    );
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus3",
+        3,
+        "bonus3description"
+    );
+
+    auto contributingTempAdjustmentsCount = abilityScores.getContributingAdjustments(abilityScoreType).size();
+
+    //Should only have one bonus in the list, since same modifier sources shouldn't stack
+    EXPECT_EQ(1, contributingTempAdjustmentsCount);
+
+    auto contributingBonus = abilityScores.getContributingAdjustments(abilityScoreType)[0];
+
+    EXPECT_EQ(AbilityScoreModifiers::Alchemical, contributingBonus.modifierType);
+    EXPECT_EQ(abilityScoreType, contributingBonus.affectedScore);
+    EXPECT_EQ("bonus2", contributingBonus.sourceName);
+    EXPECT_EQ(6, contributingBonus.modifierValue);
+    EXPECT_EQ("bonus2description", contributingBonus.description);
+    EXPECT_EQ(true, contributingBonus.enabled);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, OnlyHighestBonusAppliesWhenMultipleOfSameModifierType)
