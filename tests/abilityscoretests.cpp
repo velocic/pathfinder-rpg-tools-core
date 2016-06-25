@@ -3,6 +3,15 @@
 
 using namespace RulesEngine::Character;
 
+std::vector<AbilityScoreTypes> listOfPossibleAbilityScores = {
+    AbilityScoreTypes::STR,
+    AbilityScoreTypes::DEX,
+    AbilityScoreTypes::CON,
+    AbilityScoreTypes::INT,
+    AbilityScoreTypes::WIS,
+    AbilityScoreTypes::CHA
+};
+
 class BaseScores : public ::testing::TestWithParam<AbilityScoreTypes>
 {
     //Fixture for BaseScores test case
@@ -24,14 +33,7 @@ TEST_P(BaseScores, SetBaseAbilityScore)
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
     BaseScores, //Fixture class/Test case name
-    ::testing::Values( //Actual value set to pass to the test run
-        AbilityScoreTypes::STR,
-        AbilityScoreTypes::DEX,
-        AbilityScoreTypes::CON,
-        AbilityScoreTypes::INT,
-        AbilityScoreTypes::WIS,
-        AbilityScoreTypes::CHA
-    )
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
 
 class TemporaryAbilityScoreBonus : public ::testing::TestWithParam<AbilityScoreTypes>
@@ -115,12 +117,5 @@ TEST_P(TemporaryAbilityScoreBonus, ToggleDisablesBonus)
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
     TemporaryAbilityScoreBonus, //Fixture class/Test case name
-    ::testing::Values( //Actual value set to pass to the test run
-        AbilityScoreTypes::STR,
-        AbilityScoreTypes::DEX,
-        AbilityScoreTypes::CON,
-        AbilityScoreTypes::INT,
-        AbilityScoreTypes::WIS,
-        AbilityScoreTypes::CHA
-    )
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
