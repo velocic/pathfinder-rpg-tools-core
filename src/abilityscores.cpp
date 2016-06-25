@@ -210,7 +210,7 @@ namespace RulesEngine
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            targetAbility.totalAbilityModifier = targetAbility.totalScore / 2;
+            targetAbility.totalAbilityModifier = (targetAbility.totalScore - 10) / 2;
         }
 
         void AbilityScores::calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)

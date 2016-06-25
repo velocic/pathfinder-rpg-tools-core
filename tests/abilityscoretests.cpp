@@ -123,39 +123,134 @@ TEST_P(TemporaryAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
     EXPECT_EQ(true, contributingBonus.enabled);
 }
 
-TEST_P(TemporaryAbilityScoreBonus, OnlyHighestBonusAppliesWhenMultipleOfSameModifierType)
-{
-}
-
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
+
+    //Check that total calculated ability score is 0 at start
+    EXPECT_EQ(0, totalAdjustment);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
+
+    EXPECT_EQ(2, totalAdjustment);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    //Check that total calculated ability score is 0 at start
+    EXPECT_EQ(0, totalScore);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(2, totalScore);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalModifier = abilityScores.getTotalAbilityModifier(abilityScoreType);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalModifier = abilityScores.getTotalAbilityModifier(abilityScoreType);
+
+    EXPECT_EQ(-4, totalModifier);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    EXPECT_EQ(true, abilityScores.doesTemporaryAbilityScoreBonusSourceExist(abilityScoreType, "bonus1"));
 }
 
 TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    abilityScores.removeTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+
+    EXPECT_EQ(false, abilityScores.doesTemporaryAbilityScoreBonusSourceExist(abilityScoreType, "bonus1"));
 }
 
-TEST_P(TemporaryAbilityScoreBonus, RemoveDeletesBonusIfExists)
+TEST_P(TemporaryAbilityScoreBonus, ToggleBonus)
 {
+    //Temporary Bonuses are enabled by default
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    //Toggle to false
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+
+    auto bonus = abilityScores.getTemporaryAdjustment(abilityScoreType, "bonus1");
+    EXPECT_EQ(false, bonus.enabled);
+
+    //Toggle back to true
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+
+    bonus = abilityScores.getTemporaryAdjustment(abilityScoreType, "bonus1");
+    EXPECT_EQ(true, bonus.enabled);
 }
 
-TEST_P(TemporaryAbilityScoreBonus, ToggleEnablesBonus)
-{
-}
-
-TEST_P(TemporaryAbilityScoreBonus, ToggleDisablesBonus)
+TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
 }
 
