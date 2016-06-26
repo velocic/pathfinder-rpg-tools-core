@@ -252,6 +252,34 @@ TEST_P(TemporaryAbilityScoreBonus, ToggleBonus)
 
 TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
+    //Utilizing a bunch of functionality to be closer to what an actual use-case is like for this test
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Alchemical, abilityScoreType, "bonus1", 3, "bonus1description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Alchemical, abilityScoreType, "bonus2", 1, "bonus2description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Enhancement, abilityScoreType, "bonus3", 1, "bonus3description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Enhancement, abilityScoreType, "bonus4", 2, "bonus4description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "bonus5", 4, "bonus5description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "bonus6", 1, "bonus6description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Morale, abilityScoreType, "bonus7", 1, "bonus7description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Morale, abilityScoreType, "bonus8", 2, "bonus8description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Size, abilityScoreType, "bonus9", 4, "bonus9description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus10", 1, "bonus10description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus11", 1, "bonus11description");
+
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus7");
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus4");
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus5");
+
+    //4 10 9 8 1 5 11 -->bonuses being applied
+    //2 1 4 2 3 4 1 --> their respective bonus values
+    //17 total (+8 modifier)
+
+    EXPECT_EQ(23, abilityScores.getTotalScore(abilityScoreType));
+    EXPECT_EQ(13, abilityScores.getTotalAdjustment(abilityScoreType));
+    EXPECT_EQ(6, abilityScores.getTotalAbilityModifier(abilityScoreType));
 }
 
 INSTANTIATE_TEST_CASE_P(
