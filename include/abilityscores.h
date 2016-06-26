@@ -9,6 +9,7 @@
 
 #include <observersubject.h>
 #include <observer.h>
+#include <preprocessordefines.h>
 
 namespace RulesEngine
 {
@@ -127,7 +128,7 @@ namespace RulesEngine
             int totalAbilityPenalty = 0;
         };
 
-        class AbilityScores :
+        class PATHFINDER_RULES_ENGINE_EXPORT AbilityScores :
             ObserverSubject,
             Observer
         {

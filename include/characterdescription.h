@@ -8,6 +8,7 @@
 #include <datatypes.h>
 #include <observersubject.h>
 #include <observer.h>
+#include <preprocessordefines.h>
 
 namespace RulesEngine
 {
@@ -22,7 +23,7 @@ namespace RulesEngine
             unsigned int skillPointsPerLevel;
         };
 
-        class CharacterDescription :
+        class PATHFINDER_RULES_ENGINE_EXPORT CharacterDescription :
             ObserverSubject,
             Observer
         {
