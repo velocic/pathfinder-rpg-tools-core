@@ -698,6 +698,10 @@ namespace RulesEngine
             } else {
                 tempBonus.enabled = true;
             }
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
         }
 
         void AbilityScores::togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)

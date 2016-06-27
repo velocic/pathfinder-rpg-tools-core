@@ -273,10 +273,6 @@ TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
     abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus4");
     abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus5");
 
-    //4 10 9 8 1 5 11 -->bonuses being applied
-    //2 1 4 2 3 4 1 --> their respective bonus values
-    //17 total (+8 modifier)
-
     EXPECT_EQ(23, abilityScores.getTotalScore(abilityScoreType));
     EXPECT_EQ(13, abilityScores.getTotalAdjustment(abilityScoreType));
     EXPECT_EQ(6, abilityScores.getTotalAbilityModifier(abilityScoreType));
