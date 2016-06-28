@@ -7,7 +7,7 @@ set(PROJECT_SOURCE_DIR "${PROJECT_BINARY_DIR}/src")
 
 if (UNIX AND NOT APPLE)
     set (LINUX TRUE)
-endif()
+endif(UNIX AND NOT APPLE)
 
 include_directories("include")
 
@@ -34,15 +34,4 @@ if (LINUX)
     target_link_libraries(Tests ${PROJECT_NAME} gtest gtest_main pthread)
 else()
     target_link_libraries(Tests ${PROJECT_NAME} gtest gtest_main)
-endif()
-
-# Leaving this out for now. Thought bin would be relative to the project path, but
-# it wants to install into /usr/local
-# install(
-#     TARGETS
-#         ${PROJECT_NAME}
-#         ApiDemoConsumer
-#         Tests
-#     DESTINATION
-#         bin
-# )
+endif(LINUX)

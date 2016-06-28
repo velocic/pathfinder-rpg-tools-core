@@ -48,7 +48,7 @@ TEST_P(TemporaryAbilityScoreBonus, AddActuallyAddsBonusToList)
 
     auto tempAdjustmentsCount = abilityScores.getTemporaryAdjustments(abilityScoreType).size();
 
-    //Ensure list of tempAdjustments is empty at astart
+    //Ensure list of tempAdjustments is empty at start
     EXPECT_EQ(0, tempAdjustmentsCount);
 
     abilityScores.addTemporaryAbilityScoreBonus(
@@ -281,5 +281,84 @@ TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
     TemporaryAbilityScoreBonus, //Fixture class/Test case name
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
+);
+
+class PermanentAbilityScoreBonus : public ::testing::TestWithParam<AbilityScoreTypes>
+{
+    //Fixture for TemporaryAbilityScoreBonus test case
+};
+
+TEST_P(PermanentAbilityScoreBonus, AddActuallyAddsBonusToList)
+{
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto permanentAdjustmentsCount = abilityScores.getPermanentAdjustments(abilityScoreType).size();
+
+    //Ensure list of permanentAdjustments is empty at start
+    EXPECT_EQ(0, permanentAdjustmentsCount);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "testbonus",
+        4,
+        "dummy +4 modifier"
+    );
+
+    permanentAdjustmentsCount = abilityScores.getPermanentAdjustments(abilityScoreType).size();
+
+    //Ensure we now have 1 permanentAdjustment in the collection now
+    EXPECT_EQ(1, permanentAdjustmentsCount);
+}
+
+TEST_P(PermanentAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseScoreWithPermanentAdjustments)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseModifierWithPermanentAdjustments)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScore)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
+{
+}
+
+TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
+{
+}
+
+INSTANTIATE_TEST_CASE_P(
+    AbilityScoreTypeFixture, //Fixture class instantiation name
+    PermanentAbilityScoreBonus, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
