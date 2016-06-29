@@ -149,7 +149,7 @@ namespace RulesEngine
 
             int totalDrain = 0;
 
-            for (auto& drain : targetAbility.abilityPenalties) {
+            for (auto& drain : targetAbility.abilityDrain) {
                 //ignore drain entries marked disabled by the user
                 if (drain.second.enabled == false) {
                     continue;

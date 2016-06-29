@@ -315,14 +315,114 @@ TEST_P(PermanentAbilityScoreBonus, AddActuallyAddsBonusToList)
 
 TEST_P(PermanentAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Enhancement,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Enhancement,
+        abilityScoreType,
+        "bonus2",
+        6,
+        "bonus2description"
+    );
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Enhancement,
+        abilityScoreType,
+        "bonus3",
+        3,
+        "bonus3description"
+    );
+
+    auto contributingPermanentAdjustmentsCount = abilityScores.getContributingAdjustments(abilityScoreType).size();
+
+    //Should only have one bonus in the list, since same modifier sources shouldn't stack
+    EXPECT_EQ(1, contributingPermanentAdjustmentsCount);
+
+    auto contributingBonus = abilityScores.getContributingAdjustments(abilityScoreType)[0];
+
+    EXPECT_EQ(AbilityScoreModifiers::Enhancement, contributingBonus.modifierType);
+    EXPECT_EQ(abilityScoreType, contributingBonus.affectedScore);
+    EXPECT_EQ("bonus2", contributingBonus.sourceName);
+    EXPECT_EQ(6, contributingBonus.modifierValue);
+    EXPECT_EQ("bonus2description", contributingBonus.description);
+    EXPECT_EQ(true, contributingBonus.enabled);
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
+
+    //Check that total calculated ability score is 0 at start
+    EXPECT_EQ(0, totalAdjustment);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Inherent,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
+
+    EXPECT_EQ(2, totalAdjustment);
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    //Add drain enough to put the character into a special condition
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "bad",
+        10,
+        "you stood in bad stuff. how sad."
+    );
+
+    //A little setup just due to how we're running the same test once for
+    //every ability score type, but need slightly different behavior in
+    //this case
+    SpecialAbilityScoreValues characterTestStatus;
+
+    if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
+        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+    } else if (abilityScoreType == AbilityScoreTypes::DEX) {
+        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+    } else if (abilityScoreType == AbilityScoreTypes::INT) {
+        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+    } else {
+        //AbilityScoreTypes::CON
+        characterTestStatus = SpecialAbilityScoreValues::Dead;
+    }
+
+    //Test ensure we're in a special character status depending on our abilityscoretype for this test run
+    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Inherent,
+        abilityScoreType,
+        "bonus1",
+        1,
+        "now we should be ok again... barely"
+    );
+
+    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseScoreWithPermanentAdjustments)
