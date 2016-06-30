@@ -427,18 +427,106 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseScoreWithPermanentAdjustments)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto baseWithPermAdjusts = abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType);
+
+    EXPECT_EQ(10, baseWithPermAdjusts);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Inherent,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    baseWithPermAdjusts = abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType);
+
+    EXPECT_EQ(12, baseWithPermAdjusts);
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseModifierWithPermanentAdjustments)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto baseModWithPermAdjusts = abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType);
+
+    EXPECT_EQ(0, baseModWithPermAdjusts);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Morale,
+        abilityScoreType,
+        "bonus1",
+        6,
+        "bonus1description"
+    );
+
+    baseModWithPermAdjusts = abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType);
+
+    EXPECT_EQ(3, baseModWithPermAdjusts);
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(10, totalScore);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Untyped,
+        abilityScoreType,
+        "bonus1",
+        4,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(14, totalScore);
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto totalModifier = abilityScores.getTotalAbilityModifier(abilityScoreType);
+
+    EXPECT_EQ(0, totalModifier);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Untyped,
+        abilityScoreType,
+        "bonus1",
+        4,
+        "bonus1description"
+    );
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus2",
+        4,
+        "bonus2description"
+    );
+
+    totalModifier = abilityScores.getTotalAbilityModifier(abilityScoreType);
+
+    EXPECT_EQ(4, totalModifier);
 }
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)

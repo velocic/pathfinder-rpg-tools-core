@@ -685,6 +685,11 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.baseScore = baseScore;
+            calculateBaseAbilityModifier(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
         }
 
         void AbilityScores::toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
