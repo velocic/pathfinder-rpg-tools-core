@@ -594,6 +594,35 @@ TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
 
 TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Alchemical, abilityScoreType, "bonus1", 3, "bonus1description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Alchemical, abilityScoreType, "bonus2", 1, "bonus2description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Enhancement, abilityScoreType, "bonus3", 1, "bonus3description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Enhancement, abilityScoreType, "bonus4", 2, "bonus4description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "bonus5", 4, "bonus5description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "bonus6", 1, "bonus6description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Morale, abilityScoreType, "bonus7", 1, "bonus7description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Morale, abilityScoreType, "bonus8", 2, "bonus8description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Size, abilityScoreType, "bonus9", 4, "bonus9description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus10", 1, "bonus10description");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus11", 1, "bonus11description");
+
+    //Adding some temporary bonuses too, to generate a different TotalAdjustment than TotalScore
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus12", 2, "bonus12description");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "bonus13", 4, "bonus13description");
+
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus7");
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus4");
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus5");
+
+    EXPECT_EQ(29, abilityScores.getTotalScore(abilityScoreType));
+    EXPECT_EQ(19, abilityScores.getTotalAdjustment(abilityScoreType));
+    EXPECT_EQ(23, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
+    EXPECT_EQ(9, abilityScores.getTotalAbilityModifier(abilityScoreType));
+    EXPECT_EQ(6, abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType));
 }
 
 INSTANTIATE_TEST_CASE_P(
