@@ -239,15 +239,17 @@ TEST_P(TemporaryAbilityScoreBonus, ToggleBonus)
 
     //Toggle to false
     abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
-
     auto bonus = abilityScores.getTemporaryAdjustment(abilityScoreType, "bonus1");
+
     EXPECT_EQ(false, bonus.enabled);
+    EXPECT_EQ(0, abilityScores.getTotalScore(abilityScoreType));
 
     //Toggle back to true
     abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
-
     bonus = abilityScores.getTemporaryAdjustment(abilityScoreType, "bonus1");
+
     EXPECT_EQ(true, bonus.enabled);
+    EXPECT_EQ(2, abilityScores.getTotalScore(abilityScoreType));
 }
 
 TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
@@ -531,14 +533,63 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus2",
+        4,
+        "bonus2description"
+    );
+
+    EXPECT_EQ(true, abilityScores.doesPermanentAbilityScoreBonusSourceExist(abilityScoreType, "bonus2"));
 }
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus2",
+        4,
+        "bonus2description"
+    );
+
+    abilityScores.removePermanentAbilityScoreBonus(abilityScoreType, "bonus2");
+
+    EXPECT_EQ(false, abilityScores.doesPermanentAbilityScoreBonusSourceExist(abilityScoreType, "bonus2"));
 }
 
 TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus2",
+        4,
+        "bonus2description"
+    );
+
+    //Permanent bonuses are true by default, so toggling it the first time disables it
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus2");
+    auto bonus = abilityScores.getPermanentAdjustment(abilityScoreType, "bonus2");
+
+    EXPECT_EQ(false, bonus.enabled);
+    EXPECT_EQ(0, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
+
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus2");
+    bonus = abilityScores.getPermanentAdjustment(abilityScoreType, "bonus2");
+
+    EXPECT_EQ(true, bonus.enabled);
+    EXPECT_EQ(4, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
 }
 
 TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)

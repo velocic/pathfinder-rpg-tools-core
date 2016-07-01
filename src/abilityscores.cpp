@@ -720,6 +720,13 @@ namespace RulesEngine
             } else {
                 permanentBonus.enabled = true;
             }
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
         }
 
         void AbilityScores::toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
