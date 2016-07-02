@@ -171,14 +171,58 @@ TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 
 TEST_P(TemporaryAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(2, totalScore);
+
+    abilityScores.removeTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(0, totalScore);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    abilityScores.addTemporaryAbilityScoreBonus(
+        AbilityScoreModifiers::Alchemical,
+        abilityScoreType,
+        "bonus1",
+        2,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(2, totalScore);
+
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(0, totalScore);
+
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "bonus1");
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(2, totalScore);
 }
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
@@ -545,14 +589,62 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 
 TEST_P(PermanentAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Untyped,
+        abilityScoreType,
+        "bonus1",
+        4,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(14, totalScore);
+
+    abilityScores.removePermanentAbilityScoreBonus(abilityScoreType, "bonus1");
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(10, totalScore);
 }
 
 TEST_P(PermanentAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    auto totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    abilityScores.addPermanentAbilityScoreBonus(
+        AbilityScoreModifiers::Untyped,
+        abilityScoreType,
+        "bonus1",
+        4,
+        "bonus1description"
+    );
+
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(14, totalScore);
+
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus1");
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(10, totalScore);
+
+    abilityScores.togglePermanentAbilityScoreBonus(abilityScoreType, "bonus1");
+    totalScore = abilityScores.getTotalScore(abilityScoreType);
+
+    EXPECT_EQ(14, totalScore);
 }
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
@@ -655,7 +747,7 @@ INSTANTIATE_TEST_CASE_P(
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
 
-class AbilityScoreDamage : public ::testing::TestWithParam<AbilityScoreTypes>
+class AbilityScoreDamageTests : public ::testing::TestWithParam<AbilityScoreTypes>
 {
     //Fixture for TemporaryAbilityScoreBonus test case
 };
@@ -665,18 +757,33 @@ class AbilityScoreDamage : public ::testing::TestWithParam<AbilityScoreTypes>
 //These shouldn't be calculated in AbilityScores as currently designed, though. Instead,
 //most likely a whole bunch of other fields/sections are going to subscribe for updates
 //when we add/remove/toggle ability score damage
-TEST_P(AbilityScoreDamage, AddActuallyAddsDamageToList);
-TEST_P(AbilityScoreDamage, AddUpdatesTotalAbilityScoreDamage);
-TEST_P(AbilityScoreDamage, DoesSourceExistReturnsTrueIfFound);
-TEST_P(AbilityScoreDamage, DoesSourceExistReturnsFalseIfNotFound);
-TEST_P(AbilityScoreDamage, ToggleAbilityScoreDamage);
-TEST_P(AbilityScoreDamage, RemoveUpdatesTotalAbilityScore)
+TEST_P(AbilityScoreDamageTests, AddActuallyAddsDamageToList)
+{
+}
+
+TEST_P(AbilityScoreDamageTests, AddUpdatesTotalAbilityScoreDamage)
+{
+}
+
+TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsTrueIfFound)
+{
+}
+
+TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsFalseIfNotFound)
+{
+}
+
+TEST_P(AbilityScoreDamageTests, ToggleAbilityScoreDamage)
+{
+}
+
+TEST_P(AbilityScoreDamageTests, RemoveUpdatesTotalAbilityScore)
 {
     //Stubbed for now
     EXPECT_EQ(true, false);
 }
 
-TEST_P(AbilityScoreDamage, ToggleUpdatesTotalAbilityScore)
+TEST_P(AbilityScoreDamageTests, ToggleUpdatesTotalAbilityScore)
 {
     //Stubbed for now
     EXPECT_EQ(true, false);
@@ -685,6 +792,6 @@ TEST_P(AbilityScoreDamage, ToggleUpdatesTotalAbilityScore)
 
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
-    AbilityScoreDamage, //Fixture class/Test case name
+    AbilityScoreDamageTests, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
