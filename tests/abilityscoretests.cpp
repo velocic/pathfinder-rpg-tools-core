@@ -169,6 +169,18 @@ TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScore)
     EXPECT_EQ(2, totalScore);
 }
 
+TEST_P(TemporaryAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(TemporaryAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 {
     AbilityScores abilityScores;
@@ -531,6 +543,18 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
     EXPECT_EQ(4, totalModifier);
 }
 
+TEST_P(PermanentAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(PermanentAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 {
     AbilityScores abilityScores;
@@ -628,5 +652,39 @@ TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
     PermanentAbilityScoreBonus, //Fixture class/Test case name
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
+);
+
+class AbilityScoreDamage : public ::testing::TestWithParam<AbilityScoreTypes>
+{
+    //Fixture for TemporaryAbilityScoreBonus test case
+};
+
+//Ability score damage doesn't actually reduce the score. But, it adds a penalty
+//to derived stats like CMB, CMD, AC, HP, spell DCs, etc based on the effected score.
+//These shouldn't be calculated in AbilityScores as currently designed, though. Instead,
+//most likely a whole bunch of other fields/sections are going to subscribe for updates
+//when we add/remove/toggle ability score damage
+TEST_P(AbilityScoreDamage, AddActuallyAddsDamageToList);
+TEST_P(AbilityScoreDamage, AddUpdatesTotalAbilityScoreDamage);
+TEST_P(AbilityScoreDamage, DoesSourceExistReturnsTrueIfFound);
+TEST_P(AbilityScoreDamage, DoesSourceExistReturnsFalseIfNotFound);
+TEST_P(AbilityScoreDamage, ToggleAbilityScoreDamage);
+TEST_P(AbilityScoreDamage, RemoveUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDamage, ToggleUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+
+INSTANTIATE_TEST_CASE_P(
+    AbilityScoreTypeFixture, //Fixture class instantiation name
+    AbilityScoreDamage, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );

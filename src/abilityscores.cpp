@@ -649,6 +649,12 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.tempAdjustments.erase(sourceName);
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::removePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
@@ -656,6 +662,15 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.permanentAdjustments.erase(sourceName);
+
+            calculateTotalAbilityScoreAdjustment(ability);
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::removeAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
@@ -663,6 +678,10 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.abilityDamage.erase(sourceName);
+
+            calculateTotalAbilityScoreDamage(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::removeAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
@@ -670,6 +689,12 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.abilityDrain.erase(sourceName);
+
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::removeAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
@@ -677,6 +702,10 @@ namespace RulesEngine
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             targetAbility.abilityPenalties.erase(sourceName);
+
+            calculateTotalAbilityScorePenalties(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::setBaseAbilityScore(AbilityScoreTypes ability, int baseScore)
@@ -707,6 +736,8 @@ namespace RulesEngine
             calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScore(ability);
             calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::togglePermanentAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
@@ -727,6 +758,8 @@ namespace RulesEngine
             calculateBaseModifierWithPermanentAdjustments(ability);
             calculateTotalAbilityScore(ability);
             calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::toggleAbilityScoreDamage(AbilityScoreTypes ability, const std::string& sourceName)
@@ -740,6 +773,10 @@ namespace RulesEngine
             } else {
                 abilityDamage.enabled = true;
             }
+
+            calculateTotalAbilityScoreDamage(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::toggleAbilityScoreDrain(AbilityScoreTypes ability, const std::string& sourceName)
@@ -753,6 +790,12 @@ namespace RulesEngine
             } else {
                 abilityDrain.enabled = true;
             }
+
+            calculateTotalAbilityScoreDrain(ability);
+            calculateBaseScoreWithPermanentAdjustments(ability);
+            calculateBaseModifierWithPermanentAdjustments(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::toggleAbilityScorePenalty(AbilityScoreTypes ability, const std::string& sourceName)
@@ -766,6 +809,10 @@ namespace RulesEngine
             } else {
                 abilityPenalty.enabled = true;
             }
+
+            calculateTotalAbilityScorePenalties(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
     }
 }
