@@ -759,34 +759,151 @@ class AbilityScoreDamageTests : public ::testing::TestWithParam<AbilityScoreType
 //when we add/remove/toggle ability score damage
 TEST_P(AbilityScoreDamageTests, AddActuallyAddsDamageToList)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto abilityDamageCount = abilityScores.getAbilityDamage(abilityScoreType).size();
+
+    //Ensure list of abilityDamage is empty at start
+    EXPECT_EQ(0, abilityDamageCount);
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage1",
+        2,
+        "damage1description"
+    );
+
+    abilityDamageCount = abilityScores.getAbilityDamage(abilityScoreType).size();
+
+    EXPECT_EQ(1, abilityDamageCount);
+
+    auto testDamage = abilityScores.getAbilityDamage(abilityScoreType, "damage1");
+
+    EXPECT_EQ(abilityScoreType, testDamage.affectedScore);
+    EXPECT_EQ("damage1", testDamage.sourceName);
+    EXPECT_EQ(2, testDamage.modifierValue);
+    EXPECT_EQ("damage1description", testDamage.description);
+    EXPECT_EQ(true, testDamage.enabled);
 }
 
 TEST_P(AbilityScoreDamageTests, AddUpdatesTotalAbilityScoreDamage)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    EXPECT_EQ(0, abilityScores.getTotalAbilityDamage(abilityScoreType));
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage1",
+        2,
+        "damage1description"
+    );
+
+    EXPECT_EQ(2, abilityScores.getTotalAbilityDamage(abilityScoreType));
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    EXPECT_EQ(8, abilityScores.getTotalAbilityDamage(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsTrueIfFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    EXPECT_EQ(true, abilityScores.doesAbilityScoreDamageSourceExist(abilityScoreType, "damage2"));
 }
 
 TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsFalseIfNotFound)
 {
+
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    abilityScores.removeAbilityScoreDamage(abilityScoreType, "damage2");
+
+    EXPECT_EQ(false, abilityScores.doesAbilityScoreDamageSourceExist(abilityScoreType, "damage2"));
 }
 
 TEST_P(AbilityScoreDamageTests, ToggleAbilityScoreDamage)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    auto testDamage = abilityScores.getAbilityDamage(abilityScoreType, "damage2");
+
+    EXPECT_EQ(true, testDamage.enabled);
+
+    abilityScores.toggleAbilityScoreDamage(abilityScoreType, "damage2");
+    testDamage = abilityScores.getAbilityDamage(abilityScoreType, "damage2");
+
+    EXPECT_EQ(false, testDamage.enabled);
 }
 
 TEST_P(AbilityScoreDamageTests, RemoveUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    EXPECT_EQ(6, abilityScores.getTotalAbilityDamage(abilityScoreType));
+
+    abilityScores.removeAbilityScoreDamage(abilityScoreType, "damage2");
+
+    EXPECT_EQ(0, abilityScores.getTotalAbilityDamage(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDamageTests, ToggleUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage2",
+        6,
+        "damage2description"
+    );
+
+    EXPECT_EQ(6, abilityScores.getTotalAbilityDamage(abilityScoreType));
+
+    abilityScores.toggleAbilityScoreDamage(abilityScoreType, "damage2");
+
+    EXPECT_EQ(0, abilityScores.getTotalAbilityDamage(abilityScoreType));
 }
 
 
