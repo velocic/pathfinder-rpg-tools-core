@@ -1148,3 +1148,86 @@ INSTANTIATE_TEST_CASE_P(
     AbilityScorePenaltyTests, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
+
+class AbilityScoreDrainTests : public ::testing::TestWithParam<AbilityScoreTypes>
+{
+    //Fixture for AbilityScoreDrain test case
+};
+
+TEST_P(AbilityScoreDrainTests, AddActuallyAddsDrainToList)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreDrain)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScore)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreModifier)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AddUpdatesBaseScoreWithPermanentAdjustments)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AddUpdatesBaseModifierWithPermanentAdjustments)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, AbilityDrainAtOrBelowZeroChangesCharacterStatus)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsTrueIfFound)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsFalseIfNotFound)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, ToggleAbilityScoreDrain)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, RemoveUpdatesTotalAbilityScoreDrain)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+TEST_P(AbilityScoreDrainTests, ToggleUpdatesTotalAbilityScoreDrain)
+{
+    //Stubbed for now
+    EXPECT_EQ(true, false);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    AbilityScoreTypeFixture, //Fixture class instantiation name
+    AbilityScoreDrainTests, //Fixture class/Test case name
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
+);
