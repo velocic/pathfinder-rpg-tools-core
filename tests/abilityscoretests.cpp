@@ -1035,22 +1035,112 @@ TEST_P(AbilityScorePenaltyTests, AbilityPenaltyCantExceedTargetScoreWithPermanen
 
 TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsTrueIfFound)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        1,
+        "penalty1description"
+    );
+
+    EXPECT_EQ(true, abilityScores.doesAbilityScorePenaltySourceExist(abilityScoreType, "penalty1"));
 }
 
 TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsFalseIfNotFound)
 {
+
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        1,
+        "penalty1description"
+    );
+
+    abilityScores.removeAbilityScorePenalty(abilityScoreType, "penalty1");
+
+    EXPECT_EQ(false, abilityScores.doesAbilityScorePenaltySourceExist(abilityScoreType, "penalty1"));
 }
 
 TEST_P(AbilityScorePenaltyTests, ToggleAbilityScorePenalty)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 14);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        5,
+        "penalty1description"
+    );
+
+    EXPECT_EQ(true, abilityScores.getAbilityPenalty(abilityScoreType, "penalty1").enabled);
+
+    abilityScores.toggleAbilityScorePenalty(abilityScoreType, "penalty1");
+
+    EXPECT_EQ(false, abilityScores.getAbilityPenalty(abilityScoreType, "penalty1").enabled);
 }
 
-TEST_P(AbilityScorePenaltyTests, RemoveUpdatesTotalAbilityScore)
+TEST_P(AbilityScorePenaltyTests, RemoveUpdatesTotalAbilityScorePenalty)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 14);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        5,
+        "penalty1description"
+    );
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty2",
+        3,
+        "penalty2description"
+    );
+
+    EXPECT_EQ(8, abilityScores.getTotalAbilityPenalty(abilityScoreType));
+
+    abilityScores.removeAbilityScorePenalty(abilityScoreType, "penalty1");
+
+    EXPECT_EQ(3, abilityScores.getTotalAbilityPenalty(abilityScoreType));
 }
 
-TEST_P(AbilityScorePenaltyTests, ToggleUpdatesTotalAbilityScore)
+TEST_P(AbilityScorePenaltyTests, ToggleUpdatesTotalAbilityScorePenalty)
 {
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 14);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        5,
+        "penalty1description"
+    );
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty2",
+        3,
+        "penalty2description"
+    );
+
+    EXPECT_EQ(8, abilityScores.getTotalAbilityPenalty(abilityScoreType));
+
+    abilityScores.toggleAbilityScorePenalty(abilityScoreType, "penalty2");
+
+    EXPECT_EQ(5, abilityScores.getTotalAbilityPenalty(abilityScoreType));
 }
 
 INSTANTIATE_TEST_CASE_P(
