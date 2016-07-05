@@ -813,6 +813,37 @@ TEST_P(AbilityScoreDamageTests, AddUpdatesTotalAbilityScoreDamage)
     EXPECT_EQ(8, abilityScores.getTotalAbilityDamage(abilityScoreType));
 }
 
+TEST_P(AbilityScoreDamageTests, AbilityDamageAtOrBelowZeroChangesCharacterStatus)
+{
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 8);
+    abilityScores.addAbilityScoreDamage(
+        abilityScoreType,
+        "damage1",
+        8,
+        "damage2description"
+    );
+
+    SpecialAbilityScoreValues characterTestStatus;
+
+    //Some setup for checking specific special status based on the current
+    //ability score we're checking for this test run
+    if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
+        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+    } else if (abilityScoreType == AbilityScoreTypes::DEX) {
+        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+    } else if (abilityScoreType == AbilityScoreTypes::INT) {
+        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+    } else {
+        //AbilityScoreTypes::CON
+        characterTestStatus = SpecialAbilityScoreValues::Dead;
+    }
+
+    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
+}
+
 TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsTrueIfFound)
 {
     AbilityScores abilityScores;
@@ -910,5 +941,120 @@ TEST_P(AbilityScoreDamageTests, ToggleUpdatesTotalAbilityScore)
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
     AbilityScoreDamageTests, //Fixture class/Test case name
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
+);
+
+class AbilityScorePenaltyTests : public ::testing::TestWithParam<AbilityScoreTypes>
+{
+    //Fixture for AbilityScorePenalty test case
+};
+
+TEST_P(AbilityScorePenaltyTests, AddActuallyAddsPenaltyToList)
+{
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto abilityPenaltyCount = abilityScores.getAbilityPenalties(abilityScoreType).size();
+
+    EXPECT_EQ(0, abilityPenaltyCount);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        3,
+        "penalty1description"
+    );
+
+    abilityPenaltyCount = abilityScores.getAbilityPenalties(abilityScoreType).size();
+
+    EXPECT_EQ(1, abilityPenaltyCount);
+
+    auto testPenalty = abilityScores.getAbilityPenalty(abilityScoreType, "penalty1");
+
+    EXPECT_EQ(abilityScoreType, testPenalty.affectedScore);
+    EXPECT_EQ("penalty1", testPenalty.sourceName);
+    EXPECT_EQ(3, testPenalty.modifierValue);
+    EXPECT_EQ("penalty1description", testPenalty.description);
+    EXPECT_EQ(true, testPenalty.enabled);
+}
+
+TEST_P(AbilityScorePenaltyTests, AddUpdatesTotalAbilityScorePenalty)
+{
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    EXPECT_EQ(0, abilityScores.getTotalAbilityPenalty(abilityScoreType));
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 2);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        1,
+        "penalty1description"
+    );
+
+    EXPECT_EQ(1, abilityScores.getTotalAbilityPenalty(abilityScoreType));
+}
+
+TEST_P(AbilityScorePenaltyTests, AbilityPenaltyCantExceedTargetScoreWithPermanentBonusesMinusOne)
+{
+
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty1",
+        3,
+        "penalty1description"
+    );
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty2",
+        3,
+        "penalty2description"
+    );
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty3",
+        3,
+        "penalty3description"
+    );
+    abilityScores.addAbilityScorePenalty(
+        abilityScoreType,
+        "penalty4",
+        5,
+        "penalty4description"
+    );
+
+    EXPECT_EQ(9, abilityScores.getTotalAbilityPenalty(abilityScoreType));
+}
+
+TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsTrueIfFound)
+{
+}
+
+TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsFalseIfNotFound)
+{
+}
+
+TEST_P(AbilityScorePenaltyTests, ToggleAbilityScorePenalty)
+{
+}
+
+TEST_P(AbilityScorePenaltyTests, RemoveUpdatesTotalAbilityScore)
+{
+}
+
+TEST_P(AbilityScorePenaltyTests, ToggleUpdatesTotalAbilityScore)
+{
+}
+
+INSTANTIATE_TEST_CASE_P(
+    AbilityScoreTypeFixture, //Fixture class instantiation name
+    AbilityScorePenaltyTests, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );
