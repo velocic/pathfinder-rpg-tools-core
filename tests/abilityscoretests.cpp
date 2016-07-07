@@ -1156,71 +1156,271 @@ class AbilityScoreDrainTests : public ::testing::TestWithParam<AbilityScoreTypes
 
 TEST_P(AbilityScoreDrainTests, AddActuallyAddsDrainToList)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    auto abilityDrainCount = abilityScores.getAbilityDrain(abilityScoreType).size();
+
+    EXPECT_EQ(0, abilityDrainCount);
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    abilityDrainCount = abilityScores.getAbilityDrain(abilityScoreType).size();
+
+    EXPECT_EQ(1, abilityDrainCount);
+
+    auto testDrain = abilityScores.getAbilityDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(abilityScoreType, testDrain.affectedScore);
+    EXPECT_EQ("drain1", testDrain.sourceName);
+    EXPECT_EQ(6, testDrain.modifierValue);
+    EXPECT_EQ("drain1description", testDrain.description);
+    EXPECT_EQ(true, testDrain.enabled);
 }
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreDrain)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    EXPECT_EQ(0, abilityScores.getTotalAbilityDrain(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    EXPECT_EQ(6, abilityScores.getTotalAbilityDrain(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScore)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    EXPECT_EQ(10, abilityScores.getTotalScore(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    EXPECT_EQ(4, abilityScores.getTotalScore(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreModifier)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 14);
+
+    EXPECT_EQ(2, abilityScores.getTotalAbilityModifier(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    EXPECT_EQ(-1, abilityScores.getTotalAbilityModifier(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesBaseScoreWithPermanentAdjustments)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 10);
+
+    EXPECT_EQ(10, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    EXPECT_EQ(4, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesBaseModifierWithPermanentAdjustments)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 14);
+
+    EXPECT_EQ(2, abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        6,
+        "drain1description"
+    );
+
+    EXPECT_EQ(-1, abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, AbilityDrainAtOrBelowZeroChangesCharacterStatus)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 12);
+
+    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    SpecialAbilityScoreValues characterTestStatus;
+
+    //Some special setup for test-run dependent ability score type
+    if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
+        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+    } else if (abilityScoreType == AbilityScoreTypes::DEX) {
+        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+    } else if (abilityScoreType == AbilityScoreTypes::INT) {
+        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+    } else {
+        //AbilityScoreTypes::CON
+        characterTestStatus = SpecialAbilityScoreValues::Dead;
+    }
+
+    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsTrueIfFound)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    EXPECT_EQ(true, abilityScores.doesAbilityScoreDrainSourceExist(abilityScoreType, "drain1"));
 }
 
 TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsFalseIfNotFound)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    abilityScores.removeAbilityScoreDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(false, abilityScores.doesAbilityScoreDrainSourceExist(abilityScoreType, "drain1"));
 }
 
 TEST_P(AbilityScoreDrainTests, ToggleAbilityScoreDrain)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    auto testDrain = abilityScores.getAbilityDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(true, testDrain.enabled);
+
+    abilityScores.toggleAbilityScoreDrain(abilityScoreType, "drain1");
+    testDrain = abilityScores.getAbilityDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(false, testDrain.enabled);
 }
 
 TEST_P(AbilityScoreDrainTests, RemoveUpdatesTotalAbilityScoreDrain)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 15);
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    EXPECT_EQ(3, abilityScores.getTotalScore(abilityScoreType));
+
+    abilityScores.removeAbilityScoreDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(15, abilityScores.getTotalScore(abilityScoreType));
 }
 
 TEST_P(AbilityScoreDrainTests, ToggleUpdatesTotalAbilityScoreDrain)
+{
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 15);
+
+    abilityScores.addAbilityScoreDrain(
+        abilityScoreType,
+        "drain1",
+        12,
+        "drain1description"
+    );
+
+    EXPECT_EQ(3, abilityScores.getTotalScore(abilityScoreType));
+
+    abilityScores.toggleAbilityScoreDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(15, abilityScores.getTotalScore(abilityScoreType));
+
+    abilityScores.toggleAbilityScoreDrain(abilityScoreType, "drain1");
+
+    EXPECT_EQ(3, abilityScores.getTotalScore(abilityScoreType));
+}
+
+INSTANTIATE_TEST_CASE_P(
+    AbilityScoreTypeFixture, //Fixture class instantiation name
+    AbilityScoreDrainTests, //Fixture class/Test case name
+    ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
+);
+
+class ComprehensiveAbilityScoreTest : public ::testing::TestWithParam<AbilityScoreTypes>
+{
+    //Fixture for comprehensive test case
+};
+
+TEST_P(ComprehensiveAbilityScoreTest, TestModifiersOfSeveralTypesThatCouldActuallyBeOnACharacterSheet)
 {
     //Stubbed for now
     EXPECT_EQ(true, false);
@@ -1228,6 +1428,6 @@ TEST_P(AbilityScoreDrainTests, ToggleUpdatesTotalAbilityScoreDrain)
 
 INSTANTIATE_TEST_CASE_P(
     AbilityScoreTypeFixture, //Fixture class instantiation name
-    AbilityScoreDrainTests, //Fixture class/Test case name
+    ComprehensiveAbilityScoreTest, //Fixture class/Test case name
     ::testing::ValuesIn(listOfPossibleAbilityScores) //Actual value set to pass to the test run
 );

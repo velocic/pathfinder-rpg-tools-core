@@ -62,7 +62,7 @@ namespace RulesEngine
         void AbilityScores::calculateTotalAbilityScore(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
-            targetAbility.totalScore = targetAbility.baseScore + targetAbility.totalAdjustment;
+            targetAbility.totalScore = targetAbility.baseScore + targetAbility.totalAdjustment - targetAbility.totalAbilityDrain;
         }
 
         //Dependent on baseScore
@@ -370,9 +370,12 @@ namespace RulesEngine
 
             targetAbility.abilityDrain.insert(std::make_pair(sourceName, drain));
 
+            calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScoreDrain(ability);
             calculateBaseScoreWithPermanentAdjustments(ability);
             calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
 
             notifyObservers(mapAbilityScoreEnumToString(ability));
         }
@@ -690,9 +693,12 @@ namespace RulesEngine
 
             targetAbility.abilityDrain.erase(sourceName);
 
+            calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScoreDrain(ability);
             calculateBaseScoreWithPermanentAdjustments(ability);
             calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
 
             notifyObservers(mapAbilityScoreEnumToString(ability));
         }
@@ -791,9 +797,12 @@ namespace RulesEngine
                 abilityDrain.enabled = true;
             }
 
+            calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScoreDrain(ability);
             calculateBaseScoreWithPermanentAdjustments(ability);
             calculateBaseModifierWithPermanentAdjustments(ability);
+            calculateTotalAbilityScore(ability);
+            calculateTotalAbilityScoreModifier(ability);
 
             notifyObservers(mapAbilityScoreEnumToString(ability));
         }
