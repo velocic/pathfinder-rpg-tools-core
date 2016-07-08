@@ -1422,8 +1422,32 @@ class ComprehensiveAbilityScoreTest : public ::testing::TestWithParam<AbilitySco
 
 TEST_P(ComprehensiveAbilityScoreTest, TestModifiersOfSeveralTypesThatCouldActuallyBeOnACharacterSheet)
 {
-    //Stubbed for now
-    EXPECT_EQ(true, false);
+    AbilityScores abilityScores;
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 18);
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "temp1", 2, "temp1desc");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Inherent, abilityScoreType, "temp2", 3, "temp2desc");
+    abilityScores.addTemporaryAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "temp3", 4, "temp3desc");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Alchemical, abilityScoreType, "perm1", 4, "perm1desc");
+    abilityScores.addPermanentAbilityScoreBonus(AbilityScoreModifiers::Untyped, abilityScoreType, "perm2", 1, "perm2desc");
+    abilityScores.addAbilityScoreDamage(abilityScoreType, "damage1", 3, "damage1desc");
+    abilityScores.addAbilityScoreDamage(abilityScoreType, "damage2", 3, "damage2desc");
+    abilityScores.addAbilityScoreDamage(abilityScoreType, "damage2", 5, "damage2desc");
+    abilityScores.addAbilityScoreDrain(abilityScoreType, "drain1", 2, "drain1desc");
+    abilityScores.addAbilityScoreDrain(abilityScoreType, "drain1", 1, "drain1desc");
+    abilityScores.addAbilityScorePenalty(abilityScoreType, "penalty1", 1, "penalty1desc");
+    abilityScores.addAbilityScorePenalty(abilityScoreType, "penalty2", 2, "penalty2desc");
+
+    abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "temp2");
+
+    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(18, abilityScores.getBaseAbilityScore(abilityScoreType));
+    EXPECT_EQ(4, abilityScores.getBaseModifier(abilityScoreType));
+    EXPECT_EQ(22, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
+    EXPECT_EQ(6, abilityScores.getBaseModifierWithPermanentAdjustments(abilityScoreType));
+    EXPECT_EQ(28, abilityScores.getTotalScore(abilityScoreType));
+    EXPECT_EQ(9, abilityScores.getTotalAbilityModifier(abilityScoreType));
 }
 
 INSTANTIATE_TEST_CASE_P(

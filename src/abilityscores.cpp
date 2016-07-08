@@ -305,7 +305,7 @@ namespace RulesEngine
             bonus.modifierValue = modifierValue;
             bonus.enabled = true;
 
-            targetAbility.tempAdjustments.insert(std::make_pair(sourceName, bonus));
+            targetAbility.tempAdjustments[sourceName] = std::move(bonus);
 
             calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScore(ability);
@@ -326,7 +326,7 @@ namespace RulesEngine
             bonus.modifierValue = modifierValue;
             bonus.enabled = true;
 
-            targetAbility.permanentAdjustments.insert(std::make_pair(sourceName, bonus));
+            targetAbility.permanentAdjustments[sourceName] = std::move(bonus);
 
 
             calculateTotalAbilityScoreAdjustment(ability);
@@ -350,7 +350,7 @@ namespace RulesEngine
             damage.modifierValue = modifierValue;
             damage.enabled = true;
 
-            targetAbility.abilityDamage.insert(std::make_pair(sourceName, damage));
+            targetAbility.abilityDamage[sourceName] = std::move(damage);
 
             calculateTotalAbilityScoreDamage(ability);
 
@@ -368,7 +368,7 @@ namespace RulesEngine
             drain.modifierValue = modifierValue;
             drain.enabled = true;
 
-            targetAbility.abilityDrain.insert(std::make_pair(sourceName, drain));
+            targetAbility.abilityDrain[sourceName] = std::move(drain);
 
             calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScoreDrain(ability);
@@ -391,7 +391,7 @@ namespace RulesEngine
             penalty.modifierValue = modifierValue;
             penalty.enabled = true;
 
-            targetAbility.abilityPenalties.insert(std::make_pair(sourceName, penalty));
+            targetAbility.abilityPenalties[sourceName] = std::move(penalty);
 
             calculateTotalAbilityScorePenalties(ability);
 
