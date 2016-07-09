@@ -16,6 +16,7 @@ add_library(
     SHARED
     src/abilityscores.cpp
     src/characterdescription.cpp
+    src/baseattackbonus.cpp
 )
 
 add_executable(
