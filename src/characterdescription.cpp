@@ -39,6 +39,31 @@ namespace RulesEngine
             classInfo.insert(
                 std::make_pair(className, newClass)
             );
+
+            notifyObservers("class");
+        }
+
+
+        void CharacterDescription::addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
+        {
+            CharacterClass newClass;
+            newClass.classLevel = classLevel;
+            newClass.hitDieSize = hitDieSize;
+            newClass.skillPointsPerLevel = skillPointsPerLevel;
+            newClass.baseAttackBonusProgression = baseAttackBonusProgression;
+
+            classInfo.insert(
+                std::make_pair(className, std::move(newClass))
+            );
+
+            notifyObservers("class");
+        }
+
+        void CharacterDescription::removeClass(const std::string& className)
+        {
+            classInfo.erase(className);
+
+            notifyObservers("class");
         }
 
         void CharacterDescription::setCharacterName(const std::string& name)
@@ -59,24 +84,40 @@ namespace RulesEngine
         void CharacterDescription::setClassLevel(const std::string& className, unsigned int classLevel)
         {
             classInfo.find(className)->second.classLevel = classLevel;
+
+            notifyObservers("class");
         }
 
         void CharacterDescription::setClassHitDieSize(const std::string& className, unsigned int hitDieSize)
         {
             classInfo.find(className)->second.hitDieSize = hitDieSize;
+
+            notifyObservers("class");
         }
 
         void CharacterDescription::setClassSkillPoints(const std::string& className, unsigned int skillPointsPerLevel)
         {
             classInfo.find(className)->second.skillPointsPerLevel = skillPointsPerLevel;
+
+            notifyObservers("class");
         }
 
-        void CharacterDescription::setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel)
+        void CharacterDescription::setClassBaseAttackBonusProgression(const std::string& className, float progression)
+        {
+            classInfo.find(className)->second.baseAttackBonusProgression = progression;
+
+            notifyObservers("class");
+        }
+
+        void CharacterDescription::setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
         {
             CharacterClass& classToUpdate = classInfo.find(className)->second;
             classToUpdate.classLevel = classLevel;
             classToUpdate.hitDieSize = hitDieSize;
             classToUpdate.skillPointsPerLevel = skillPointsPerLevel;
+            classToUpdate.baseAttackBonusProgression = baseAttackBonusProgression;
+
+            notifyObservers("class");
         }
 
         void CharacterDescription::setDeity(const std::string& deityName)
@@ -127,6 +168,7 @@ namespace RulesEngine
         void CharacterDescription::setSizeCategory(SizeCategories size)
         {
             sizeCategory = size;
+
             notifyObservers("sizeCategory");
         }
 
@@ -148,6 +190,11 @@ namespace RulesEngine
         CharacterClass CharacterDescription::getClass(const std::string& className) const
         {
             return classInfo.find(className)->second;
+        }
+
+        const std::unordered_map<std::string, CharacterClass>& CharacterDescription::getClasses() const
+        {
+            return classInfo;
         }
 
         std::string CharacterDescription::getDeity() const

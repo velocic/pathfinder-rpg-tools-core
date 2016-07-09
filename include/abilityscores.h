@@ -129,8 +129,8 @@ namespace RulesEngine
         };
 
         class PATHFINDER_RULES_ENGINE_EXPORT AbilityScores :
-            ObserverSubject,
-            Observer
+            public ObserverSubject,
+            public Observer
         {
             private:
                 std::unordered_map<int, AbilityScore> abilityScores;

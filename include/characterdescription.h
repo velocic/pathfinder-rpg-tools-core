@@ -21,11 +21,15 @@ namespace RulesEngine
             unsigned int classLevel;
             unsigned int hitDieSize;
             unsigned int skillPointsPerLevel;
+
+            //Multiplier * level to derive total BAB contribution from this class.
+            //Options are 1, .75, and .5. Results rounded down.
+            float baseAttackBonusProgression;
         };
 
         class PATHFINDER_RULES_ENGINE_EXPORT CharacterDescription :
-            ObserverSubject,
-            Observer
+            public ObserverSubject,
+            public Observer
         {
             private:
                 std::string characterName;
@@ -56,6 +60,8 @@ namespace RulesEngine
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
                 void addClass(const std::string& className);
+                void addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression);
+                void removeClass(const std::string& className);
 
                 void setCharacterName(const std::string& name);
                 void setAlignment(const std::string& alignment);
@@ -63,7 +69,8 @@ namespace RulesEngine
                 void setClassLevel(const std::string& className, unsigned int classLevel);
                 void setClassHitDieSize(const std::string& className, unsigned int hitDieSize);
                 void setClassSkillPoints(const std::string& className, unsigned int skillPointsPerLevel);
-                void setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel);
+                void setClassBaseAttackBonusProgression(const std::string& className, float progression);
+                void setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression);
                 void setDeity(const std::string& deityName);
                 void setHomeland(const std::string& homeland);
                 void setRace(const std::string& race);
@@ -79,6 +86,7 @@ namespace RulesEngine
                 std::string getAlignment() const;
                 std::string getPlayer() const;
                 CharacterClass getClass(const std::string& className) const;
+                const std::unordered_map<std::string, CharacterClass>& getClasses() const;
                 std::string getDeity() const;
                 std::string getHomeland() const;
                 std::string getRace() const;

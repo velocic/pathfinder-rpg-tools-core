@@ -4,8 +4,25 @@ namespace RulesEngine
 {
     namespace Character
     {
-        void BaseAttackBonus::calculateBaseAttackBonus()
+        void BaseAttackBonus::calculateBaseAttackBonus(const CharacterDescription& characterDescription)
         {
+            auto characterClassMap = characterDescription.getClasses();
+
+            unsigned int totalBAB = 0;
+            baseAttackBonusByClass.clear();
+
+            for (auto characterClassPair : characterClassMap) {
+                auto classBABContribution = characterClassPair.second.baseAttackBonusProgression * characterClassPair.second.classLevel;
+
+                totalBAB += classBABContribution;
+
+                baseAttackBonusByClass.emplace_back(
+                    characterClassPair.second.className,
+                    classBABContribution
+                );
+            }
+
+            totalBaseAttackBonus = totalBAB;
         }
 
         void BaseAttackBonus::notifyObservers(const std::string& fieldName)
@@ -15,16 +32,22 @@ namespace RulesEngine
             }
         }
 
-        unsigned int BaseAttackBonus::getTotalBaseAttackBonus()
+        unsigned int BaseAttackBonus::getTotalBaseAttackBonus() const
         {
-            //Stubbed for now
-            return 0;
+            return totalBaseAttackBonus;
+        }
+
+        const std::vector<std::pair<std::string, unsigned int>>& BaseAttackBonus::getBaseAttackBonusByClass() const
+        {
+            return baseAttackBonusByClass;
         }
 
         void BaseAttackBonus::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
-            //Needs to subscribe to updates about class levels (from any number of classes, with
-            //  any combination of BAB progression types) from the characterdescription module
+            //Provided by CharacterDescription
+            if (fieldName == "class") {
+                calculateBaseAttackBonus(*static_cast<const CharacterDescription*>(subject));
+            }
         }
 
         void BaseAttackBonus::registerObserver(const std::string& observerName, Observer* observer)
