@@ -182,12 +182,12 @@ namespace RulesEngine
                 int getBaseModifier(AbilityScoreTypes ability) const;
                 int getBaseModifierWithPermanentAdjustments(AbilityScoreTypes ability) const;
                 int getTotalAbilityModifier(AbilityScoreTypes ability) const;
-                std::unordered_map<std::string, AbilityScoreBonus> getTemporaryAdjustments(AbilityScoreTypes ability) const;
-                std::unordered_map<std::string, AbilityScoreBonus> getPermanentAdjustments(AbilityScoreTypes ability) const;
-                std::vector<AbilityScoreBonus> getContributingAdjustments(AbilityScoreTypes ability) const;
-                std::unordered_map<std::string, AbilityScoreDamage> getAbilityDamage(AbilityScoreTypes ability) const;
-                std::unordered_map<std::string, AbilityScoreDrain> getAbilityDrain(AbilityScoreTypes ability) const;
-                std::unordered_map<std::string, AbilityScorePenalty> getAbilityPenalties(AbilityScoreTypes ability) const;
+                const std::unordered_map<std::string, AbilityScoreBonus>& getTemporaryAdjustments(AbilityScoreTypes ability) const;
+                const std::unordered_map<std::string, AbilityScoreBonus>& getPermanentAdjustments(AbilityScoreTypes ability) const;
+                const std::vector<AbilityScoreBonus>& getContributingAdjustments(AbilityScoreTypes ability) const;
+                const std::unordered_map<std::string, AbilityScoreDamage>& getAbilityDamage(AbilityScoreTypes ability) const;
+                const std::unordered_map<std::string, AbilityScoreDrain>& getAbilityDrain(AbilityScoreTypes ability) const;
+                const std::unordered_map<std::string, AbilityScorePenalty>& getAbilityPenalties(AbilityScoreTypes ability) const;
                 AbilityScoreBonus getTemporaryAdjustment(AbilityScoreTypes ability, const std::string& sourceName) const;
                 AbilityScoreBonus getPermanentAdjustment(AbilityScoreTypes ability, const std::string& sourceName) const;
                 AbilityScoreDamage getAbilityDamage(AbilityScoreTypes ability, const std::string& sourceName) const;

@@ -512,42 +512,42 @@ namespace RulesEngine
             return targetAbility.totalAbilityModifier;
         }
 
-        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getTemporaryAdjustments(AbilityScoreTypes ability) const
+        const std::unordered_map<std::string, AbilityScoreBonus>& AbilityScores::getTemporaryAdjustments(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.tempAdjustments;
         }
 
-        std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getPermanentAdjustments(AbilityScoreTypes ability) const
+        const std::unordered_map<std::string, AbilityScoreBonus>& AbilityScores::getPermanentAdjustments(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.permanentAdjustments;
         }
 
-        std::vector<AbilityScoreBonus> AbilityScores::getContributingAdjustments(AbilityScoreTypes ability) const
+        const std::vector<AbilityScoreBonus>& AbilityScores::getContributingAdjustments(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.contributingAdjustments;
         }
 
-        std::unordered_map<std::string, AbilityScoreDamage> AbilityScores::getAbilityDamage(AbilityScoreTypes ability) const
+        const std::unordered_map<std::string, AbilityScoreDamage>& AbilityScores::getAbilityDamage(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.abilityDamage;
         }
 
-        std::unordered_map<std::string, AbilityScoreDrain> AbilityScores::getAbilityDrain(AbilityScoreTypes ability) const
+        const std::unordered_map<std::string, AbilityScoreDrain>& AbilityScores::getAbilityDrain(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             return targetAbility.abilityDrain;
         }
 
-        std::unordered_map<std::string, AbilityScorePenalty> AbilityScores::getAbilityPenalties(AbilityScoreTypes ability) const
+        const std::unordered_map<std::string, AbilityScorePenalty>& AbilityScores::getAbilityPenalties(AbilityScoreTypes ability) const
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
