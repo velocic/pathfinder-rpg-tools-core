@@ -27,6 +27,7 @@ add_executable(
 add_executable(
     Tests
     tests/abilityscoretests.cpp
+    tests/baseattackbonustests.cpp
 )
 
 target_link_libraries(ApiDemoConsumer ${PROJECT_NAME})

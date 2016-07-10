@@ -23,6 +23,8 @@ namespace RulesEngine
             }
 
             totalBaseAttackBonus = totalBAB;
+
+            notifyObservers("baseAttackBonus");
         }
 
         void BaseAttackBonus::notifyObservers(const std::string& fieldName)
@@ -40,6 +42,18 @@ namespace RulesEngine
         const std::vector<std::pair<std::string, unsigned int>>& BaseAttackBonus::getBaseAttackBonusByClass() const
         {
             return baseAttackBonusByClass;
+        }
+
+        std::vector<unsigned int> BaseAttackBonus::getIterativeAttackBonuses() const
+        {
+            int baseAttackBonusCounter = static_cast<int>(totalBaseAttackBonus);
+            std::vector<unsigned int> iterativeBonuses;
+
+            for (baseAttackBonusCounter; baseAttackBonusCounter > 0; baseAttackBonusCounter -= 5) {
+                iterativeBonuses.push_back(static_cast<unsigned int>(baseAttackBonusCounter));
+            }
+
+            return iterativeBonuses;
         }
 
         void BaseAttackBonus::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)

@@ -33,6 +33,7 @@ namespace RulesEngine
 
                 unsigned int getTotalBaseAttackBonus() const;
                 const std::vector<std::pair<std::string, unsigned int>>& getBaseAttackBonusByClass() const;
+                std::vector<unsigned int> getIterativeAttackBonuses() const;
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
