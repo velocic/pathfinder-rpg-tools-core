@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include <testcommon.h>
 #include <baseattackbonus.h>
 #include <characterdescription.h>
 
@@ -145,12 +145,83 @@ TEST(BaseAttackBonus, CalculatesFullBABClassIterativeBonusesCorrectly)
 
 TEST(BaseAttackBonus, CalculatesThreeFourthBABClassIterativeBonusesCorrectly)
 {
+    BaseAttackBonus bab;
+
+    CharacterDescription charDescription;
+    charDescription.registerObserver("baseAttackBonus", &bab);
+
+    charDescription.addClass("rogue");
+    charDescription.setClass("rogue", 8, 8, 8, .75);
+
+    auto iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(2, iterativeBonusList.size());
+    EXPECT_EQ(6, iterativeBonusList[0]);
+    EXPECT_EQ(1, iterativeBonusList[1]);
+
+    charDescription.setClassLevel("rogue", 15);
+    iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(3, iterativeBonusList.size());
+    EXPECT_EQ(11, iterativeBonusList[0]);
+    EXPECT_EQ(6, iterativeBonusList[1]);
+    EXPECT_EQ(1, iterativeBonusList[2]);
+
+    charDescription.setClassLevel("rogue", 20);
+    iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(3, iterativeBonusList.size());
+    EXPECT_EQ(15, iterativeBonusList[0]);
+    EXPECT_EQ(10, iterativeBonusList[1]);
+    EXPECT_EQ(5, iterativeBonusList[2]);
 }
 
 TEST(BaseAttackBonus, CalculatesHalfBABClassIterativeBonusesCorrectly)
 {
+    BaseAttackBonus bab;
+
+    CharacterDescription charDescription;
+    charDescription.registerObserver("baseAttackBonus", &bab);
+
+    charDescription.addClass("wizard", 12, 6, 2, .5);
+
+    auto iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(2, iterativeBonusList.size());
+    EXPECT_EQ(6, iterativeBonusList[0]);
+    EXPECT_EQ(1, iterativeBonusList[1]);
+
+    charDescription.setClassLevel("wizard", 20);
+    iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(2, iterativeBonusList.size());
+    EXPECT_EQ(10, iterativeBonusList[0]);
+    EXPECT_EQ(5, iterativeBonusList[1]);
 }
 
 TEST(BaseAttackBonus, CalculatesComplexMulticlassBABCorrectly)
 {
+    BaseAttackBonus bab;
+
+    CharacterDescription charDescription;
+    charDescription.registerObserver("baseAttackBonus", &bab);
+
+    charDescription.addClass("wizard", 12, 6, 2, .5);
+    charDescription.addClass("rogue", 5, 8, 8, .75);
+    charDescription.addClass("fighter", 3, 10, 2, 1);
+
+    //wizard BAB - 6
+    //rogue BAB - 3
+    //fighter BAB - 3
+    //TOTAL BAB - 12
+    //ITERATIVES - 12/7/2
+
+    EXPECT_EQ(12, bab.getTotalBaseAttackBonus());
+
+    auto iterativeBonusList = bab.getIterativeAttackBonuses();
+
+    ASSERT_EQ(3, iterativeBonusList.size());
+    EXPECT_EQ(12, iterativeBonusList[0]);
+    EXPECT_EQ(7, iterativeBonusList[1]);
+    EXPECT_EQ(2, iterativeBonusList[2]);
 }

@@ -4,7 +4,7 @@ project(PathfinderRulesEngine)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
 set(PROJECT_SOURCE_DIR "${PROJECT_BINARY_DIR}/src")
-include_directories("include")
+include_directories("include" "tests/include")
 
 if (UNIX AND NOT APPLE)
     set (LINUX TRUE)

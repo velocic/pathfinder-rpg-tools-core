@@ -2,11 +2,13 @@
 #define OBSERVERSUBJECT_H
 
 #include <string>
+
 #include <observer.h>
+#include <preprocessordefines.h>
 
 namespace RulesEngine
 {
-    class ObserverSubject
+    class PATHFINDER_RULES_ENGINE_EXPORT ObserverSubject
     {
         private:
             virtual void notifyObservers(const std::string& fieldName) = 0;

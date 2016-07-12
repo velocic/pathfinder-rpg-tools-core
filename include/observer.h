@@ -3,12 +3,14 @@
 
 #include <string>
 
+#include <preprocessordefines.h>
+
 namespace RulesEngine
 {
     //Forward declare to avoid circular dependency
     class ObserverSubject;
 
-    class Observer
+    class PATHFINDER_RULES_ENGINE_EXPORT Observer
     {
         public:
             virtual ~Observer() {}

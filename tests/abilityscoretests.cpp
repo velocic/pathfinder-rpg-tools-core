@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include <testcommon.h>
 #include <abilityscores.h>
 
 using namespace RulesEngine::Character;
