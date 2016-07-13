@@ -17,6 +17,7 @@ add_library(
     src/abilityscores.cpp
     src/characterdescription.cpp
     src/baseattackbonus.cpp
+    src/hitpoints.cpp
 )
 
 add_executable(

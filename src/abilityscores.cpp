@@ -280,7 +280,7 @@ namespace RulesEngine
         
         void AbilityScores::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
-            //Subscribe to updates here, & recalculate as needed
+            //TODO: Subscribe to updates here, & recalculate as needed
         }
 
         void AbilityScores::registerObserver(const std::string& observerName, Observer* observer)

@@ -56,6 +56,7 @@ namespace RulesEngine
                 //Unregister from modules we're observing
                 ~CharacterDescription() {}
 
+                //TODO: addNegativeLevels needs representation here
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
