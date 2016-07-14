@@ -17,9 +17,9 @@ namespace RulesEngine
         {
             private:
                 int currentHitPoints = 0;
-                unsigned int nonLethalDamage = 0;
-                unsigned int maxHitPoints = 0;
-                unsigned int temporaryHitPoints = 0;
+                int nonLethalDamage = 0;
+                int maxHitPoints = 0;
+                int temporaryHitPoints = 0;
 
                 std::unordered_map<std::string, Observer*> observers;
 
@@ -35,16 +35,16 @@ namespace RulesEngine
                 //Generate Max HP from PFS rules (if user doesn't decide to roll themselves)
                 void autoGenerateMaximumHitPoints();
 
-                void addTemporaryHitPoints(unsigned int tempHP);
+                void addTemporaryHitPoints(int tempHP);
 
-                void dealNonLethalDamage(unsigned int damageAmount);
-                void dealDamage(unsigned int damageAmount);
-                void healHitPoints(unsigned int healAmount);
+                void dealNonLethalDamage(int damageAmount);
+                void dealDamage(int damageAmount);
+                void healHitPoints(int healAmount);
 
                 int getCurrentHitPoints() const;
-                unsigned int getNonLethalDamage() const;
-                unsigned int getMaxHitPoints() const;
-                unsigned int getTemporaryHitPoints() const;
+                int getNonLethalDamage() const;
+                int getMaxHitPoints() const;
+                int getTemporaryHitPoints() const;
 
                 void reset();
                 void resetNonLethalDamage();
@@ -52,7 +52,7 @@ namespace RulesEngine
                 void resetTotalHitPoints();
 
                 void setCurrentHitPoints(int currentHP);
-                void setMaximumHitPoints(unsigned int maxHP);
+                void setMaximumHitPoints(int maxHP);
         };
     }
 }

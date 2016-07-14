@@ -31,20 +31,53 @@ namespace RulesEngine
         {
         }
 
-        void HitPoints::addTemporaryHitPoints(unsigned int tempHP)
+        void HitPoints::addTemporaryHitPoints(int tempHP)
         {
+            temporaryHitPoints += tempHP;
         }
 
-        void HitPoints::dealNonLethalDamage(unsigned int damageAmount)
+        void HitPoints::dealNonLethalDamage(int damageAmount)
         {
+            nonLethalDamage += damageAmount;
+
+            //TODO: need to set a special status as UNCONSCIOUS if this is greater than maxHitPoints
+            //architecturally, this is kind of tough since abilityscores already
+            //has that representation. Maybe move it to characterdescription and have
+            //both of these classes talk to it?
         }
 
-        void HitPoints::dealDamage(unsigned int damageAmount)
+        void HitPoints::dealDamage(int damageAmount)
         {
+            auto actualDamageAmount = damageAmount;
+            if (temporaryHitPoints > 0) {
+                actualDamageAmount -= temporaryHitPoints;
+                temporaryHitPoints -= damageAmount;
+
+                if (temporaryHitPoints < 0) {
+                    temporaryHitPoints = 0;
+                }
+            }
+
+            currentHitPoints -= damageAmount;
+
+            //TODO: need to set a special status as DEAD if this is less than 0
+            //architecturally, this is kind of tough since abilityscores already
+            //has that representation. Maybe move it to characterdescription and have
+            //both of these classes talk to it?
         }
 
-        void HitPoints::healHitPoints(unsigned int healAmount)
+        void HitPoints::healHitPoints(int healAmount)
         {
+            currentHitPoints += healAmount;
+            nonLethalDamage -= healAmount;
+
+            if (currentHitPoints > maxHitPoints) {
+                currentHitPoints = maxHitPoints;
+            }
+
+            if (nonLethalDamage < 0) {
+                nonLethalDamage = 0;
+            }
         }
 
         int HitPoints::getCurrentHitPoints() const
@@ -52,43 +85,53 @@ namespace RulesEngine
             return currentHitPoints;
         }
 
-        unsigned int HitPoints::getNonLethalDamage() const
+        int HitPoints::getNonLethalDamage() const
         {
             return nonLethalDamage;
         }
 
-        unsigned int HitPoints::getMaxHitPoints() const
+        int HitPoints::getMaxHitPoints() const
         {
             return maxHitPoints;
         }
 
-        unsigned int HitPoints::getTemporaryHitPoints() const
+        int HitPoints::getTemporaryHitPoints() const
         {
             return temporaryHitPoints;
         }
 
         void HitPoints::reset()
         {
+            resetNonLethalDamage();
+            resetTemporaryHitPoints();
+            resetTotalHitPoints();
         }
 
         void HitPoints::resetNonLethalDamage()
         {
+            nonLethalDamage = 0;
         }
 
         void HitPoints::resetTemporaryHitPoints()
         {
+            temporaryHitPoints = 0;
         }
 
         void HitPoints::resetTotalHitPoints()
         {
+            //TODO: need a way to remember user-defined MAXHP value,
+            //and to re-use that instead of just recalculating with PFS rules
+            autoGenerateMaximumHitPoints();
         }
 
         void HitPoints::setCurrentHitPoints(int currentHP)
         {
+            currentHitPoints = currentHP;
         }
 
-        void HitPoints::setMaximumHitPoints(unsigned int maxHP)
+        void HitPoints::setMaximumHitPoints(int maxHP)
         {
+            maxHitPoints = maxHP;
         }
     }
 }
