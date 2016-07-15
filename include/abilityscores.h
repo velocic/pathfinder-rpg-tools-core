@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include <characterdescription.h>
 #include <observersubject.h>
 #include <observer.h>
 #include <preprocessordefines.h>
@@ -23,15 +24,6 @@ namespace RulesEngine
             INT,
             WIS,
             CHA
-        };
-
-        enum class SpecialAbilityScoreValues : int
-        {
-            Unconscious, //If Strength, Wisdom, or Charisma falls to 0
-            Immobile, //If Dexterity falls to 0
-            Dead, //If Constitution falls to 0
-            Comatose, //If Intelligence falls to 0
-            Normal //None of the above apply, character is fine
         };
 
         enum class AbilityScoreModifiers : int
@@ -99,7 +91,6 @@ namespace RulesEngine
 
         struct AbilityScore
         {
-            SpecialAbilityScoreValues characterStatus = SpecialAbilityScoreValues::Normal;
             int baseScore = 0; //Initial score selected & modified by user only
             int baseScoreWithPermanentAdjustments = 0; //baseScore + totalPermanentAdjustment - totalAbilityDrain
             int totalScore = 0; //Should not be adjusted directly by user, derived from all modifiers including temporary bonuses like spell effects
@@ -134,6 +125,7 @@ namespace RulesEngine
         {
             private:
                 std::unordered_map<int, AbilityScore> abilityScores;
+                CharacterDescription& characterDescription;
                 std::unordered_map<std::string, Observer*> observers;
 
                 void calculateTotalAbilityScore(AbilityScoreTypes ability);
@@ -145,7 +137,7 @@ namespace RulesEngine
                 void calculateTotalAbilityScoreDamage(AbilityScoreTypes ability);
                 void calculateTotalAbilityScoreDrain(AbilityScoreTypes ability);
                 void calculateTotalAbilityScorePenalties(AbilityScoreTypes ability);
-                SpecialAbilityScoreValues determineCharacterStatus(AbilityScoreTypes ability, int damageValue);
+                CharacterStatus determineCharacterStatus(AbilityScoreTypes ability, int damageValue);
                 std::string mapAbilityScoreEnumToString(AbilityScoreTypes ability);
                 void notifyObservers(const std::string& fieldName) override;
 
@@ -153,7 +145,7 @@ namespace RulesEngine
                 std::unordered_map<std::string, AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList);
                 std::unordered_map<std::string, AbilityScoreBonus> getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& mergeList, const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList);
             public:
-                AbilityScores();
+                AbilityScores(CharacterDescription& charDescription);
 
                 //Unregister from modules we're observing
                 ~AbilityScores() {}
@@ -175,7 +167,6 @@ namespace RulesEngine
                 bool doesAbilityScoreDrainSourceExist(AbilityScoreTypes ability, const std::string& sourceName);
                 bool doesAbilityScorePenaltySourceExist(AbilityScoreTypes ability, const std::string& sourceName);
 
-                SpecialAbilityScoreValues getCharacterStatus(AbilityScoreTypes ability) const;
                 int getBaseAbilityScore(AbilityScoreTypes ability) const;
                 int getBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability) const;
                 int getTotalScore(AbilityScoreTypes ability) const;

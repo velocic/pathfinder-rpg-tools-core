@@ -66,6 +66,11 @@ namespace RulesEngine
             notifyObservers("class");
         }
 
+        void CharacterDescription::setCharacterStatus(CharacterStatus status)
+        {
+            characterStatus = status;
+        }
+
         void CharacterDescription::setCharacterName(const std::string& name)
         {
             characterName = name;
@@ -170,6 +175,11 @@ namespace RulesEngine
             sizeCategory = size;
 
             notifyObservers("sizeCategory");
+        }
+
+        CharacterStatus CharacterDescription::getCharacterStatus() const
+        {
+            return characterStatus;
         }
 
         std::string CharacterDescription::getCharacterName() const

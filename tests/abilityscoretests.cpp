@@ -1,5 +1,6 @@
 #include <testcommon.h>
 #include <abilityscores.h>
+#include <characterdescription.h>
 
 using namespace RulesEngine::Character;
 
@@ -19,7 +20,8 @@ class BaseScores : public ::testing::TestWithParam<AbilityScoreTypes>
 
 TEST_P(BaseScores, SetBaseAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
 
     //GetParam() is a gtest helper that lets you grab different values and run
     //this test over multiple runs with different data
@@ -43,7 +45,8 @@ class TemporaryAbilityScoreBonus : public ::testing::TestWithParam<AbilityScoreT
 
 TEST_P(TemporaryAbilityScoreBonus, AddActuallyAddsBonusToList)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto tempAdjustmentsCount = abilityScores.getTemporaryAdjustments(abilityScoreType).size();
@@ -76,7 +79,8 @@ TEST_P(TemporaryAbilityScoreBonus, AddActuallyAddsBonusToList)
 
 TEST_P(TemporaryAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto tempAdjustmentsCount = abilityScores.getTemporaryAdjustments(abilityScoreType).size();
@@ -125,7 +129,8 @@ TEST_P(TemporaryAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
@@ -148,7 +153,8 @@ TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalScore = abilityScores.getTotalScore(abilityScoreType);
@@ -171,7 +177,8 @@ TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 
 TEST_P(TemporaryAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalScore = abilityScores.getTotalScore(abilityScoreType);
@@ -197,7 +204,8 @@ TEST_P(TemporaryAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 
 TEST_P(TemporaryAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalScore = abilityScores.getTotalScore(abilityScoreType);
@@ -227,7 +235,8 @@ TEST_P(TemporaryAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 
 TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalModifier = abilityScores.getTotalAbilityModifier(abilityScoreType);
@@ -247,7 +256,8 @@ TEST_P(TemporaryAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 
 TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addTemporaryAbilityScoreBonus(
@@ -263,7 +273,8 @@ TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 
 TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addTemporaryAbilityScoreBonus(
@@ -282,7 +293,8 @@ TEST_P(TemporaryAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 TEST_P(TemporaryAbilityScoreBonus, ToggleBonus)
 {
     //Temporary Bonuses are enabled by default
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addTemporaryAbilityScoreBonus(
@@ -311,7 +323,8 @@ TEST_P(TemporaryAbilityScoreBonus, ToggleBonus)
 TEST_P(TemporaryAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
     //Utilizing a bunch of functionality to be closer to what an actual use-case is like for this test
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -349,7 +362,8 @@ class PermanentAbilityScoreBonus : public ::testing::TestWithParam<AbilityScoreT
 
 TEST_P(PermanentAbilityScoreBonus, AddActuallyAddsBonusToList)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto permanentAdjustmentsCount = abilityScores.getPermanentAdjustments(abilityScoreType).size();
@@ -373,7 +387,8 @@ TEST_P(PermanentAbilityScoreBonus, AddActuallyAddsBonusToList)
 
 TEST_P(PermanentAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addPermanentAbilityScoreBonus(
@@ -417,7 +432,8 @@ TEST_P(PermanentAbilityScoreBonus, BonusesOfSameModifierTypeDontStack)
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto totalAdjustment = abilityScores.getTotalAdjustment(abilityScoreType);
@@ -440,7 +456,8 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreAdjustment)
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -456,21 +473,21 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
     //A little setup just due to how we're running the same test once for
     //every ability score type, but need slightly different behavior in
     //this case
-    SpecialAbilityScoreValues characterTestStatus;
+    CharacterStatus characterTestStatus;
 
     if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
-        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+        characterTestStatus = CharacterStatus::Unconscious;
     } else if (abilityScoreType == AbilityScoreTypes::DEX) {
-        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+        characterTestStatus = CharacterStatus::Immobile;
     } else if (abilityScoreType == AbilityScoreTypes::INT) {
-        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+        characterTestStatus = CharacterStatus::Comatose;
     } else {
         //AbilityScoreTypes::CON
-        characterTestStatus = SpecialAbilityScoreValues::Dead;
+        characterTestStatus = CharacterStatus::Dead;
     }
 
     //Test ensure we're in a special character status depending on our abilityscoretype for this test run
-    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(characterTestStatus, characterDescription.getCharacterStatus());
 
     abilityScores.addPermanentAbilityScoreBonus(
         AbilityScoreModifiers::Inherent,
@@ -480,12 +497,13 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreDrain)
         "now we should be ok again... barely"
     );
 
-    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(CharacterStatus::Normal, characterDescription.getCharacterStatus());
 }
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseScoreWithPermanentAdjustments)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -509,7 +527,8 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseScoreWithPermanentAdjustments)
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseModifierWithPermanentAdjustments)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -533,7 +552,8 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesBaseModifierWithPermanentAdjustment
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -557,7 +577,8 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScore)
 
 TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -589,7 +610,8 @@ TEST_P(PermanentAbilityScoreBonus, AddUpdatesTotalAbilityScoreModifier)
 
 TEST_P(PermanentAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -617,7 +639,8 @@ TEST_P(PermanentAbilityScoreBonus, RemoveUpdatesTotalAbilityScore)
 
 TEST_P(PermanentAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -649,7 +672,8 @@ TEST_P(PermanentAbilityScoreBonus, ToggleUpdatesTotalAbilityScore)
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addPermanentAbilityScoreBonus(
@@ -665,7 +689,8 @@ TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsTrueIfFound)
 
 TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addPermanentAbilityScoreBonus(
@@ -683,7 +708,8 @@ TEST_P(PermanentAbilityScoreBonus, DoesSourceExistReturnsFalseIfNotFound)
 
 TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addPermanentAbilityScoreBonus(
@@ -710,7 +736,8 @@ TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
 
 TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -759,7 +786,8 @@ class AbilityScoreDamageTests : public ::testing::TestWithParam<AbilityScoreType
 //when we add/remove/toggle ability score damage
 TEST_P(AbilityScoreDamageTests, AddActuallyAddsDamageToList)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto abilityDamageCount = abilityScores.getAbilityDamage(abilityScoreType).size();
@@ -789,7 +817,8 @@ TEST_P(AbilityScoreDamageTests, AddActuallyAddsDamageToList)
 
 TEST_P(AbilityScoreDamageTests, AddUpdatesTotalAbilityScoreDamage)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     EXPECT_EQ(0, abilityScores.getTotalAbilityDamage(abilityScoreType));
@@ -815,7 +844,8 @@ TEST_P(AbilityScoreDamageTests, AddUpdatesTotalAbilityScoreDamage)
 
 TEST_P(AbilityScoreDamageTests, AbilityDamageAtOrBelowZeroChangesCharacterStatus)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 8);
@@ -826,27 +856,28 @@ TEST_P(AbilityScoreDamageTests, AbilityDamageAtOrBelowZeroChangesCharacterStatus
         "damage2description"
     );
 
-    SpecialAbilityScoreValues characterTestStatus;
+    CharacterStatus characterTestStatus;
 
     //Some setup for checking specific special status based on the current
     //ability score we're checking for this test run
     if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
-        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+        characterTestStatus = CharacterStatus::Unconscious;
     } else if (abilityScoreType == AbilityScoreTypes::DEX) {
-        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+        characterTestStatus = CharacterStatus::Immobile;
     } else if (abilityScoreType == AbilityScoreTypes::INT) {
-        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+        characterTestStatus = CharacterStatus::Comatose;
     } else {
         //AbilityScoreTypes::CON
-        characterTestStatus = SpecialAbilityScoreValues::Dead;
+        characterTestStatus = CharacterStatus::Dead;
     }
 
-    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(characterTestStatus, characterDescription.getCharacterStatus());
 }
 
 TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsTrueIfFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDamage(
@@ -862,7 +893,8 @@ TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsTrueIfFound)
 TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsFalseIfNotFound)
 {
 
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDamage(
@@ -879,7 +911,8 @@ TEST_P(AbilityScoreDamageTests, DoesSourceExistReturnsFalseIfNotFound)
 
 TEST_P(AbilityScoreDamageTests, ToggleAbilityScoreDamage)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDamage(
@@ -901,7 +934,8 @@ TEST_P(AbilityScoreDamageTests, ToggleAbilityScoreDamage)
 
 TEST_P(AbilityScoreDamageTests, RemoveUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDamage(
@@ -920,7 +954,8 @@ TEST_P(AbilityScoreDamageTests, RemoveUpdatesTotalAbilityScore)
 
 TEST_P(AbilityScoreDamageTests, ToggleUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDamage(
@@ -951,7 +986,8 @@ class AbilityScorePenaltyTests : public ::testing::TestWithParam<AbilityScoreTyp
 
 TEST_P(AbilityScorePenaltyTests, AddActuallyAddsPenaltyToList)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto abilityPenaltyCount = abilityScores.getAbilityPenalties(abilityScoreType).size();
@@ -980,7 +1016,8 @@ TEST_P(AbilityScorePenaltyTests, AddActuallyAddsPenaltyToList)
 
 TEST_P(AbilityScorePenaltyTests, AddUpdatesTotalAbilityScorePenalty)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     EXPECT_EQ(0, abilityScores.getTotalAbilityPenalty(abilityScoreType));
@@ -1000,7 +1037,8 @@ TEST_P(AbilityScorePenaltyTests, AddUpdatesTotalAbilityScorePenalty)
 TEST_P(AbilityScorePenaltyTests, AbilityPenaltyCantExceedTargetScoreWithPermanentBonusesMinusOne)
 {
 
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -1035,7 +1073,8 @@ TEST_P(AbilityScorePenaltyTests, AbilityPenaltyCantExceedTargetScoreWithPermanen
 
 TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsTrueIfFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScorePenalty(
@@ -1051,7 +1090,8 @@ TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsTrueIfFound)
 TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsFalseIfNotFound)
 {
 
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScorePenalty(
@@ -1068,7 +1108,8 @@ TEST_P(AbilityScorePenaltyTests, DoesSourceExistReturnsFalseIfNotFound)
 
 TEST_P(AbilityScorePenaltyTests, ToggleAbilityScorePenalty)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 14);
@@ -1089,7 +1130,8 @@ TEST_P(AbilityScorePenaltyTests, ToggleAbilityScorePenalty)
 
 TEST_P(AbilityScorePenaltyTests, RemoveUpdatesTotalAbilityScorePenalty)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 14);
@@ -1117,7 +1159,8 @@ TEST_P(AbilityScorePenaltyTests, RemoveUpdatesTotalAbilityScorePenalty)
 
 TEST_P(AbilityScorePenaltyTests, ToggleUpdatesTotalAbilityScorePenalty)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 14);
@@ -1156,7 +1199,8 @@ class AbilityScoreDrainTests : public ::testing::TestWithParam<AbilityScoreTypes
 
 TEST_P(AbilityScoreDrainTests, AddActuallyAddsDrainToList)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     auto abilityDrainCount = abilityScores.getAbilityDrain(abilityScoreType).size();
@@ -1185,7 +1229,8 @@ TEST_P(AbilityScoreDrainTests, AddActuallyAddsDrainToList)
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreDrain)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     EXPECT_EQ(0, abilityScores.getTotalAbilityDrain(abilityScoreType));
@@ -1202,7 +1247,8 @@ TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreDrain)
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScore)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -1221,7 +1267,8 @@ TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScore)
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreModifier)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 14);
@@ -1240,7 +1287,8 @@ TEST_P(AbilityScoreDrainTests, AddUpdatesTotalAbilityScoreModifier)
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesBaseScoreWithPermanentAdjustments)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 10);
@@ -1259,7 +1307,8 @@ TEST_P(AbilityScoreDrainTests, AddUpdatesBaseScoreWithPermanentAdjustments)
 
 TEST_P(AbilityScoreDrainTests, AddUpdatesBaseModifierWithPermanentAdjustments)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 14);
@@ -1278,12 +1327,13 @@ TEST_P(AbilityScoreDrainTests, AddUpdatesBaseModifierWithPermanentAdjustments)
 
 TEST_P(AbilityScoreDrainTests, AbilityDrainAtOrBelowZeroChangesCharacterStatus)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 12);
 
-    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(CharacterStatus::Normal, characterDescription.getCharacterStatus());
 
     abilityScores.addAbilityScoreDrain(
         abilityScoreType,
@@ -1292,26 +1342,27 @@ TEST_P(AbilityScoreDrainTests, AbilityDrainAtOrBelowZeroChangesCharacterStatus)
         "drain1description"
     );
 
-    SpecialAbilityScoreValues characterTestStatus;
+    CharacterStatus characterTestStatus;
 
     //Some special setup for test-run dependent ability score type
     if (abilityScoreType == AbilityScoreTypes::STR || abilityScoreType == AbilityScoreTypes::WIS || abilityScoreType == AbilityScoreTypes::CHA) {
-        characterTestStatus = SpecialAbilityScoreValues::Unconscious;
+        characterTestStatus = CharacterStatus::Unconscious;
     } else if (abilityScoreType == AbilityScoreTypes::DEX) {
-        characterTestStatus = SpecialAbilityScoreValues::Immobile;
+        characterTestStatus = CharacterStatus::Immobile;
     } else if (abilityScoreType == AbilityScoreTypes::INT) {
-        characterTestStatus = SpecialAbilityScoreValues::Comatose;
+        characterTestStatus = CharacterStatus::Comatose;
     } else {
         //AbilityScoreTypes::CON
-        characterTestStatus = SpecialAbilityScoreValues::Dead;
+        characterTestStatus = CharacterStatus::Dead;
     }
 
-    EXPECT_EQ(characterTestStatus, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(characterTestStatus, characterDescription.getCharacterStatus());
 }
 
 TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsTrueIfFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDrain(
@@ -1326,7 +1377,8 @@ TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsTrueIfFound)
 
 TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsFalseIfNotFound)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDrain(
@@ -1343,7 +1395,8 @@ TEST_P(AbilityScoreDrainTests, DoesSourceExistReturnsFalseIfNotFound)
 
 TEST_P(AbilityScoreDrainTests, ToggleAbilityScoreDrain)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.addAbilityScoreDrain(
@@ -1365,7 +1418,8 @@ TEST_P(AbilityScoreDrainTests, ToggleAbilityScoreDrain)
 
 TEST_P(AbilityScoreDrainTests, RemoveUpdatesTotalAbilityScoreDrain)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 15);
@@ -1386,7 +1440,8 @@ TEST_P(AbilityScoreDrainTests, RemoveUpdatesTotalAbilityScoreDrain)
 
 TEST_P(AbilityScoreDrainTests, ToggleUpdatesTotalAbilityScoreDrain)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 15);
@@ -1422,7 +1477,8 @@ class ComprehensiveAbilityScoreTest : public ::testing::TestWithParam<AbilitySco
 
 TEST_P(ComprehensiveAbilityScoreTest, TestModifiersOfSeveralTypesThatCouldActuallyBeOnACharacterSheet)
 {
-    AbilityScores abilityScores;
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
     auto abilityScoreType = GetParam();
 
     abilityScores.setBaseAbilityScore(abilityScoreType, 18);
@@ -1441,7 +1497,7 @@ TEST_P(ComprehensiveAbilityScoreTest, TestModifiersOfSeveralTypesThatCouldActual
 
     abilityScores.toggleTemporaryAbilityScoreBonus(abilityScoreType, "temp2");
 
-    EXPECT_EQ(SpecialAbilityScoreValues::Normal, abilityScores.getCharacterStatus(abilityScoreType));
+    EXPECT_EQ(CharacterStatus::Normal, characterDescription.getCharacterStatus());
     EXPECT_EQ(18, abilityScores.getBaseAbilityScore(abilityScoreType));
     EXPECT_EQ(4, abilityScores.getBaseModifier(abilityScoreType));
     EXPECT_EQ(22, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));

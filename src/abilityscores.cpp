@@ -4,7 +4,8 @@ namespace RulesEngine
 {
     namespace Character
     {
-        AbilityScores::AbilityScores()
+        AbilityScores::AbilityScores(CharacterDescription& charDescription) :
+            characterDescription(characterDescription)
         {
             AbilityScore emptyAbilityScore;
 
@@ -72,23 +73,23 @@ namespace RulesEngine
             targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
         }
 
-        SpecialAbilityScoreValues AbilityScores::determineCharacterStatus(AbilityScoreTypes ability, int damageValue)
+        CharacterStatus AbilityScores::determineCharacterStatus(AbilityScoreTypes ability, int damageValue)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
             if ((targetAbility.baseScoreWithPermanentAdjustments - damageValue) > 0) {
-                return SpecialAbilityScoreValues::Normal;
+                return CharacterStatus::Normal;
             }
 
             if (ability == AbilityScoreTypes::STR || ability == AbilityScoreTypes::WIS || ability == AbilityScoreTypes::CHA) {
-                return SpecialAbilityScoreValues::Unconscious;
+                return CharacterStatus::Unconscious;
             } else if (ability == AbilityScoreTypes::DEX) {
-                return SpecialAbilityScoreValues::Immobile;
+                return CharacterStatus::Immobile;
             } else if (ability == AbilityScoreTypes::INT) {
-                return SpecialAbilityScoreValues::Comatose;
+                return CharacterStatus::Comatose;
             } else {
                 //AbilityScoreTypes::CON
-                return SpecialAbilityScoreValues::Dead;
+                return CharacterStatus::Dead;
             }
         }
 
@@ -99,7 +100,7 @@ namespace RulesEngine
 
             targetAbility.baseModifierWithPermanentAdjustments = (targetAbility.baseScoreWithPermanentAdjustments - 10) / 2;
 
-            targetAbility.characterStatus = determineCharacterStatus(ability, 0);
+            characterDescription.setCharacterStatus(determineCharacterStatus(ability, 0));
         }
 
         //Dependent on target ability score's tempAdjustments & permanentAdjustments being fully populated
@@ -140,7 +141,7 @@ namespace RulesEngine
             }
 
             targetAbility.totalAbilityDamage = totalDamage;
-            targetAbility.characterStatus = determineCharacterStatus(ability, totalDamage);
+            characterDescription.setCharacterStatus(determineCharacterStatus(ability, totalDamage));
         }
 
         void AbilityScores::calculateTotalAbilityScoreDrain(AbilityScoreTypes ability)
@@ -159,7 +160,7 @@ namespace RulesEngine
             }
 
             targetAbility.totalAbilityDrain = totalDrain;
-            targetAbility.characterStatus = determineCharacterStatus(ability, totalDrain);
+            characterDescription.setCharacterStatus(determineCharacterStatus(ability, totalDrain));
         }
 
         void AbilityScores::calculateTotalAbilityScorePenalties(AbilityScoreTypes ability)
@@ -225,7 +226,7 @@ namespace RulesEngine
             }
 
             targetAbility.baseScoreWithPermanentAdjustments = totalBonus + targetAbility.baseScore - targetAbility.totalAbilityDrain;
-            targetAbility.characterStatus = determineCharacterStatus(ability, 0);
+            characterDescription.setCharacterStatus(determineCharacterStatus(ability, 0));
         }
 
         std::unordered_map<std::string, AbilityScoreBonus> AbilityScores::getContributingBonusesFromRawBonusList(const std::unordered_map<std::string, AbilityScoreBonus>& mergeList, const std::unordered_map<std::string, AbilityScoreBonus>& rawBonusList)
@@ -461,13 +462,6 @@ namespace RulesEngine
             }
 
             return true;
-        }
-
-        SpecialAbilityScoreValues AbilityScores::getCharacterStatus(AbilityScoreTypes ability) const
-        {
-            auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
-
-            return targetAbility.characterStatus;
         }
 
         int AbilityScores::getBaseAbilityScore(AbilityScoreTypes ability) const

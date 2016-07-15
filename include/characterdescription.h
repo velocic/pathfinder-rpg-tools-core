@@ -1,4 +1,4 @@
-#ifndef CHARACTERCLASS_H
+#ifndef CHARACTERDESCRIPTION_H
 
 #include <string>
 #include <unordered_map>
@@ -27,11 +27,21 @@ namespace RulesEngine
             float baseAttackBonusProgression;
         };
 
+        enum class CharacterStatus : int
+        {
+            Unconscious, //If Strength, Wisdom, or Charisma falls to 0
+            Immobile, //If Dexterity falls to 0
+            Dead, //If Constitution falls to 0
+            Comatose, //If Intelligence falls to 0
+            Normal //None of the above apply, character is fine
+        };
+
         class PATHFINDER_RULES_ENGINE_EXPORT CharacterDescription :
             public ObserverSubject,
             public Observer
         {
             private:
+                CharacterStatus characterStatus = CharacterStatus::Normal;
                 std::string characterName;
                 std::string alignment;
                 std::string player;
@@ -64,6 +74,7 @@ namespace RulesEngine
                 void addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression);
                 void removeClass(const std::string& className);
 
+                void setCharacterStatus(CharacterStatus status);
                 void setCharacterName(const std::string& name);
                 void setAlignment(const std::string& alignment);
                 void setPlayer(const std::string& playerName);
@@ -83,6 +94,7 @@ namespace RulesEngine
                 void setWeight(unsigned int weight);
                 void setSizeCategory(SizeCategories size); //must notify observers of change
 
+                CharacterStatus getCharacterStatus() const;
                 std::string getCharacterName() const;
                 std::string getAlignment() const;
                 std::string getPlayer() const;
@@ -102,5 +114,5 @@ namespace RulesEngine
     }
 }
 
-#define CHARACTERCLASS_H
+#define CHARACTERDESCRIPTION_H
 #endif

@@ -49,7 +49,7 @@ namespace RulesEngine
             int baseAttackBonusCounter = static_cast<int>(totalBaseAttackBonus);
             std::vector<unsigned int> iterativeBonuses;
 
-            for (baseAttackBonusCounter; baseAttackBonusCounter > 0; baseAttackBonusCounter -= 5) {
+            for (; baseAttackBonusCounter > 0; baseAttackBonusCounter -= 5) {
                 iterativeBonuses.push_back(static_cast<unsigned int>(baseAttackBonusCounter));
             }
 
