@@ -36,6 +36,22 @@ namespace RulesEngine
             Normal //None of the above apply, character is fine
         };
 
+        struct TemporaryNegativeLevelDebuff
+        {
+            std::string description;
+            std::string sourceName;
+            unsigned int numNegativeLevels;
+            bool enabled = false;
+        };
+
+        struct PermanentNegativeLevelDebuff
+        {
+            std::string description;
+            std::string sourceName;
+            unsigned int numNegativeLevels;
+            bool enabled = false;
+        };
+
         class PATHFINDER_RULES_ENGINE_EXPORT CharacterDescription :
             public ObserverSubject,
             public Observer
@@ -55,24 +71,38 @@ namespace RulesEngine
                 std::string eyes;
                 unsigned int age = 0;
                 unsigned int weight = 0;
+                unsigned int totalTemporaryNegativeLevels = 0;
+                unsigned int totalPermanentNegativeLevels = 0;
+                unsigned int totalNegativeLevels = 0;
                 SizeCategories sizeCategory = SizeCategories::Medium; //Needs to be able subscribe for updates
+                std::unordered_map<std::string, TemporaryNegativeLevelDebuff> temporaryNegativeLevels;
+                std::unordered_map<std::string, PermanentNegativeLevelDebuff> permanentNegativeLevels;
                 std::unordered_map<std::string, Observer*> observers;
 
+                void calculateNegativeLevels();
                 void notifyObservers(const std::string& fieldName) override;
-
             public:
                 CharacterDescription() {}
 
                 //Unregister from modules we're observing
                 ~CharacterDescription() {}
 
-                //TODO: addNegativeLevels needs representation here
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
                 void addClass(const std::string& className);
                 void addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression);
+
+                void addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd);
+                void addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd);
+                void addTemporaryNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description);
+                void addPermanentNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description);
+
                 void removeClass(const std::string& className);
+                void removeTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToRemove);
+                void removePermanentNegativeLevels(const std::string& sourceName, unsigned int amountToRemove);
+                void removeTemporaryNegativeLevelDebuff(const std::string& sourceName);
+                void removePermanentNegativeLevelDebuff(const std::string& sourceName);
 
                 void setCharacterStatus(CharacterStatus status);
                 void setCharacterName(const std::string& name);
@@ -94,12 +124,19 @@ namespace RulesEngine
                 void setWeight(unsigned int weight);
                 void setSizeCategory(SizeCategories size); //must notify observers of change
 
+                void toggleTemporaryNegativeLevelDebuff(const std::string& sourceName);
+                void togglePermanentNegativeLevelDebuff(const std::string& sourceName);
+
                 CharacterStatus getCharacterStatus() const;
                 std::string getCharacterName() const;
                 std::string getAlignment() const;
                 std::string getPlayer() const;
                 CharacterClass getClass(const std::string& className) const;
                 const std::unordered_map<std::string, CharacterClass>& getClasses() const;
+                TemporaryNegativeLevelDebuff getTemporaryNegativeLevelDebuff(const std::string& sourceName) const;
+                PermanentNegativeLevelDebuff getPermanentNegativeLevelDebuff(const std::string& sourceName) const;
+                const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& getTemporaryNegativeLevelDebuffs() const;
+                const std::unordered_map<std::string, PermanentNegativeLevelDebuff>& getPermanentNegativeLevelDebuffs() const;
                 std::string getDeity() const;
                 std::string getHomeland() const;
                 std::string getRace() const;

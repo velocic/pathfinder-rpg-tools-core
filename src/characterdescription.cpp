@@ -4,6 +4,23 @@ namespace RulesEngine
 {
     namespace Character
     {
+        void CharacterDescription::calculateNegativeLevels()
+        {
+            totalTemporaryNegativeLevels = 0;
+            totalPermanentNegativeLevels = 0;
+            totalNegativeLevels = 0;
+
+            for (auto& negativeLevelDebuff : temporaryNegativeLevels) {
+                totalTemporaryNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+            }
+
+            for (auto& negativeLevelDebuff : permanentNegativeLevels) {
+                totalPermanentNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+            }
+
+            totalNegativeLevels = totalTemporaryNegativeLevels + totalPermanentNegativeLevels;
+        }
+
         void CharacterDescription::notifyObservers(const std::string& fieldName)
         {
             for (auto observer : observers) {
@@ -59,11 +76,51 @@ namespace RulesEngine
             notifyObservers("class");
         }
 
+        void CharacterDescription::addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
+        {
+            //TODO: this should simply add the negative level modifier amount by the given number
+        }
+
+        void CharacterDescription::addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
+        {
+            //TODO: this should simply add the negative level modifier amount by the given number
+        }
+
+        void CharacterDescription::addTemporaryNegativeLevelDebuff(const std::string& className)
+        {
+            //TODO fill out
+        }
+
+        void CharacterDescription::addPermanentNegativeLevelDebuff(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
+        {
+            //TODO fill out
+        }
+
         void CharacterDescription::removeClass(const std::string& className)
         {
             classInfo.erase(className);
 
             notifyObservers("class");
+        }
+
+        void CharacterDescription::removeTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
+        {
+            //TODO: this should simply reduce the negative level modifier amount by the given number
+        }
+
+        void CharacterDescription::removePermanentNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
+        {
+            //TODO: this should simply reduce the negative level modifier amount by the given number
+        }
+
+        void CharacterDescription::removeTemporaryNegativeLevelDebuff(const std::string& sourceName)
+        {
+            //TODO fill out
+        }
+
+        void CharacterDescription::removePermanentNegativeLevelDebuff(const std::string& sourceName)
+        {
+            //TODO fill out
         }
 
         void CharacterDescription::setCharacterStatus(CharacterStatus status)
@@ -177,6 +234,16 @@ namespace RulesEngine
             notifyObservers("sizeCategory");
         }
 
+        void CharacterDescription::toggleTemporaryNegativeLevelDebuff(const std::string& sourceName)
+        {
+            //TODO: fill in
+        }
+
+        void CharacterDescription::togglePermanentNegativeLevelDebuff(const std::string& sourceName)
+        {
+            //TODO: fill in
+        }
+
         CharacterStatus CharacterDescription::getCharacterStatus() const
         {
             return characterStatus;
@@ -205,6 +272,26 @@ namespace RulesEngine
         const std::unordered_map<std::string, CharacterClass>& CharacterDescription::getClasses() const
         {
             return classInfo;
+        }
+
+        TemporaryNegativeLevelDebuff CharacterDescription::getTemporaryNegativeLevelDebuff(const std::string& sourceName) const
+        {
+            //TODO fill in
+        }
+
+        PermanentNegativeLevelDebuff CharacterDescription::getPermanentNegativeLevelDebuff(const std::string& sourceName) const
+        {
+            //TODO fill in
+        }
+
+        const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& CharacterDescription::getTemporaryNegativeLevelDebuffs() const
+        {
+            //TODO fill in
+        }
+
+        const std::unordered_map<std::string, PermanentNegativeLevelDebuff>& CharacterDescription::getPermanentNegativeLevelDebuffs() const
+        {
+            //TODO fill in
         }
 
         std::string CharacterDescription::getDeity() const
