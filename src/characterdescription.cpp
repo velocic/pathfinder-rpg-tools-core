@@ -19,6 +19,8 @@ namespace RulesEngine
             }
 
             totalNegativeLevels = totalTemporaryNegativeLevels + totalPermanentNegativeLevels;
+
+            notifyObservers("negativeLevels");
         }
 
         void CharacterDescription::notifyObservers(const std::string& fieldName)
@@ -78,21 +80,25 @@ namespace RulesEngine
 
         void CharacterDescription::addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
+            notifyObservers("negativeLevels");
             //TODO: this should simply add the negative level modifier amount by the given number
         }
 
         void CharacterDescription::addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
+            notifyObservers("negativeLevels");
             //TODO: this should simply add the negative level modifier amount by the given number
         }
 
         void CharacterDescription::addTemporaryNegativeLevelDebuff(const std::string& className)
         {
+            notifyObservers("negativeLevels");
             //TODO fill out
         }
 
         void CharacterDescription::addPermanentNegativeLevelDebuff(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
         {
+            notifyObservers("negativeLevels");
             //TODO fill out
         }
 
@@ -105,21 +111,25 @@ namespace RulesEngine
 
         void CharacterDescription::removeTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
         {
+            notifyObservers("negativeLevels");
             //TODO: this should simply reduce the negative level modifier amount by the given number
         }
 
         void CharacterDescription::removePermanentNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
         {
+            notifyObservers("negativeLevels");
             //TODO: this should simply reduce the negative level modifier amount by the given number
         }
 
         void CharacterDescription::removeTemporaryNegativeLevelDebuff(const std::string& sourceName)
         {
+            notifyObservers("negativeLevels");
             //TODO fill out
         }
 
         void CharacterDescription::removePermanentNegativeLevelDebuff(const std::string& sourceName)
         {
+            notifyObservers("negativeLevels");
             //TODO fill out
         }
 
@@ -236,11 +246,13 @@ namespace RulesEngine
 
         void CharacterDescription::toggleTemporaryNegativeLevelDebuff(const std::string& sourceName)
         {
+            notifyObservers("negativeLevels");
             //TODO: fill in
         }
 
         void CharacterDescription::togglePermanentNegativeLevelDebuff(const std::string& sourceName)
         {
+            notifyObservers("negativeLevels");
             //TODO: fill in
         }
 
