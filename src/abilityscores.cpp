@@ -5,7 +5,7 @@ namespace RulesEngine
     namespace Character
     {
         AbilityScores::AbilityScores(CharacterDescription& charDescription) :
-            characterDescription(characterDescription)
+            characterDescription(charDescription)
         {
             AbilityScore emptyAbilityScore;
 
