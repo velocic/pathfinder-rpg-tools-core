@@ -80,26 +80,46 @@ namespace RulesEngine
 
         void CharacterDescription::addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
+            auto& negativeLevelDebuff = temporaryNegativeLevels.find(sourceName)->second;
+
+            negativeLevelDebuff.numNegativeLevels += amountToAdd;
+
             notifyObservers("negativeLevels");
-            //TODO: this should simply add the negative level modifier amount by the given number
         }
 
         void CharacterDescription::addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
+            auto& negativeLevelDebuff = permanentNegativeLevels.find(sourceName)->second;
+
+            negativeLevelDebuff.numNegativeLevels += amountToAdd;
+
             notifyObservers("negativeLevels");
-            //TODO: this should simply add the negative level modifier amount by the given number
         }
 
-        void CharacterDescription::addTemporaryNegativeLevelDebuff(const std::string& className)
+        void CharacterDescription::addTemporaryNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description)
         {
+            TemporaryNegativeLevelDebuff tempDebuff;
+            tempDebuff.description = description;
+            tempDebuff.sourceName = sourceName;
+            tempDebuff.numNegativeLevels = numNegativeLevels;
+            tempDebuff.enabled = true;
+
+            temporaryNegativeLevels[sourceName] = std::move(tempDebuff);
+
             notifyObservers("negativeLevels");
-            //TODO fill out
         }
 
-        void CharacterDescription::addPermanentNegativeLevelDebuff(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
+        void CharacterDescription::addPermanentNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description)
         {
+            PermanentNegativeLevelDebuff permDebuff;
+            permDebuff.description = description;
+            permDebuff.sourceName = sourceName;
+            permDebuff.numNegativeLevels = numNegativeLevels;
+            permDebuff.enabled = true;
+
+            permanentNegativeLevels[sourceName] = std::move(permDebuff);
+
             notifyObservers("negativeLevels");
-            //TODO fill out
         }
 
         void CharacterDescription::removeClass(const std::string& className)
@@ -109,13 +129,33 @@ namespace RulesEngine
             notifyObservers("class");
         }
 
-        void CharacterDescription::removeTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
+        void CharacterDescription::removeTemporaryNegativeLevels(unsigned int amountToRemove)
         {
+            int removalCounter = static_cast<int>(amountToRemove);
+
+            for (auto& temporaryNegLevelDebuffPair : temporaryNegativeLevels) {
+                if (removalCounter <= 0) {
+                    break;
+                }
+
+                auto& negLevelDebuff = temporaryNegLevelDebuffPair.second;
+
+                if (removalCounter >= negLevelDebuff.numNegativeLevels) {
+                    removalCounter -= negLevelDebuff.numNegativeLevels;
+                    negLevelDebuff.numNegativeLevels = 0;
+                    negLevelDebuff.enabled = false;
+                    continue;
+                }
+
+                negLevelDebuff.numNegativeLevels -= removalCounter;
+                removalCounter = 0;
+                break;
+            }
+
             notifyObservers("negativeLevels");
-            //TODO: this should simply reduce the negative level modifier amount by the given number
         }
 
-        void CharacterDescription::removePermanentNegativeLevels(const std::string& sourceName, unsigned int amountToRemove)
+        void CharacterDescription::removePermanentNegativeLevels(unsigned int amountToRemove)
         {
             notifyObservers("negativeLevels");
             //TODO: this should simply reduce the negative level modifier amount by the given number

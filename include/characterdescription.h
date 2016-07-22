@@ -99,8 +99,8 @@ namespace RulesEngine
                 void addPermanentNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description);
 
                 void removeClass(const std::string& className);
-                void removeTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToRemove);
-                void removePermanentNegativeLevels(const std::string& sourceName, unsigned int amountToRemove);
+                void removeTemporaryNegativeLevels(unsigned int amountToRemove);
+                void removePermanentNegativeLevels(unsigned int amountToRemove);
                 void removeTemporaryNegativeLevelDebuff(const std::string& sourceName);
                 void removePermanentNegativeLevelDebuff(const std::string& sourceName);
 
