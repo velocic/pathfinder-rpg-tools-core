@@ -328,22 +328,28 @@ namespace RulesEngine
 
         TemporaryNegativeLevelDebuff CharacterDescription::getTemporaryNegativeLevelDebuff(const std::string& sourceName) const
         {
-            //TODO fill in
+            throw std::logic_error("Not yet implemented");
+            TemporaryNegativeLevelDebuff tempNegativeLevel;
+            return tempNegativeLevel;
         }
 
         PermanentNegativeLevelDebuff CharacterDescription::getPermanentNegativeLevelDebuff(const std::string& sourceName) const
         {
-            //TODO fill in
+            throw std::logic_error("Not yet implemented");
+            PermanentNegativeLevelDebuff premanentNegativeLevel;
+            return premanentNegativeLevel;
         }
 
         const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& CharacterDescription::getTemporaryNegativeLevelDebuffs() const
         {
-            //TODO fill in
+            throw std::logic_error("Not yet implemented");
+            return temporaryNegativeLevels;
         }
 
         const std::unordered_map<std::string, PermanentNegativeLevelDebuff>& CharacterDescription::getPermanentNegativeLevelDebuffs() const
         {
-            //TODO fill in
+            throw std::logic_error("Not yet implemented");
+            return permanentNegativeLevels;
         }
 
         std::string CharacterDescription::getDeity() const
