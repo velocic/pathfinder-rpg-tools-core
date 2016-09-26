@@ -137,6 +137,7 @@ namespace RulesEngine
                 PermanentNegativeLevelDebuff getPermanentNegativeLevelDebuff(const std::string& sourceName) const;
                 const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& getTemporaryNegativeLevelDebuffs() const;
                 const std::unordered_map<std::string, PermanentNegativeLevelDebuff>& getPermanentNegativeLevelDebuffs() const;
+                unsigned int getTotalNegativeLevels();
                 std::string getDeity() const;
                 std::string getHomeland() const;
                 std::string getRace() const;

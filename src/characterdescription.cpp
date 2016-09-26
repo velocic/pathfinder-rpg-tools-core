@@ -140,7 +140,7 @@ namespace RulesEngine
 
                 auto& negLevelDebuff = temporaryNegLevelDebuffPair.second;
 
-                if (removalCounter >= negLevelDebuff.numNegativeLevels) {
+                if (removalCounter >= static_cast<int>(negLevelDebuff.numNegativeLevels)) {
                     removalCounter -= negLevelDebuff.numNegativeLevels;
                     negLevelDebuff.numNegativeLevels = 0;
                     negLevelDebuff.enabled = false;
@@ -152,25 +152,51 @@ namespace RulesEngine
                 break;
             }
 
-            notifyObservers("negativeLevels");
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::removePermanentNegativeLevels(unsigned int amountToRemove)
         {
-            notifyObservers("negativeLevels");
-            //TODO: this should simply reduce the negative level modifier amount by the given number
+            int removalCounter = static_cast<int>(amountToRemove);
+
+            for (auto& permanentNegLevelDebuffPair : permanentNegativeLevels) {
+                if (removalCounter <= 0) {
+                    break;
+                }
+
+                auto& negLevelDebuff = permanentNegLevelDebuffPair.second;
+
+                if (removalCounter >= static_cast<int>(negLevelDebuff.numNegativeLevels)) {
+                    removalCounter -= negLevelDebuff.numNegativeLevels;
+                    negLevelDebuff.numNegativeLevels = 0;
+                    negLevelDebuff.enabled = false;
+                    continue;
+                }
+
+                negLevelDebuff.numNegativeLevels -= removalCounter;
+                removalCounter = 0;
+                break;
+            }
+
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::removeTemporaryNegativeLevelDebuff(const std::string& sourceName)
         {
-            notifyObservers("negativeLevels");
-            //TODO fill out
+            temporaryNegativeLevels.erase(sourceName);
+
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::removePermanentNegativeLevelDebuff(const std::string& sourceName)
         {
-            notifyObservers("negativeLevels");
-            //TODO fill out
+            permanentNegativeLevels.erase(sourceName);
+
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::setCharacterStatus(CharacterStatus status)
@@ -286,14 +312,30 @@ namespace RulesEngine
 
         void CharacterDescription::toggleTemporaryNegativeLevelDebuff(const std::string& sourceName)
         {
-            notifyObservers("negativeLevels");
-            //TODO: fill in
+            auto& enabled = temporaryNegativeLevels.find(sourceName)->second.enabled;
+
+            if (enabled == true) {
+                enabled = false;
+            } else {
+                enabled = true;
+            }
+
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::togglePermanentNegativeLevelDebuff(const std::string& sourceName)
         {
-            notifyObservers("negativeLevels");
-            //TODO: fill in
+            auto& enabled = permanentNegativeLevels.find(sourceName)->second.enabled;
+
+            if (enabled == true) {
+                enabled = false;
+            } else {
+                enabled = true;
+            }
+
+            //No need to call notify here, calculateNegativeLevels calls it for us
+            calculateNegativeLevels();
         }
 
         CharacterStatus CharacterDescription::getCharacterStatus() const
@@ -328,28 +370,27 @@ namespace RulesEngine
 
         TemporaryNegativeLevelDebuff CharacterDescription::getTemporaryNegativeLevelDebuff(const std::string& sourceName) const
         {
-            throw std::logic_error("Not yet implemented");
-            TemporaryNegativeLevelDebuff tempNegativeLevel;
-            return tempNegativeLevel;
+            return temporaryNegativeLevels.find(sourceName)->second;
         }
 
         PermanentNegativeLevelDebuff CharacterDescription::getPermanentNegativeLevelDebuff(const std::string& sourceName) const
         {
-            throw std::logic_error("Not yet implemented");
-            PermanentNegativeLevelDebuff premanentNegativeLevel;
-            return premanentNegativeLevel;
+            return permanentNegativeLevels.find(sourceName)->second;
         }
 
         const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& CharacterDescription::getTemporaryNegativeLevelDebuffs() const
         {
-            throw std::logic_error("Not yet implemented");
             return temporaryNegativeLevels;
         }
 
         const std::unordered_map<std::string, PermanentNegativeLevelDebuff>& CharacterDescription::getPermanentNegativeLevelDebuffs() const
         {
-            throw std::logic_error("Not yet implemented");
             return permanentNegativeLevels;
+        }
+
+        unsigned int CharacterDescription::getTotalNegativeLevels()
+        {
+            return totalNegativeLevels;
         }
 
         std::string CharacterDescription::getDeity() const
