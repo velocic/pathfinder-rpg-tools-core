@@ -3,7 +3,7 @@
 
 using namespace RulesEngine::Character;
 
-TEST(CharacterDescription, AddTemporaryNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, AddTemporaryNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
     CharacterDescription characterDescription;
 
@@ -18,7 +18,7 @@ TEST(CharacterDescription, AddTemporaryNegativeLevelDebuffUpdatesTotalNegativeLe
     EXPECT_EQ(3, characterDescription.getTotalNegativeLevels());
 }
 
-TEST(CharacterDescription, AddPermanentNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, AddPermanentNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
     CharacterDescription characterDescription;
 
@@ -33,7 +33,55 @@ TEST(CharacterDescription, AddPermanentNegativeLevelDebuffUpdatesTotalNegativeLe
     EXPECT_EQ(5, characterDescription.getTotalNegativeLevels());
 }
 
-TEST(CharacterDescription, AddTemporaryNegativeLevelsUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, AddTemporaryNegativeLevelDebuffOverwritesEntryWithSameName)
+{
+    CharacterDescription characterDescription;
+
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "Temp Debuff",
+        2,
+        "Desc."
+    );
+
+    EXPECT_EQ(2, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "Temp Debuff",
+        3,
+        "Desc."
+    );
+
+    auto& tempNegLevelMap = characterDescription.getTemporaryNegativeLevelDebuffs();
+
+    EXPECT_EQ(1, tempNegLevelMap.size());
+    EXPECT_EQ(3, characterDescription.getTotalNegativeLevels());
+}
+
+TEST(NegativeLevels, AddPermanentNegativeLevelDebuffOverwritesEntryWithSameName)
+{
+    CharacterDescription characterDescription;
+
+    characterDescription.addPermanentNegativeLevelDebuff(
+        "Perm Debuff",
+        4,
+        "desc."
+    );
+
+    EXPECT_EQ(4, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addPermanentNegativeLevelDebuff(
+        "Perm Debuff",
+        1,
+        "desc."
+    );
+
+    auto& permNegLevelMap = characterDescription.getPermanentNegativeLevelDebuffs();
+
+    EXPECT_EQ(1, permNegLevelMap.size());
+    EXPECT_EQ(1, characterDescription.getTotalNegativeLevels());
+}
+
+TEST(NegativeLevels, AddTemporaryNegativeLevelsUpdatesTotalNegativeLevelCount)
 {
     CharacterDescription characterDescription;
     characterDescription.addTemporaryNegativeLevelDebuff(
@@ -49,7 +97,7 @@ TEST(CharacterDescription, AddTemporaryNegativeLevelsUpdatesTotalNegativeLevelCo
     EXPECT_EQ(7, characterDescription.getTotalNegativeLevels());
 }
 
-TEST(CharacterDescription, AddPermanentNegativeLevelsUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, AddPermanentNegativeLevelsUpdatesTotalNegativeLevelCount)
 {
     CharacterDescription characterDescription;
     characterDescription.addPermanentNegativeLevelDebuff(
@@ -64,44 +112,134 @@ TEST(CharacterDescription, AddPermanentNegativeLevelsUpdatesTotalNegativeLevelCo
     EXPECT_EQ(1, characterDescription.getTotalNegativeLevels());
 }
 
-TEST(CharacterDescription, RemoveTemporaryNegativeLevelsUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, RemoveTemporaryNegativeLevelsWithRemainingCountAboveZero)
 {
-    //Test cases: count > 0, count reduced to exactly 0, try to reduce to a negative number
+    CharacterDescription characterDescription;
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "TempDebuff",
+        9,
+        "Desc."
+    );
+
+    EXPECT_EQ(9, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.removeTemporaryNegativeLevels(4);
+
+    EXPECT_EQ(5, characterDescription.getTotalNegativeLevels());
+    EXPECT_EQ(true, characterDescription.getTemporaryNegativeLevelDebuff("TempDebuff").enabled);
+}
+
+TEST(NegativeLevels, RemoveTemporaryNegativeLevelsWithRemainingCountExactlyZero)
+{
+    CharacterDescription characterDescription;
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "TempDebuff",
+        9,
+        "Desc."
+    );
+
+    EXPECT_EQ(9, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.removeTemporaryNegativeLevels(9);
+
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+    EXPECT_EQ(false, characterDescription.getTemporaryNegativeLevelDebuff("TempDebuff").enabled);
+}
+
+TEST(NegativeLevels, RemoveTemporaryNegativeLevelsInExcessOfRemainingCount)
+{
+    CharacterDescription characterDescription;
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "TempDebuff",
+        9,
+        "Desc."
+    );
+
+    EXPECT_EQ(9, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.removeTemporaryNegativeLevels(25);
+
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+    EXPECT_EQ(false, characterDescription.getTemporaryNegativeLevelDebuff("TempDebuff").enabled);
+}
+
+TEST(NegativeLevels, RemoveTemporaryNegativeLevelsTogglesMultipleDebuffsDisabled)
+{
+    CharacterDescription characterDescription;
+    
+    characterDescription.addTemporaryNegativeLevelDebuff("Temp1", 2, "desc1");
+    characterDescription.addTemporaryNegativeLevelDebuff("Temp2", 3, "desc1");
+    characterDescription.addTemporaryNegativeLevelDebuff("Temp3", 1, "desc1");
+
+    EXPECT_EQ(6, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.removeTemporaryNegativeLevels(5);
+
+    EXPECT_EQ(1, characterDescription.getTotalNegativeLevels());
+
+    auto debuff1 = characterDescription.getTemporaryNegativeLevelDebuff("Temp1");
+    auto debuff2 = characterDescription.getTemporaryNegativeLevelDebuff("Temp2");
+    auto debuff3 = characterDescription.getTemporaryNegativeLevelDebuff("Temp3");
+
+    //This block may not be easily testable. Passes at time of writing, but depends on
+    //the order elements are iterated through in an UNORDERED map. Useful for now to
+    //tell that the proper number of nodes are disabled at time of development, though.
+    EXPECT_EQ(1, debuff1.numNegativeLevels);
+    EXPECT_EQ(true, debuff1.enabled);
+
+    EXPECT_EQ(0, debuff2.numNegativeLevels);
+    EXPECT_EQ(false, debuff2.enabled);
+
+    EXPECT_EQ(0, debuff3.numNegativeLevels);
+    EXPECT_EQ(false, debuff3.enabled);
+}
+
+TEST(NegativeLevels, RemovePermanentNegativeLevelsWithRemainingCountAboveZero)
+{
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, RemovePermanentNegativeLevelsUpdatesTotalNegativeLevelCount)
-{
-    //Test cases: count > 0, count reduced to exactly 0, try to reduce to a negative number
-    throw std::logic_error("Unimplemented");
-}
-
-TEST(CharacterDescription, ToggleTemporaryNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, RemovePermanentNegativeLevelsWithRemainingCountExactlyZero)
 {
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, TogglePermanentNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
+TEST(NegativeLevels, RemovePermanentNegativeLevelsInExcessOfRemainingCount)
 {
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, GetTemporaryNegativeLevelDebuffReturnsProperDebuffEntry)
+TEST(NegativeLevels, RemovePermanentNegativeLevelsTogglesMultipleDebuffsDisabled)
 {
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, GetPermanentNegativeLevelDebuffReturnsProperDebuffEntry)
+TEST(NegativeLevels, ToggleTemporaryNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, GetTemporaryNegativeLevelDebuffsReturnsEntireCollectionProperly)
+TEST(NegativeLevels, TogglePermanentNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
     throw std::logic_error("Unimplemented");
 }
 
-TEST(CharacterDescription, GetPermanentNegativeLevelDebuffsReturnsEntireCollectionProperly)
+TEST(NegativeLevels, GetTemporaryNegativeLevelDebuffReturnsProperDebuffEntry)
+{
+    throw std::logic_error("Unimplemented");
+}
+
+TEST(NegativeLevels, GetPermanentNegativeLevelDebuffReturnsProperDebuffEntry)
+{
+    throw std::logic_error("Unimplemented");
+}
+
+TEST(NegativeLevels, GetTemporaryNegativeLevelDebuffsReturnsEntireCollectionProperly)
+{
+    throw std::logic_error("Unimplemented");
+}
+
+TEST(NegativeLevels, GetPermanentNegativeLevelDebuffsReturnsEntireCollectionProperly)
 {
     throw std::logic_error("Unimplemented");
 }

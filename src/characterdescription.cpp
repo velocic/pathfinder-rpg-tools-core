@@ -11,11 +11,15 @@ namespace RulesEngine
             totalNegativeLevels = 0;
 
             for (auto& negativeLevelDebuff : temporaryNegativeLevels) {
-                totalTemporaryNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+                if (negativeLevelDebuff.second.enabled == true) {
+                    totalTemporaryNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+                }
             }
 
             for (auto& negativeLevelDebuff : permanentNegativeLevels) {
-                totalPermanentNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+                if (negativeLevelDebuff.second.enabled == true) {
+                    totalPermanentNegativeLevels += negativeLevelDebuff.second.numNegativeLevels;
+                }
             }
 
             totalNegativeLevels = totalTemporaryNegativeLevels + totalPermanentNegativeLevels;
