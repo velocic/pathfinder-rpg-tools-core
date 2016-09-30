@@ -84,7 +84,7 @@ namespace RulesEngine
 
             negativeLevelDebuff.numNegativeLevels += amountToAdd;
 
-            notifyObservers("negativeLevels");
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
@@ -93,7 +93,7 @@ namespace RulesEngine
 
             negativeLevelDebuff.numNegativeLevels += amountToAdd;
 
-            notifyObservers("negativeLevels");
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::addTemporaryNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description)
@@ -106,7 +106,7 @@ namespace RulesEngine
 
             temporaryNegativeLevels[sourceName] = std::move(tempDebuff);
 
-            notifyObservers("negativeLevels");
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::addPermanentNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description)
@@ -119,7 +119,7 @@ namespace RulesEngine
 
             permanentNegativeLevels[sourceName] = std::move(permDebuff);
 
-            notifyObservers("negativeLevels");
+            calculateNegativeLevels();
         }
 
         void CharacterDescription::removeClass(const std::string& className)

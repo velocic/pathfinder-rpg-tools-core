@@ -5,22 +5,63 @@ using namespace RulesEngine::Character;
 
 TEST(CharacterDescription, AddTemporaryNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
-    throw std::logic_error("Unimplemented");
+    CharacterDescription characterDescription;
+
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "Dummy Debuff",
+        3,
+        "Dummy description"
+    );
+
+    EXPECT_EQ(3, characterDescription.getTotalNegativeLevels());
 }
 
 TEST(CharacterDescription, AddPermanentNegativeLevelDebuffUpdatesTotalNegativeLevelCount)
 {
-    throw std::logic_error("Unimplemented");
+    CharacterDescription characterDescription;
+
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addPermanentNegativeLevelDebuff(
+        "Dummy Permanent Debuff",
+        5,
+        "Dummy permanent description"
+    );
+
+    EXPECT_EQ(5, characterDescription.getTotalNegativeLevels());
 }
 
 TEST(CharacterDescription, AddTemporaryNegativeLevelsUpdatesTotalNegativeLevelCount)
 {
-    throw std::logic_error("Unimplemented");
+    CharacterDescription characterDescription;
+    characterDescription.addTemporaryNegativeLevelDebuff(
+        "Dummy Temp Debuff",
+        0,
+        "Dummy temp description"
+    );
+
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addTemporaryNegativeLevels("Dummy Temp Debuff", 7);
+
+    EXPECT_EQ(7, characterDescription.getTotalNegativeLevels());
 }
 
 TEST(CharacterDescription, AddPermanentNegativeLevelsUpdatesTotalNegativeLevelCount)
 {
-    throw std::logic_error("Unimplemented");
+    CharacterDescription characterDescription;
+    characterDescription.addPermanentNegativeLevelDebuff(
+        "Dummy Perm Debuff",
+        0,
+        "Dummy Perm Desc."
+    );
+    EXPECT_EQ(0, characterDescription.getTotalNegativeLevels());
+
+    characterDescription.addPermanentNegativeLevels("Dummy Perm Debuff", 1);
+
+    EXPECT_EQ(1, characterDescription.getTotalNegativeLevels());
 }
 
 TEST(CharacterDescription, RemoveTemporaryNegativeLevelsUpdatesTotalNegativeLevelCount)
