@@ -84,7 +84,13 @@ namespace RulesEngine
 
         void CharacterDescription::addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
-            auto& negativeLevelDebuff = temporaryNegativeLevels.find(sourceName)->second;
+            auto mapIterator = temporaryNegativeLevels.find(sourceName);
+
+            if (mapIterator == temporaryNegativeLevels.end()) {
+                return;
+            }
+
+            auto& negativeLevelDebuff = mapIterator->second;
 
             negativeLevelDebuff.numNegativeLevels += amountToAdd;
 
@@ -93,7 +99,13 @@ namespace RulesEngine
 
         void CharacterDescription::addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
         {
-            auto& negativeLevelDebuff = permanentNegativeLevels.find(sourceName)->second;
+            auto mapIterator = permanentNegativeLevels.find(sourceName);
+
+            if (mapIterator == permanentNegativeLevels.end()) {
+                return;
+            }
+
+            auto& negativeLevelDebuff = mapIterator->second;
 
             negativeLevelDebuff.numNegativeLevels += amountToAdd;
 
@@ -225,35 +237,65 @@ namespace RulesEngine
 
         void CharacterDescription::setClassLevel(const std::string& className, unsigned int classLevel)
         {
-            classInfo.find(className)->second.classLevel = classLevel;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            mapIterator->second.classLevel = classLevel;
 
             notifyObservers("class");
         }
 
         void CharacterDescription::setClassHitDieSize(const std::string& className, unsigned int hitDieSize)
         {
-            classInfo.find(className)->second.hitDieSize = hitDieSize;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            mapIterator->second.hitDieSize = hitDieSize;
 
             notifyObservers("class");
         }
 
         void CharacterDescription::setClassSkillPoints(const std::string& className, unsigned int skillPointsPerLevel)
         {
-            classInfo.find(className)->second.skillPointsPerLevel = skillPointsPerLevel;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            mapIterator->second.skillPointsPerLevel = skillPointsPerLevel;
 
             notifyObservers("class");
         }
 
         void CharacterDescription::setClassBaseAttackBonusProgression(const std::string& className, float progression)
         {
-            classInfo.find(className)->second.baseAttackBonusProgression = progression;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            mapIterator->second.baseAttackBonusProgression = progression;
 
             notifyObservers("class");
         }
 
         void CharacterDescription::setClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
         {
-            CharacterClass& classToUpdate = classInfo.find(className)->second;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            CharacterClass& classToUpdate = mapIterator->second;
             classToUpdate.classLevel = classLevel;
             classToUpdate.hitDieSize = hitDieSize;
             classToUpdate.skillPointsPerLevel = skillPointsPerLevel;
@@ -316,7 +358,13 @@ namespace RulesEngine
 
         void CharacterDescription::toggleTemporaryNegativeLevelDebuff(const std::string& sourceName)
         {
-            auto& enabled = temporaryNegativeLevels.find(sourceName)->second.enabled;
+            auto mapIterator = temporaryNegativeLevels.find(sourceName);
+
+            if (mapIterator == temporaryNegativeLevels.end()) {
+                return;
+            }
+
+            auto& enabled = mapIterator->second.enabled;
 
             if (enabled == true) {
                 enabled = false;
@@ -330,7 +378,13 @@ namespace RulesEngine
 
         void CharacterDescription::togglePermanentNegativeLevelDebuff(const std::string& sourceName)
         {
-            auto& enabled = permanentNegativeLevels.find(sourceName)->second.enabled;
+            auto mapIterator = permanentNegativeLevels.find(sourceName);
+
+            if (mapIterator == permanentNegativeLevels.end()) {
+                return;
+            }
+
+            auto& enabled = mapIterator->second.enabled;
 
             if (enabled == true) {
                 enabled = false;
@@ -364,7 +418,13 @@ namespace RulesEngine
 
         CharacterClass CharacterDescription::getClass(const std::string& className) const
         {
-            return classInfo.find(className)->second;
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return CharacterClass();
+            }
+
+            return mapIterator->second;
         }
 
         const std::unordered_map<std::string, CharacterClass>& CharacterDescription::getClasses() const
@@ -374,12 +434,24 @@ namespace RulesEngine
 
         TemporaryNegativeLevelDebuff CharacterDescription::getTemporaryNegativeLevelDebuff(const std::string& sourceName) const
         {
-            return temporaryNegativeLevels.find(sourceName)->second;
+            auto mapIterator = temporaryNegativeLevels.find(sourceName);
+
+            if (mapIterator == temporaryNegativeLevels.end()) {
+                return TemporaryNegativeLevelDebuff();
+            }
+
+            return mapIterator->second;
         }
 
         PermanentNegativeLevelDebuff CharacterDescription::getPermanentNegativeLevelDebuff(const std::string& sourceName) const
         {
-            return permanentNegativeLevels.find(sourceName)->second;
+            auto mapIterator = permanentNegativeLevels.find(sourceName);
+
+            if (mapIterator == permanentNegativeLevels.end()) {
+                return PermanentNegativeLevelDebuff();
+            }
+
+            return mapIterator->second;
         }
 
         const std::unordered_map<std::string, TemporaryNegativeLevelDebuff>& CharacterDescription::getTemporaryNegativeLevelDebuffs() const
