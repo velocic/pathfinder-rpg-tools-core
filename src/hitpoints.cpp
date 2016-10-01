@@ -4,6 +4,21 @@ namespace RulesEngine
 {
     namespace Character
     {
+        HitPoints::HitPoints(CharacterDescription& charDesc, AbilityScores& abilityScores)
+        :
+            characterDescription(charDesc),
+            abilityScores(abilityScores)
+        {
+            characterDescription.registerObserver("hitpoints", this);
+            this->abilityScores.registerObserver("hitpoints", this);
+        }
+
+        HitPoints::~HitPoints()
+        {
+            characterDescription.unregisterObserver("hitpoints");
+            abilityScores.unregisterObserver("hitpoints");
+        }
+
         void HitPoints::notifyObservers(const std::string& fieldName)
         {
             for (auto observer : observers) {
@@ -13,8 +28,17 @@ namespace RulesEngine
 
         void HitPoints::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
+            if (fieldName == "class") {
+                generateLevelUpHitPoints();
+            }
+
+            if (fieldName == "negativeLevels") {
+                //total and current hp need to be reduced by 5 per neg level
+            }
+
             //TODO: need to subscribe to negative levels (which needs to be added to characterdescription module)
             //TODO: need to subscribe to abilityscores for constitution score updates
+            //TODO: need to subscribe to character level changes (and which specific class's HD applies) for randomly-generated HP
         }
 
         void HitPoints::registerObserver(const std::string& observerName, Observer* observer)
@@ -27,8 +51,16 @@ namespace RulesEngine
             observers.erase(observerName);
         }
 
-        void HitPoints::autoGenerateMaximumHitPoints()
+        void HitPoints::generateLevelUpHitPoints()
         {
+            if (usePFSStyleFixedHPCalculation == true) {
+                //calculate the level-up based on pfs rules
+                return;
+            }
+
+            //calculate the level-up based on core rules
+
+            //how to determine which class specifically leveled up?
         }
 
         void HitPoints::addTemporaryHitPoints(int tempHP)
@@ -121,7 +153,7 @@ namespace RulesEngine
         {
             //TODO: need a way to remember user-defined MAXHP value,
             //and to re-use that instead of just recalculating with PFS rules
-            autoGenerateMaximumHitPoints();
+            generateLevelUpHitPoints();
         }
 
         void HitPoints::setCurrentHitPoints(int currentHP)
@@ -132,6 +164,13 @@ namespace RulesEngine
         void HitPoints::setMaximumHitPoints(int maxHP)
         {
             maxHitPoints = maxHP;
+        }
+
+        void HitPoints::setUsePFSStyleFixedHPCalculation(bool shouldUse)
+        {
+            usePFSStyleFixedHPCalculation = shouldUse;
+
+            resetTotalHitPoints();
         }
     }
 }
