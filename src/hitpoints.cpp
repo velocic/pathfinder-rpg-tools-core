@@ -30,15 +30,18 @@ namespace RulesEngine
         {
             if (fieldName == "class") {
                 generateHitPoints();
+                return;
             }
 
             if (fieldName == "negativeLevels") {
                 //total and current hp need to be reduced by 5 per neg level
                 throw std::logic_error("Unimplemented");
+                return;
             }
 
             if (fieldName == "constitution") {
                 throw std::logic_error("Unimplemented");
+                return;
             }
         }
 
@@ -63,26 +66,63 @@ namespace RulesEngine
 
         void HitPoints::generateHitPointsCoreRules()
         {
-            //NOTE: The very first level is always the full hit die amount
+            //TODO: The very first level should be set to the full hit die amount
 
-            //A crude way to do this could be to get the whole collection of classes w/ levels
-            //from character description, and go over it in a few passes.
+            auto& characterClasses = characterDescription.getClasses();
+            std::random_device randomDevice;
+            auto randomGenerator = std::mt19937(randomDevice());
 
-            //Data representation:
-            //have some sort of map of class names to vectors of die rolls in this class
-            //First pass:
-            //check that all classes listed are present in the map.
-            //  -if not in map, but in the class list from chardescription, add them
-            //  - if in the map but not in the class list (i.e. the class was deleted
-            //       from chardescription), remove it from the map
-            //Second pass:
-            //iterate through each class entry in the map. check the vector size.
-            //  -if the vector size is smaller than the number of class levels from
-            //    chardescription, add more die rolls to our class->die rolls map
-            //  -if the vector size is bigger than the number of class levels from
-            //    chardescription (i.e. levels were removed after having previously added them)
-            //    remove die rolls from the end of the vector
-            throw std::logic_error("Unimplemented");
+            for (auto& characterClass : characterClasses) {
+                auto& className = characterClass.second.className;
+                auto hpDieRollsIterator = hpDieRollsByLevel.find(className);
+
+                if (hpDieRollsIterator == hpDieRollsByLevel.end()) {
+
+                    //add the class to our collection
+                    hpDieRollsByLevel[className] = std::vector<unsigned int>();
+
+                    //Create a distrubtion from 1 - Die Max Size, inclusive
+                    auto uniformDistribution = std::uniform_int_distribution<unsigned int>(1, characterClass.second.hitDieSize);
+
+                    //fill it with the appropriate amount of randomly rolled hit die
+                    for (int i = 0; i < characterClass.second.classLevel; ++i) {
+                        hpDieRollsByLevel[className].push_back(uniformDistribution(randomGenerator));
+                    }
+                } else {
+                    //Class entry exists. Add HP rolls if more levels exist than we have rolls for. If level is lower
+                    //than the number of rolls, we need to pop roll values starting from the end because levels were deleted
+                    auto& classDieRolls = hpDieRollsIterator->second;
+                    auto classLevel = characterClass.second.classLevel;
+
+                    if (classDieRolls.size() == classLevel) {
+                        continue;
+                    }
+
+                    //Create a distrubtion from 1 - Die Max Size, inclusive
+                    auto uniformDistribution = std::uniform_int_distribution<unsigned int>(1, characterClass.second.hitDieSize);
+
+                    if (classDieRolls.size() < classLevel) {
+                        for (int i = classDieRolls.size(); i < classLevel; ++i) {
+                            classDieRolls.push_back(uniformDistribution(randomGenerator));
+                        }
+                    } else {
+                        classDieRolls.erase(
+                            classDieRolls.begin() + (classLevel - 1),
+                            classDieRolls.end()
+                        );
+                    }
+                }
+            }
+
+            //Now, update new max hit points value
+            unsigned int maxHP = 0;
+            for (auto& classRollPair : hpDieRollsByLevel) {
+                for (auto rollValue : classRollPair.second) {
+                    maxHP += rollValue;
+                }
+            }
+
+            maxHitPoints = maxHP;
         }
 
         void HitPoints::generateHitPoints()
@@ -93,8 +133,6 @@ namespace RulesEngine
             }
 
             generateHitPointsCoreRules();
-
-            //how to determine which class specifically leveled up?
         }
 
         void HitPoints::addTemporaryHitPoints(int tempHP)
@@ -170,7 +208,7 @@ namespace RulesEngine
         {
             resetNonLethalDamage();
             resetTemporaryHitPoints();
-            resetTotalHitPoints();
+            setCurrentHitPoints(getMaxHitPoints());
         }
 
         void HitPoints::resetNonLethalDamage()
@@ -183,10 +221,9 @@ namespace RulesEngine
             temporaryHitPoints = 0;
         }
 
-        void HitPoints::resetTotalHitPoints()
+        void HitPoints::recalculateTotalHitPoints()
         {
-            //TODO: need a way to remember user-defined MAXHP value,
-            //and to re-use that instead of just recalculating with PFS rules
+            hpDieRollsByLevel.clear();
             generateHitPoints();
         }
 
@@ -204,7 +241,7 @@ namespace RulesEngine
         {
             usePFSStyleFixedHPCalculation = shouldUse;
 
-            resetTotalHitPoints();
+            recalculateTotalHitPoints();
         }
     }
 }

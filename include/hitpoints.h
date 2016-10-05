@@ -1,6 +1,7 @@
 #ifndef HITPOINTS_H
 #define HITPOINTS_H
 
+#include <random>
 #include <unordered_map>
 
 #include <abilityscores.h>
@@ -31,8 +32,8 @@ namespace RulesEngine
                 //If true, HP gains per level = 1/2 HD size + 1 per level + con modifier
                 bool usePFSStyleFixedHPCalculation = false;
 
-                //First level always = full HD size + con modifier
-                std::vector<unsigned int> hpDieRollsByLevel;
+                //Map of class names -> HP die rolls, in order by level
+                std::unordered_map<std::string, std::vector<unsigned int>> hpDieRollsByLevel;
 
                 std::unordered_map<std::string, Observer*> observers;
 
@@ -63,10 +64,10 @@ namespace RulesEngine
                 int getMaxHitPoints() const;
                 int getTemporaryHitPoints() const;
 
+                void recalculateTotalHitPoints();
                 void reset();
                 void resetNonLethalDamage();
                 void resetTemporaryHitPoints();
-                void resetTotalHitPoints();
 
                 void setCurrentHitPoints(int currentHP);
                 void setMaximumHitPoints(int maxHP);
