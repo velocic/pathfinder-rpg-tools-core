@@ -66,7 +66,6 @@ namespace RulesEngine
             notifyObservers("class");
         }
 
-
         void CharacterDescription::addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
         {
             CharacterClass newClass;

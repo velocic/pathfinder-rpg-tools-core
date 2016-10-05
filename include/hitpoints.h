@@ -36,6 +36,9 @@ namespace RulesEngine
 
                 std::unordered_map<std::string, Observer*> observers;
 
+                void generateHitPointsPFSRules();
+                void generateHitPointsCoreRules();
+
                 void notifyObservers(const std::string& fieldName) override;
             public:
                 HitPoints(CharacterDescription& charDesc, AbilityScores& abilityScores);
@@ -47,7 +50,7 @@ namespace RulesEngine
 
                 //Generate Max HP from PFS rules (if user doesn't decide to roll themselves)
                 // void autoGenerateMaximumHitPoints();
-                void generateLevelUpHitPoints();
+                void generateHitPoints();
 
                 void addTemporaryHitPoints(int tempHP);
 
