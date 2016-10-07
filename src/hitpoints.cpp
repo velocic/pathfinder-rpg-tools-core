@@ -33,14 +33,13 @@ namespace RulesEngine
                 return;
             }
 
-            if (fieldName == "negativeLevels") {
-                //total and current hp need to be reduced by 5 per neg level
-                throw std::logic_error("Unimplemented");
+            if (fieldName == "constitution") {
+                generateHitPoints();
                 return;
             }
 
-            if (fieldName == "constitution") {
-                throw std::logic_error("Unimplemented");
+            if (fieldName == "negativeLevels") {
+                generateHitPoints();
                 return;
             }
         }
@@ -67,8 +66,6 @@ namespace RulesEngine
         void HitPoints::generateHitPointsCoreRules()
         {
             //TODO: The very first level should be set to the full hit die amount
-            //TODO: Need to factor in con modifier every single level individually, and set the minimum HP gain to 1
-            //if mod happens to be 0 and the die roll was low
 
             auto& characterClasses = characterDescription.getClasses();
             std::random_device randomDevice;
@@ -122,8 +119,7 @@ namespace RulesEngine
                         }
                     } else {
                         classDieRolls.erase(
-                            // classDieRolls.begin() + (classLevel - 1),
-                            classDieRolls.begin() + (classLevel),
+                            classDieRolls.begin() + classLevel,
                             classDieRolls.end()
                         );
                     }
@@ -132,11 +128,23 @@ namespace RulesEngine
 
             //Now, update new max hit points value
             unsigned int maxHP = 0;
+            int conModifier = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::CON);
+
             for (auto& classRollPair : hpDieRollsByLevel) {
                 for (auto rollValue : classRollPair.second) {
-                    maxHP += rollValue;
+                    int rollWithConMod = conModifier + static_cast<int>(rollValue);
+
+                    //characters are always guaranteed at least 1hp per level up, even with a negative modifier
+                    if (rollWithConMod <= 0) {
+                        rollWithConMod = 1;
+                    }
+
+                    maxHP += rollWithConMod;
                 }
             }
+
+            //Negative level penalty on HP is a flat -5 points per negative level
+            maxHP += static_cast<int>(characterDescription.getTotalNegativeLevels()) * -5;
 
             maxHitPoints = maxHP;
         }
