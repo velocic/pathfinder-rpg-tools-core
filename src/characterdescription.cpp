@@ -58,6 +58,7 @@ namespace RulesEngine
             newClass.classLevel = 1;
             newClass.hitDieSize = 4;
             newClass.skillPointsPerLevel = 2;
+            newClass.baseAttackBonusProgression = .5;
 
             classInfo.insert(
                 std::make_pair(className, newClass)
@@ -69,6 +70,7 @@ namespace RulesEngine
         void CharacterDescription::addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
         {
             CharacterClass newClass;
+            newClass.className = className;
             newClass.classLevel = classLevel;
             newClass.hitDieSize = hitDieSize;
             newClass.skillPointsPerLevel = skillPointsPerLevel;

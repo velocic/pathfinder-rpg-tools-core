@@ -6,8 +6,8 @@ namespace RulesEngine
     {
         HitPoints::HitPoints(CharacterDescription& charDesc, AbilityScores& abilityScores)
         :
-            characterDescription(charDesc),
-            abilityScores(abilityScores)
+            abilityScores(abilityScores),
+            characterDescription(charDesc)
         {
             characterDescription.registerObserver("hitpoints", this);
             this->abilityScores.registerObserver("hitpoints", this);
@@ -67,10 +67,25 @@ namespace RulesEngine
         void HitPoints::generateHitPointsCoreRules()
         {
             //TODO: The very first level should be set to the full hit die amount
+            //TODO: Need to factor in con modifier every single level individually, and set the minimum HP gain to 1
+            //if mod happens to be 0 and the die roll was low
 
             auto& characterClasses = characterDescription.getClasses();
             std::random_device randomDevice;
             auto randomGenerator = std::mt19937(randomDevice());
+
+            //Check our die roll map to see if we are still retaining any class entries that aren't in the collection
+            //returned from characterDescription.getClasses(). If we find one, invalidate all the die rolls because we've
+            //made a pretty big change to the character
+            for (auto& hpDieRollClassEntry : hpDieRollsByLevel) {
+                auto& className = hpDieRollClassEntry.first;
+                auto charClassIterator = characterClasses.find(className);
+
+                if (charClassIterator == characterClasses.end()) {
+                    hpDieRollsByLevel.clear();
+                    break;
+                }
+            }
 
             for (auto& characterClass : characterClasses) {
                 auto& className = characterClass.second.className;
@@ -85,7 +100,7 @@ namespace RulesEngine
                     auto uniformDistribution = std::uniform_int_distribution<unsigned int>(1, characterClass.second.hitDieSize);
 
                     //fill it with the appropriate amount of randomly rolled hit die
-                    for (int i = 0; i < characterClass.second.classLevel; ++i) {
+                    for (unsigned int i = 0; i < characterClass.second.classLevel; ++i) {
                         hpDieRollsByLevel[className].push_back(uniformDistribution(randomGenerator));
                     }
                 } else {
@@ -102,12 +117,13 @@ namespace RulesEngine
                     auto uniformDistribution = std::uniform_int_distribution<unsigned int>(1, characterClass.second.hitDieSize);
 
                     if (classDieRolls.size() < classLevel) {
-                        for (int i = classDieRolls.size(); i < classLevel; ++i) {
+                        for (unsigned int i = classDieRolls.size(); i < classLevel; ++i) {
                             classDieRolls.push_back(uniformDistribution(randomGenerator));
                         }
                     } else {
                         classDieRolls.erase(
-                            classDieRolls.begin() + (classLevel - 1),
+                            // classDieRolls.begin() + (classLevel - 1),
+                            classDieRolls.begin() + (classLevel),
                             classDieRolls.end()
                         );
                     }
