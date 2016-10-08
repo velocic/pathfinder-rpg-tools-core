@@ -61,6 +61,12 @@ namespace RulesEngine
             
             //NOTE: The very first level is always the full hit die amount
             throw std::logic_error("Unimplemented");
+
+            //TODO: make sure to update current HP if max gets
+            //reduced below current
+            // if (currentHitPoints > maxHitPoints) {
+            //     currentHitPoints = maxHitPoints;
+            // }
         }
 
         void HitPoints::generateHitPointsCoreRules()
@@ -152,6 +158,9 @@ namespace RulesEngine
             maxHP += static_cast<int>(characterDescription.getTotalNegativeLevels()) * -5;
 
             maxHitPoints = maxHP;
+            if (currentHitPoints > maxHitPoints) {
+                currentHitPoints = maxHitPoints;
+            }
         }
 
         void HitPoints::generateHitPoints()

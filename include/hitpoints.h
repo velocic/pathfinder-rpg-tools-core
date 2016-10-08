@@ -25,7 +25,6 @@ namespace RulesEngine
 
                 int currentHitPoints = 0;
                 int maxHitPoints = 0;
-                int negativeLevelPenalty = 0;
                 int nonLethalDamage = 0;
                 int temporaryHitPoints = 0;
 
