@@ -111,3 +111,59 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsAddedAfterClassLevelIncrease)
     EXPECT_EQ(4, dieRollsByClass.find("Wizard")->second.size());
     EXPECT_EQ(3, dieRollsByClass.find("Rogue")->second.size());
 }
+
+TEST(HitPointGeneration, HPCalculatedCorrectlyPFSFirstLevelCharacter)
+{
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
+    abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 18);
+    HitPoints hitPoints(characterDescription, abilityScores);
+    hitPoints.setUsePFSStyleFixedHPCalculation(true);
+
+    characterDescription.addClass("Fighter", 1, 10, 2, 1);
+
+    EXPECT_EQ(14, hitPoints.getMaxHitPoints());
+}
+
+TEST(HitPointGeneration, HPCalculatedCorrectlyPFSSingleClass)
+{
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
+    abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 18);
+    HitPoints hitPoints(characterDescription, abilityScores);
+    hitPoints.setUsePFSStyleFixedHPCalculation(true);
+
+    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+
+    EXPECT_EQ(84, hitPoints.getMaxHitPoints());
+}
+
+TEST(HitPointGeneration, HPCalculatedCorrectlyPFSMultiClass)
+{
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
+    abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 18);
+    HitPoints hitPoints(characterDescription, abilityScores);
+    hitPoints.setUsePFSStyleFixedHPCalculation(true);
+
+    characterDescription.addClass("Wizard", 3, 6, 4, .5);
+    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+
+    EXPECT_EQ(108, hitPoints.getMaxHitPoints());
+}
+
+TEST(HitPointGeneration, HPCalculatedCorrectlyPFSNegativeLevels)
+{
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
+    abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 18);
+    HitPoints hitPoints(characterDescription, abilityScores);
+    hitPoints.setUsePFSStyleFixedHPCalculation(true);
+
+    characterDescription.addTemporaryNegativeLevelDebuff("Debuff1", 2, "DebuffDescrip");
+
+    characterDescription.addClass("Wizard", 3, 6, 4, .5);
+    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+
+    EXPECT_EQ(98, hitPoints.getMaxHitPoints());
+}

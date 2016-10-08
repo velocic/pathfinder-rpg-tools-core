@@ -54,27 +54,8 @@ namespace RulesEngine
             observers.erase(observerName);
         }
 
-        void HitPoints::generateHitPointsPFSRules()
+        void HitPoints::resetMaxHPIfCharacterClassRemoved(const std::unordered_map<std::string, CharacterClass>& characterClasses)
         {
-            //Almost exactly similar to the HP generation for core rules, but instead of rolling
-            //each level, the level grants (HD Size / 2) + 1
-            
-            //NOTE: The very first level is always the full hit die amount
-            throw std::logic_error("Unimplemented");
-
-            //TODO: make sure to update current HP if max gets
-            //reduced below current
-            // if (currentHitPoints > maxHitPoints) {
-            //     currentHitPoints = maxHitPoints;
-            // }
-        }
-
-        void HitPoints::generateHitPointsCoreRules()
-        {
-            auto& characterClasses = characterDescription.getClasses();
-            std::random_device randomDevice;
-            auto randomGenerator = std::mt19937(randomDevice());
-
             //Check our die roll map to see if we are still retaining any class entries that aren't in the collection
             //returned from characterDescription.getClasses(). If we find one, invalidate all the die rolls because we've
             //made a pretty big change to the character
@@ -85,9 +66,87 @@ namespace RulesEngine
                 if (charClassIterator == characterClasses.end()) {
                     hpDieRollsByClass.clear();
                     firstHitDieRollCalculated = false;
-                    break;
+                    return;
                 }
             }
+        }
+
+        void HitPoints::setMaxHPFromDieRolls(const std::unordered_map<std::string, std::vector<unsigned int>>& hpDieRollsByClass)
+        {
+            int maxHP = 0;
+            int conModifier = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::CON);
+
+            for (auto& classRollPair : hpDieRollsByClass) {
+                for (auto rollValue : classRollPair.second) {
+                    int rollWithConMod = conModifier + static_cast<int>(rollValue);
+
+                    //characters are always guaranteed at least 1hp per level up, even with a negative modifier
+                    if (rollWithConMod <= 0) {
+                        rollWithConMod = 1;
+                    }
+
+                    maxHP += rollWithConMod;
+                }
+            }
+
+            //Negative level penalty on HP is a flat -5 points per negative level
+            maxHP += static_cast<int>(characterDescription.getTotalNegativeLevels()) * -5;
+
+            if (maxHP < 0) {
+                maxHP = 0;
+            }
+
+            maxHitPoints = maxHP;
+            if (currentHitPoints > maxHitPoints) {
+                currentHitPoints = maxHitPoints;
+            }
+        }
+
+        void HitPoints::generateHitPointsPFSRules()
+        {
+            //Similar to the HP generation for core rules, but instead of rolling
+            //each level, the level grants (HD Size / 2) + 1 + conModifier.
+            //Note: no class exists that I know of with <d6 hit die but, 
+            //we let users kind of define their own classes without really enforcing rules. So, guarantee
+            //every level grants at least 1 hp in the case we have like a -5 
+            
+            auto& characterClasses = characterDescription.getClasses();
+            int conModifier = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::CON);
+            int maxHP = 0;
+            bool firstLevelCalculated = false;
+
+            for (auto& characterClass : characterClasses) {
+                int hpToAdd = 0;
+
+                if (firstLevelCalculated) {
+                    hpToAdd = ((characterClass.second.hitDieSize / 2) + 1 + conModifier) * characterClass.second.classLevel;
+                } else {
+                    hpToAdd = ((characterClass.second.hitDieSize / 2) + 1 + conModifier) * (characterClass.second.classLevel - 1) + (characterClass.second.hitDieSize + conModifier);
+                    firstLevelCalculated = true;
+                }
+
+                if (hpToAdd <= 0) {
+                    hpToAdd = characterClass.second.classLevel;
+                }
+
+                maxHP += hpToAdd;
+            }
+
+            maxHP += static_cast<int>(characterDescription.getTotalNegativeLevels()) * -5;
+
+            maxHitPoints = maxHP;
+            if (currentHitPoints > maxHitPoints) {
+                currentHitPoints = maxHitPoints;
+            }
+        }
+
+        void HitPoints::generateHitPointsCoreRules()
+        {
+            auto& characterClasses = characterDescription.getClasses();
+            std::random_device randomDevice;
+            auto randomGenerator = std::mt19937(randomDevice());
+
+            resetMaxHPIfCharacterClassRemoved(characterClasses);
 
             for (auto& characterClass : characterClasses) {
                 auto& className = characterClass.second.className;
@@ -138,29 +197,7 @@ namespace RulesEngine
             }
 
             //Now, update new max hit points value
-            unsigned int maxHP = 0;
-            int conModifier = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::CON);
-
-            for (auto& classRollPair : hpDieRollsByClass) {
-                for (auto rollValue : classRollPair.second) {
-                    int rollWithConMod = conModifier + static_cast<int>(rollValue);
-
-                    //characters are always guaranteed at least 1hp per level up, even with a negative modifier
-                    if (rollWithConMod <= 0) {
-                        rollWithConMod = 1;
-                    }
-
-                    maxHP += rollWithConMod;
-                }
-            }
-
-            //Negative level penalty on HP is a flat -5 points per negative level
-            maxHP += static_cast<int>(characterDescription.getTotalNegativeLevels()) * -5;
-
-            maxHitPoints = maxHP;
-            if (currentHitPoints > maxHitPoints) {
-                currentHitPoints = maxHitPoints;
-            }
+            setMaxHPFromDieRolls(hpDieRollsByClass);
         }
 
         void HitPoints::generateHitPoints()

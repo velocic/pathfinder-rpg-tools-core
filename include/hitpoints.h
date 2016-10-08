@@ -40,6 +40,9 @@ namespace RulesEngine
 
                 std::unordered_map<std::string, Observer*> observers;
 
+                void resetMaxHPIfCharacterClassRemoved(const std::unordered_map<std::string, CharacterClass>& characterClasses);
+                void setMaxHPFromDieRolls(const std::unordered_map<std::string, std::vector<unsigned int>>& hpDieRollsByClass);
+
                 void generateHitPointsPFSRules();
                 void generateHitPointsCoreRules();
 
