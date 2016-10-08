@@ -65,8 +65,6 @@ namespace RulesEngine
 
         void HitPoints::generateHitPointsCoreRules()
         {
-            //TODO: The very first level should be set to the full hit die amount
-
             auto& characterClasses = characterDescription.getClasses();
             std::random_device randomDevice;
             auto randomGenerator = std::mt19937(randomDevice());
@@ -74,31 +72,38 @@ namespace RulesEngine
             //Check our die roll map to see if we are still retaining any class entries that aren't in the collection
             //returned from characterDescription.getClasses(). If we find one, invalidate all the die rolls because we've
             //made a pretty big change to the character
-            for (auto& hpDieRollClassEntry : hpDieRollsByLevel) {
+            for (auto& hpDieRollClassEntry : hpDieRollsByClass) {
                 auto& className = hpDieRollClassEntry.first;
                 auto charClassIterator = characterClasses.find(className);
 
                 if (charClassIterator == characterClasses.end()) {
-                    hpDieRollsByLevel.clear();
+                    hpDieRollsByClass.clear();
+                    firstHitDieRollCalculated = false;
                     break;
                 }
             }
 
             for (auto& characterClass : characterClasses) {
                 auto& className = characterClass.second.className;
-                auto hpDieRollsIterator = hpDieRollsByLevel.find(className);
+                auto hpDieRollsIterator = hpDieRollsByClass.find(className);
 
-                if (hpDieRollsIterator == hpDieRollsByLevel.end()) {
+                if (hpDieRollsIterator == hpDieRollsByClass.end()) {
 
                     //add the class to our collection
-                    hpDieRollsByLevel[className] = std::vector<unsigned int>();
+                    hpDieRollsByClass[className] = std::vector<unsigned int>();
 
                     //Create a distrubtion from 1 - Die Max Size, inclusive
                     auto uniformDistribution = std::uniform_int_distribution<unsigned int>(1, characterClass.second.hitDieSize);
 
                     //fill it with the appropriate amount of randomly rolled hit die
                     for (unsigned int i = 0; i < characterClass.second.classLevel; ++i) {
-                        hpDieRollsByLevel[className].push_back(uniformDistribution(randomGenerator));
+                        if (firstHitDieRollCalculated == false) {
+                            hpDieRollsByClass[className].push_back(characterClass.second.hitDieSize);
+                            firstHitDieRollCalculated = true;
+                            continue;
+                        }
+
+                        hpDieRollsByClass[className].push_back(uniformDistribution(randomGenerator));
                     }
                 } else {
                     //Class entry exists. Add HP rolls if more levels exist than we have rolls for. If level is lower
@@ -130,7 +135,7 @@ namespace RulesEngine
             unsigned int maxHP = 0;
             int conModifier = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::CON);
 
-            for (auto& classRollPair : hpDieRollsByLevel) {
+            for (auto& classRollPair : hpDieRollsByClass) {
                 for (auto rollValue : classRollPair.second) {
                     int rollWithConMod = conModifier + static_cast<int>(rollValue);
 
@@ -213,6 +218,11 @@ namespace RulesEngine
             return currentHitPoints;
         }
 
+        const std::unordered_map<std::string, std::vector<unsigned int>>& HitPoints::getHpDieRollsByClass() const
+        {
+            return hpDieRollsByClass;
+        }
+
         int HitPoints::getNonLethalDamage() const
         {
             return nonLethalDamage;
@@ -247,7 +257,7 @@ namespace RulesEngine
 
         void HitPoints::recalculateTotalHitPoints()
         {
-            hpDieRollsByLevel.clear();
+            hpDieRollsByClass.clear();
             generateHitPoints();
         }
 

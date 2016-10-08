@@ -32,8 +32,12 @@ namespace RulesEngine
                 //If true, HP gains per level = 1/2 HD size + 1 per level + con modifier
                 bool usePFSStyleFixedHPCalculation = false;
 
+                //Kludgy flag for making sure the very first character level always
+                //is assigned the max possible value
+                bool firstHitDieRollCalculated = false;
+
                 //Map of class names -> HP die rolls, in order by level
-                std::unordered_map<std::string, std::vector<unsigned int>> hpDieRollsByLevel;
+                std::unordered_map<std::string, std::vector<unsigned int>> hpDieRollsByClass;
 
                 std::unordered_map<std::string, Observer*> observers;
 
@@ -60,6 +64,7 @@ namespace RulesEngine
                 void healHitPoints(int healAmount);
 
                 int getCurrentHitPoints() const;
+                const std::unordered_map<std::string, std::vector<unsigned int>>& getHpDieRollsByClass() const;
                 int getNonLethalDamage() const;
                 int getMaxHitPoints() const;
                 int getTemporaryHitPoints() const;

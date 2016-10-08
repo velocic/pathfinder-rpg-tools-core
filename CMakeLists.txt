@@ -30,6 +30,7 @@ add_executable(
     tests/abilityscoretests.cpp
     tests/baseattackbonustests.cpp
     tests/characterdescriptiontests.cpp
+    tests/hitpointtests.cpp
 )
 
 target_link_libraries(ApiDemoConsumer ${PROJECT_NAME})

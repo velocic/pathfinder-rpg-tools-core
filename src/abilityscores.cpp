@@ -70,7 +70,7 @@ namespace RulesEngine
         void AbilityScores::calculateBaseAbilityModifier(AbilityScoreTypes ability)
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
-            targetAbility.baseModifier = (targetAbility.baseScore - 10) / 2;
+            targetAbility.baseModifier = std::floor((static_cast<float>(targetAbility.baseScore) - 10) / 2);
         }
 
         CharacterStatus AbilityScores::determineCharacterStatus(AbilityScoreTypes ability, int damageValue)
@@ -98,7 +98,7 @@ namespace RulesEngine
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            targetAbility.baseModifierWithPermanentAdjustments = (targetAbility.baseScoreWithPermanentAdjustments - 10) / 2;
+            targetAbility.baseModifierWithPermanentAdjustments = std::floor((static_cast<float>(targetAbility.baseScoreWithPermanentAdjustments) - 10) / 2);
 
             characterDescription.setCharacterStatus(determineCharacterStatus(ability, 0));
         }
@@ -211,7 +211,7 @@ namespace RulesEngine
         {
             auto& targetAbility = abilityScores.find(static_cast<int>(ability))->second;
 
-            targetAbility.totalAbilityModifier = (targetAbility.totalScore - 10) / 2;
+            targetAbility.totalAbilityModifier = std::floor((static_cast<float>(targetAbility.totalScore) - 10) / 2);
         }
 
         void AbilityScores::calculateBaseScoreWithPermanentAdjustments(AbilityScoreTypes ability)

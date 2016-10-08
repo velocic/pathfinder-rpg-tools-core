@@ -734,6 +734,28 @@ TEST_P(PermanentAbilityScoreBonus, ToggleBonus)
     EXPECT_EQ(4, abilityScores.getBaseScoreWithPermanentAdjustments(abilityScoreType));
 }
 
+TEST_P(PermanentAbilityScoreBonus, CalculatesModifierWithNegativeAbilityScoreCorrectly)
+{
+    CharacterDescription characterDescription;
+    AbilityScores abilityScores(characterDescription);
+    auto abilityScoreType = GetParam();
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 9);
+    EXPECT_EQ(-1, abilityScores.getTotalAbilityModifier(abilityScoreType));
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 7);
+    EXPECT_EQ(-2, abilityScores.getTotalAbilityModifier(abilityScoreType));
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 5);
+    EXPECT_EQ(-3, abilityScores.getTotalAbilityModifier(abilityScoreType));
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 3);
+    EXPECT_EQ(-4, abilityScores.getTotalAbilityModifier(abilityScoreType));
+
+    abilityScores.setBaseAbilityScore(abilityScoreType, 1);
+    EXPECT_EQ(-5, abilityScores.getTotalAbilityModifier(abilityScoreType));
+}
+
 TEST_P(PermanentAbilityScoreBonus, CalculatesTotalAndModifierCorrectly)
 {
     CharacterDescription characterDescription;
