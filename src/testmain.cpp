@@ -5,6 +5,8 @@
 int main()
 {
     //TODO: Need to account for favored class bonus choices (+1 skill, +1hp)
+    //TODO: hit points - track damage reduction (and DR types)
+    //TODO hit points - track energy resistance
     RulesEngine::Character::CharacterDescription characterDescription;
 
     RulesEngine::Character::AbilityScores abilityScores(characterDescription);
