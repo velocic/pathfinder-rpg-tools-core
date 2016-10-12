@@ -215,6 +215,20 @@ namespace RulesEngine
             temporaryHitPoints += tempHP;
         }
 
+        void HitPoints::clearDamageReduction()
+        {
+            for (auto& drPair : damageReduction) {
+                drPair.second = 0;
+            }
+        }
+
+        void HitPoints::clearEnergyResistance()
+        {
+            for (auto& erPair : energyResistance) {
+                erPair.second = 0;
+            }
+        }
+
         void HitPoints::dealNonLethalDamage(int damageAmount)
         {
             nonLethalDamage += damageAmount;
@@ -264,6 +278,16 @@ namespace RulesEngine
             return currentHitPoints;
         }
 
+        const std::unordered_map<std::string, unsigned int>& HitPoints::getDamageReduction() const
+        {
+            return damageReduction;
+        }
+
+        const std::unordered_map<std::string, unsigned int>& HitPoints::getEnergyResistance() const
+        {
+            return energyResistance;
+        }
+
         const std::unordered_map<std::string, std::vector<unsigned int>>& HitPoints::getHpDieRollsByClass() const
         {
             return hpDieRollsByClass;
@@ -301,6 +325,16 @@ namespace RulesEngine
             temporaryHitPoints = 0;
         }
 
+        void HitPoints::resetDamageReduction()
+        {
+            damageReduction.clear();
+        }
+
+        void HitPoints::resetEnergyResistance()
+        {
+            energyResistance.clear();
+        }
+
         void HitPoints::recalculateTotalHitPoints()
         {
             hpDieRollsByClass.clear();
@@ -310,6 +344,16 @@ namespace RulesEngine
         void HitPoints::setCurrentHitPoints(int currentHP)
         {
             currentHitPoints = currentHP;
+        }
+
+        void HitPoints::setDamageReduction(std::string reductionType, unsigned int reductionValue)
+        {
+            damageReduction[reductionType] = reductionValue;
+        }
+
+        void HitPoints::setEnergyResistance(std::string resistanceType, unsigned int resistanceValue)
+        {
+            energyResistance[resistanceType] = resistanceValue;
         }
 
         void HitPoints::setMaximumHitPoints(int maxHP)

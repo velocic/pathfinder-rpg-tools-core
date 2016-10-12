@@ -35,6 +35,9 @@ namespace RulesEngine
                 //is assigned the max possible value
                 bool firstHitDieRollCalculated = false;
 
+                std::unordered_map<std::string, unsigned int> damageReduction;
+                std::unordered_map<std::string, unsigned int> energyResistance;
+
                 //Map of class names -> HP die rolls, in order by level
                 std::unordered_map<std::string, std::vector<unsigned int>> hpDieRollsByClass;
 
@@ -55,28 +58,38 @@ namespace RulesEngine
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
 
-                //Generate Max HP from PFS rules (if user doesn't decide to roll themselves)
-                // void autoGenerateMaximumHitPoints();
-                void generateHitPoints();
-
                 void addTemporaryHitPoints(int tempHP);
+
+                void clearDamageReduction();
+                void clearEnergyResistance();
 
                 void dealNonLethalDamage(int damageAmount);
                 void dealDamage(int damageAmount);
                 void healHitPoints(int healAmount);
 
                 int getCurrentHitPoints() const;
+                const std::unordered_map<std::string, unsigned int>& getDamageReduction() const;
+                const std::unordered_map<std::string, unsigned int>& getEnergyResistance() const;
                 const std::unordered_map<std::string, std::vector<unsigned int>>& getHpDieRollsByClass() const;
                 int getNonLethalDamage() const;
                 int getMaxHitPoints() const;
                 int getTemporaryHitPoints() const;
+
+                //Generate Max HP from PFS rules (if user doesn't decide to roll themselves)
+                // void autoGenerateMaximumHitPoints();
+                void generateHitPoints();
 
                 void recalculateTotalHitPoints();
                 void reset();
                 void resetNonLethalDamage();
                 void resetTemporaryHitPoints();
 
+                void resetDamageReduction();
+                void resetEnergyResistance();
+
                 void setCurrentHitPoints(int currentHP);
+                void setDamageReduction(std::string reductionType, unsigned int reductionValue);
+                void setEnergyResistance(std::string resistanceType, unsigned int resistanceValue);
                 void setMaximumHitPoints(int maxHP);
 
                 void setUsePFSStyleFixedHPCalculation(bool shouldUse);
