@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(PathfinderRulesEngine)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
+set(CMAKE_CXX_FLAGS "-std=c++14 -g -Wall")
 set(PROJECT_SOURCE_DIR "${PROJECT_BINARY_DIR}/src")
 include_directories("include" "tests/include")
 
@@ -32,6 +32,7 @@ add_executable(
     tests/baseattackbonustests.cpp
     tests/characterdescriptiontests.cpp
     tests/hitpointtests.cpp
+    tests/initiativetests.cpp
 )
 
 target_link_libraries(ApiDemoConsumer ${PROJECT_NAME})

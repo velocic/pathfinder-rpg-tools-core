@@ -41,6 +41,10 @@ namespace RulesEngine
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
+
+                void addInitiativeModifier(const std::string& sourceName, const std::string& description, int modifierValue, bool enabled = true);
+                void calculateTotalInitiative();
+                int getInitiative() const;
         };
     }
 }
