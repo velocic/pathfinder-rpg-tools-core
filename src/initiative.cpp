@@ -70,5 +70,12 @@ namespace RulesEngine
         {
             return totalInitiative;
         }
+
+        void Initiative::removeInitiativeModifier(const std::string& sourceName)
+        {
+            miscInitiativeModifiers.erase(sourceName);
+            calculateTotalInitiative();
+            notifyObservers("initiative");
+        }
     }
 }

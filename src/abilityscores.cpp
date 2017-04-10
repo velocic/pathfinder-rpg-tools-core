@@ -281,7 +281,6 @@ namespace RulesEngine
         
         void AbilityScores::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
-            //TODO: Subscribe to updates here, & recalculate as needed
         }
 
         void AbilityScores::registerObserver(const std::string& observerName, Observer* observer)
@@ -328,7 +327,6 @@ namespace RulesEngine
             bonus.enabled = true;
 
             targetAbility.permanentAdjustments[sourceName] = std::move(bonus);
-
 
             calculateTotalAbilityScoreAdjustment(ability);
             calculateTotalAbilityScoreDrain(ability);

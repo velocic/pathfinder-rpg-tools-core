@@ -45,6 +45,7 @@ namespace RulesEngine
                 void addInitiativeModifier(const std::string& sourceName, const std::string& description, int modifierValue, bool enabled = true);
                 void calculateTotalInitiative();
                 int getInitiative() const;
+                void removeInitiativeModifier(const std::string& sourceName);
         };
     }
 }

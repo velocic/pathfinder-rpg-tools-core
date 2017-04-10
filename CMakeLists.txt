@@ -19,6 +19,7 @@ add_library(
     src/baseattackbonus.cpp
     src/hitpoints.cpp
     src/initiative.cpp
+    src/combatmaneuverbonus.cpp
 )
 
 add_executable(
