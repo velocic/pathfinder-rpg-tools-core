@@ -4,6 +4,7 @@
 #include <string>
 
 #include <abilityscores.h>
+#include <baseattackbonus.h>
 #include <characterdescription.h>
 #include <observer.h>
 #include <observersubject.h>
@@ -41,14 +42,17 @@ namespace RulesEngine
             private:
                 CharacterDescription &characterDescription;
                 AbilityScores &abilityScores;
+                BaseAttackBonus &baseAttackBonus;
                 int totalCombatManeuverBonus = 0;
 
                 std::unordered_map<std::string, CombatManeuverModifier> CMBModifiers;
                 std::unordered_map<std::string, Observer*> observers;
 
                 void notifyObservers(const std::string& fieldName) override;
+
+                std::unordered_map<std::string, CombatManeuverModifier> getContributingCMBModifiers(const std::unordered_map<std::string, CombatManeuverModifier>& rawModifierList) const;
             public:
-                CombatManeuverBonus(CharacterDescription &description, AbilityScores &abilityScores);
+                CombatManeuverBonus(CharacterDescription &description, AbilityScores &abilityScores, BaseAttackBonus &baseAttackBonus);
                 ~CombatManeuverBonus();
 
                 void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
