@@ -10,7 +10,7 @@ TEST(HitPointGeneration, AllDieRollTotalsBetweenOneAndHDMaxWithConModifierZero)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     //Ridiculous level 1000 character so we can be sure we basically roll all hit die
     //amounts possible
@@ -31,7 +31,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsCollectedWithSingleClass)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     characterDescription.addClass("Fighter", 12, 10, 2, 1);
 
@@ -44,7 +44,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsCollectedWithMultipleClasses)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     characterDescription.addClass("Fighter", 12, 10, 2, 1);
     characterDescription.addClass("Wizard", 4, 6, 4, .5);
@@ -61,7 +61,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsRetainedAfterClassDeletion)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     characterDescription.addClass("Fighter", 12, 10, 2, 1);
     characterDescription.addClass("Wizard", 4, 6, 4, .5);
@@ -79,7 +79,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsRetainedAfterClassLevelReduced)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     characterDescription.addClass("Fighter", 12, 10, 2, 1);
     characterDescription.addClass("Wizard", 4, 6, 4, .5);
@@ -98,7 +98,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsAddedAfterClassLevelIncrease)
     CharacterDescription characterDescription;
     AbilityScores abilityScores(characterDescription);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
-    RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
+    HitPoints hitPoints(characterDescription, abilityScores);
 
     characterDescription.addClass("Fighter", 12, 10, 2, 1);
     characterDescription.addClass("Wizard", 4, 6, 4, .5);

@@ -717,6 +717,8 @@ namespace RulesEngine
             calculateBaseModifierWithPermanentAdjustments(ability);
             calculateTotalAbilityScore(ability);
             calculateTotalAbilityScoreModifier(ability);
+
+            notifyObservers(mapAbilityScoreEnumToString(ability));
         }
 
         void AbilityScores::toggleTemporaryAbilityScoreBonus(AbilityScoreTypes ability, const std::string& sourceName)
