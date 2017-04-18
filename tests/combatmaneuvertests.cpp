@@ -2,7 +2,7 @@
 #include <characterdescription.h>
 #include <abilityscores.h>
 #include <baseattackbonus.h>
-#include <combatmaneuverbonus.h>
+#include <combatmaneuvers.h>
 
 using namespace RulesEngine::Character;
 
@@ -12,7 +12,7 @@ TEST(CombatManeuverBonus, BABFactoredCorrectly)
     AbilityScores abilityScores(characterDescription);
     BaseAttackBonus baseAttackBonus;
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
-    CombatManeuverBonus combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
+    CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
     characterDescription.addClass("fighter", 5, 10, 2, 1);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 10);
@@ -35,7 +35,7 @@ TEST(CombatManeuverBonus, STRFactoredCorrectly)
     AbilityScores abilityScores(characterDescription);
     BaseAttackBonus baseAttackBonus;
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
-    CombatManeuverBonus combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
+    CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 18);
 
@@ -52,7 +52,7 @@ TEST(CombatManeuverBonus, SizeFactoredCorrectly)
     AbilityScores abilityScores(characterDescription);
     BaseAttackBonus baseAttackBonus;
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
-    CombatManeuverBonus combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
+    CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
     characterDescription.setSizeCategory(SizeCategories::Fine);
 
@@ -73,7 +73,7 @@ TEST(CombatManeuverBonus, ModifiersFactoredCorrectly)
     AbilityScores abilityScores(characterDescription);
     BaseAttackBonus baseAttackBonus;
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
-    CombatManeuverBonus combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
+    CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
     combatManeuvers.addCMBModifier(CombatManeuverModifierType::Circumstance, "Stuff1", "SomeDescrip", 2);
 
@@ -98,7 +98,7 @@ TEST(CombatManeuverBonus, ComplexCharacterDerivedCorrectly)
     AbilityScores abilityScores(characterDescription);
     BaseAttackBonus baseAttackBonus;
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
-    CombatManeuverBonus combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
+    CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
     characterDescription.addClass("fighter", 5, 10, 2, 1);
     characterDescription.addClass("rogue", 5, 8, 6, .75);

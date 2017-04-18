@@ -1,68 +1,68 @@
-#include <combatmaneuverbonus.h>
+#include <combatmaneuvers.h>
 
 namespace RulesEngine
 {
     namespace Character
     {
-        CombatManeuverBonus::CombatManeuverBonus(CharacterDescription& description, AbilityScores& abilityScores, BaseAttackBonus &baseAttackBonus)
+        CombatManeuvers::CombatManeuvers(CharacterDescription& description, AbilityScores& abilityScores, BaseAttackBonus &baseAttackBonus)
         :
             characterDescription(description),
             abilityScores(abilityScores),
             baseAttackBonus(baseAttackBonus)
         {
-            characterDescription.registerObserver("combatManeuverBonus", this);
-            abilityScores.registerObserver("combatManeuverBonus", this);
-            baseAttackBonus.registerObserver("combatManeuverBonus", this);
+            characterDescription.registerObserver("combatManeuvers", this);
+            abilityScores.registerObserver("combatManeuvers", this);
+            baseAttackBonus.registerObserver("combatManeuvers", this);
 
             calculateTotalCombatManeuverBonus();
         }
 
-        CombatManeuverBonus::~CombatManeuverBonus()
+        CombatManeuvers::~CombatManeuvers()
         {
-            characterDescription.unregisterObserver("combatManeuverBonus");
-            abilityScores.unregisterObserver("combatManeuverBonus");
-            baseAttackBonus.unregisterObserver("combatManeuverBonus");
+            characterDescription.unregisterObserver("combatManeuvers");
+            abilityScores.unregisterObserver("combatManeuvers");
+            baseAttackBonus.unregisterObserver("combatManeuvers");
         }
 
-        void CombatManeuverBonus::notifyObservers(const std::string& fieldName)
+        void CombatManeuvers::notifyObservers(const std::string& fieldName)
         {
             for (auto observer : observers) {
                 observer.second->receiveNotification(this, fieldName);
             }
         }
 
-        void CombatManeuverBonus::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
+        void CombatManeuvers::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
             if (fieldName == "baseAttackBonus" || fieldName == "strength" || fieldName == "sizeCategory") {
                 calculateTotalCombatManeuverBonus();
             }
         }
 
-        void CombatManeuverBonus::registerObserver(const std::string &observerName, Observer *observer)
+        void CombatManeuvers::registerObserver(const std::string &observerName, Observer *observer)
         {
             observers.insert(std::make_pair(observerName, observer));
         }
 
-        void CombatManeuverBonus::unregisterObserver(const std::string &observerName)
+        void CombatManeuvers::unregisterObserver(const std::string &observerName)
         {
             observers.erase(observerName);
         }
 
-        void CombatManeuverBonus::addCMBModifier(CombatManeuverModifierType type, const std::string& sourceName, const std::string& description, int modifierValue, bool enabled)
+        void CombatManeuvers::addCMBModifier(CombatManeuverModifierType type, const std::string& sourceName, const std::string& description, int modifierValue, bool enabled)
         {
             CMBModifiers[sourceName] = CombatManeuverModifier{type, description, sourceName, modifierValue, enabled};
 
             calculateTotalCombatManeuverBonus();
         }
 
-        void CombatManeuverBonus::calculateTotalCombatManeuverBonus()
+        void CombatManeuvers::calculateTotalCombatManeuverBonus()
         {
             //CMB = BAB + STR mod + size mod + contributingCMBModifiers total
             //Size Mods: Fine -8, Diminutive -4, Tiny -2, Small -1, Medium +0, Large +1, Huge +2, Gargantuan +4, Colossal +8
             int totalContributingModifiers = 0;
             int sizeModifier = 0;
 
-            auto contributingModifiers = getContributingCMBModifiers(CMBModifiers);
+            auto contributingModifiers = getContributingModifiers(CMBModifiers);
             auto totalBAB = baseAttackBonus.getTotalBaseAttackBonus();
             auto strMod = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::STR);
             auto sizeCategory = characterDescription.getSizeCategory();
@@ -94,15 +94,15 @@ namespace RulesEngine
 
             totalCombatManeuverBonus = totalBAB + strMod + sizeModifier + totalContributingModifiers;
 
-            notifyObservers("combatManeuverBonus");
+            notifyObservers("combatManeuvers");
         }
 
-        int CombatManeuverBonus::getCombatManeuverBonus() const
+        int CombatManeuvers::getCombatManeuverBonus() const
         {
             return totalCombatManeuverBonus;
         }
 
-        std::unordered_map<std::string, CombatManeuverModifier> CombatManeuverBonus::getContributingCMBModifiers(const std::unordered_map<std::string, CombatManeuverModifier>& rawModifierList) const
+        std::unordered_map<std::string, CombatManeuverModifier> CombatManeuvers::getContributingModifiers(const std::unordered_map<std::string, CombatManeuverModifier>& rawModifierList) const
         {
             std::unordered_map<std::string, CombatManeuverModifier> contributingModifiers; 
 
