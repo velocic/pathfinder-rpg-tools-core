@@ -49,11 +49,13 @@ namespace RulesEngine
                 int totalCombatManeuverDefense = 0;
 
                 std::unordered_map<std::string, CombatManeuverModifier> CMBModifiers;
+                std::unordered_map<std::string, CombatManeuverModifier> CMDModifiers;
                 std::unordered_map<std::string, Observer*> observers;
 
                 void notifyObservers(const std::string& fieldName) override;
 
                 std::unordered_map<std::string, CombatManeuverModifier> getContributingModifiers(const std::unordered_map<std::string, CombatManeuverModifier>& rawModifierList) const;
+                int getSizeModifierFromSizeCategory(SizeCategories category) const;
             public:
                 CombatManeuvers(CharacterDescription &description, AbilityScores &abilityScores, BaseAttackBonus &baseAttackBonus);
                 ~CombatManeuvers();

@@ -15,6 +15,7 @@ namespace RulesEngine
             baseAttackBonus.registerObserver("combatManeuvers", this);
 
             calculateTotalCombatManeuverBonus();
+            calculateTotalCombatManeuverDefense();
         }
 
         CombatManeuvers::~CombatManeuvers()
@@ -35,6 +36,10 @@ namespace RulesEngine
         {
             if (fieldName == "baseAttackBonus" || fieldName == "strength" || fieldName == "sizeCategory") {
                 calculateTotalCombatManeuverBonus();
+            }
+
+            if (fieldName == "baseAttackBonus" || fieldName == "strength" || fieldName == "dexterity" || fieldName == "sizeCategory") {
+                calculateTotalCombatManeuverDefense();
             }
         }
 
@@ -60,7 +65,6 @@ namespace RulesEngine
             //CMB = BAB + STR mod + size mod + contributingCMBModifiers total
             //Size Mods: Fine -8, Diminutive -4, Tiny -2, Small -1, Medium +0, Large +1, Huge +2, Gargantuan +4, Colossal +8
             int totalContributingModifiers = 0;
-            int sizeModifier = 0;
 
             auto contributingModifiers = getContributingModifiers(CMBModifiers);
             auto totalBAB = baseAttackBonus.getTotalBaseAttackBonus();
@@ -71,26 +75,7 @@ namespace RulesEngine
                 totalContributingModifiers += contributingModifier.second.modifierValue;
             }
 
-            //Translate size category into specific size modifier amount
-            if (sizeCategory == SizeCategories::Fine) {
-                sizeModifier = -8;
-            } else if (sizeCategory == SizeCategories::Diminutive) {
-                sizeModifier = -4;
-            } else if (sizeCategory == SizeCategories::Tiny) {
-                sizeModifier = -2;
-            } else if (sizeCategory == SizeCategories::Small) {
-                sizeModifier = -1;
-            } else if (sizeCategory == SizeCategories::Medium) {
-                sizeModifier = 0;
-            } else if (sizeCategory == SizeCategories::Large) {
-                sizeModifier = 1;
-            } else if (sizeCategory == SizeCategories::Huge) {
-                sizeModifier = 2;
-            } else if (sizeCategory == SizeCategories::Gargantuan) {
-                sizeModifier = 4;
-            } else {
-                sizeModifier = 8;
-            }
+            auto sizeModifier = getSizeModifierFromSizeCategory(sizeCategory);
 
             totalCombatManeuverBonus = totalBAB + strMod + sizeModifier + totalContributingModifiers;
 
@@ -140,6 +125,63 @@ namespace RulesEngine
             }
 
             return contributingModifiers;
+        }
+
+        int CombatManeuvers::getSizeModifierFromSizeCategory(SizeCategories category) const
+        {
+            if (category == SizeCategories::Fine) {
+                return -8;
+            } else if (category == SizeCategories::Diminutive) {
+                return -4;
+            } else if (category == SizeCategories::Tiny) {
+                return -2;
+            } else if (category == SizeCategories::Small) {
+                return -1;
+            } else if (category == SizeCategories::Medium) {
+                return 0;
+            } else if (category == SizeCategories::Large) {
+                return 1;
+            } else if (category == SizeCategories::Huge) {
+                return 2;
+            } else if (category == SizeCategories::Gargantuan) {
+                return 4;
+            }
+
+            return 8;
+        }
+
+        void CombatManeuvers::addCMDModifier(CombatManeuverModifierType type, const std::string& sourceName, const std::string& description, int modifierValue, bool enabled)
+        {
+            CMDModifiers[sourceName] = CombatManeuverModifier{type, description, sourceName, modifierValue, enabled};
+
+            calculateTotalCombatManeuverDefense();
+        }
+
+        void CombatManeuvers::calculateTotalCombatManeuverDefense()
+        {
+            //CMD = 10 + BAB + Str mod + Dex mod + size mod + misc bonuses
+            int totalContributingModifiers = 0;
+
+            auto contributingModifiers = getContributingModifiers(CMDModifiers);
+            auto totalBAB = baseAttackBonus.getTotalBaseAttackBonus();
+            auto strMod = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::STR);
+            auto dexMod = abilityScores.getTotalAbilityModifier(AbilityScoreTypes::DEX);
+            auto sizeCategory = characterDescription.getSizeCategory();
+
+            for (const auto& contributingModifier : contributingModifiers) {
+                totalContributingModifiers += contributingModifier.second.modifierValue;
+            }
+
+            auto sizeModifier = getSizeModifierFromSizeCategory(sizeCategory);
+
+            totalCombatManeuverDefense = 10 + totalBAB + strMod + dexMod + sizeModifier + totalContributingModifiers;
+
+            notifyObservers("combatManeuvers");
+        }
+
+        int CombatManeuvers::getCombatManeuverDefense() const
+        {
+            return totalCombatManeuverDefense;
         }
     }
 }
