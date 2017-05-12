@@ -1,49 +1,12 @@
 #ifndef SKILLS_H
 #define SKILLS_H
 
+#include <common.h>
+
 namespace RulesEngine
 {
     namespace Character
     {
-        enum class SkillType : int
-        {
-            Acrobatics,
-            Appraise,
-            Bluff,
-            Climb,
-            Craft, //Can have multiple subtypes
-            Diplomacy,
-            DisableDevice,
-            Disguise,
-            EscapeArtist,
-            Fly,
-            HandleAnimal,
-            Heal,
-            Intimidate,
-            KnowledgeArcana,
-            KnowledgeDungeoneering,
-            KnowledgeEngineering,
-            KnowledgeGeography,
-            KnowledgeHistory,
-            KnowledgeLocal,
-            KnowledgeNature,
-            KnowledgeNobility,
-            KnowledgePlanes,
-            KnowledgeReligion,
-            Linguistics,
-            Perception,
-            Perform, //Can have multiple subtypes
-            Profession, //Can have multiple subtypes
-            Ride,
-            SenseMotive,
-            SleightOfHand,
-            Spellcraft,
-            Stealth,
-            Survival,
-            Swim,
-            UseMagicDevice
-        };
-
         //TODO: Pare-down this list, hard to find a list of exactly what bonus types
         //can affect skills
         enum class SkillModifierType : int
@@ -88,11 +51,23 @@ namespace RulesEngine
             private:
                 CharacterDescription &characterDescription;
                 AbilityScores &abilityScores;
+                int totalSpendableRanks = 0;
+                int spentRanks = 0;
 
+                void calculateTotalSpendableRanks(const characterDescription& charDescription);
+
+                std::unordered_map<SkillType, Skill> skills;
                 std::vector<SkillModifier> globalSkillModifiers;
+                std::unordered_map<SkillType, int> totalSkillPoints;
             public:
-                Skills();
+                Skills(CharacterDescription& charDescription, AbilityScores& abilityScores);
                 ~Skills();
+
+                void addSkillRanks(SkillType skill, int numRanks);
+                void addSkillModifier(SkillType skill, SkillModifierType modType, const std::string& description, const std::string& sourceName, int modValue, bool enabled = true);
+                void calculateTotalSkillPoints();
+                void removeSkillRanks(SkillType skill, int numRanks);
+                void removeSkillModifier(SkillType skill, const std::string& );
         };
     }
 }

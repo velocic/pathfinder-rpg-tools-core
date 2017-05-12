@@ -1,5 +1,7 @@
 #include <characterdescription.h>
 
+#include <algorithm>
+
 namespace RulesEngine
 {
     namespace Character
@@ -67,7 +69,7 @@ namespace RulesEngine
             notifyObservers("class");
         }
 
-        void CharacterDescription::addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression)
+        void CharacterDescription::addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression, const std::vector<SkillType>& classSkills)
         {
             CharacterClass newClass;
             newClass.className = className;
@@ -75,12 +77,24 @@ namespace RulesEngine
             newClass.hitDieSize = hitDieSize;
             newClass.skillPointsPerLevel = skillPointsPerLevel;
             newClass.baseAttackBonusProgression = baseAttackBonusProgression;
+            newClass.classSkills = classSkills;
 
             classInfo.insert(
                 std::make_pair(className, std::move(newClass))
             );
 
             notifyObservers("class");
+        }
+
+        void CharacterDescription::addClassSkill(const std::string& className, SkillType classSkill)
+        {
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            mapIterator->second.classSkills.push_back(classSkill);
         }
 
         void CharacterDescription::addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd)
@@ -144,6 +158,30 @@ namespace RulesEngine
             classInfo.erase(className);
 
             notifyObservers("class");
+        }
+
+        void CharacterDescription::removeClassSkill(const std::string& className, SkillType removalTarget)
+        {
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return;
+            }
+
+            auto& classSkills = mapIterator->second.classSkills;
+
+            std::remove_if(
+                classSkills.begin(),
+                classSkills.end(),
+                [removalTarget](const auto& skillType) -> bool
+                {
+                    if (skillType == removalTarget) {
+                        return true;
+                    }
+
+                    return false;
+                }
+            );
         }
 
         void CharacterDescription::removeTemporaryNegativeLevels(unsigned int amountToRemove)
@@ -426,6 +464,17 @@ namespace RulesEngine
             }
 
             return mapIterator->second;
+        }
+
+        const std::vector<SkillType> CharacterDescription::getClassSkills(const std::string& className) const
+        {
+            auto mapIterator = classInfo.find(className);
+
+            if (mapIterator == classInfo.end()) {
+                return std::vector<SkillType>();
+            }
+
+            return mapIterator->second.classSkills;
         }
 
         const std::unordered_map<std::string, CharacterClass>& CharacterDescription::getClasses() const

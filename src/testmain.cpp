@@ -1,5 +1,6 @@
-#include <characterdescription.h>
 #include <abilityscores.h>
+#include <characterdescription.h>
+#include <common.h>
 #include <hitpoints.h>
 
 int main()
@@ -15,13 +16,13 @@ int main()
     RulesEngine::Character::HitPoints hitPoints(characterDescription, abilityScores);
     hitPoints.setUsePFSStyleFixedHPCalculation(true);
 
-    characterDescription.addClass("Fighter", 6, 10, 2, 1);
+    characterDescription.addClass("Fighter", 6, 10, 2, 1, std::vector<RulesEngine::Character::SkillType>());
 
     abilityScores.setBaseAbilityScore(RulesEngine::Character::AbilityScoreTypes::CON, 7); //-2 modifier
 
     characterDescription.addTemporaryNegativeLevelDebuff("tempSource", 1, "tempDesc");
     characterDescription.addPermanentNegativeLevelDebuff("permSource", 2, "permDesc");
-    characterDescription.addClass("Wizard", 2, 6, 4, .5);
+    characterDescription.addClass("Wizard", 2, 6, 4, .5, std::vector<RulesEngine::Character::SkillType>());
 
     characterDescription.removeClass("Wizard");
 

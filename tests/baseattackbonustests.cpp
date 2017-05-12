@@ -183,7 +183,7 @@ TEST(BaseAttackBonus, CalculatesHalfBABClassIterativeBonusesCorrectly)
     CharacterDescription charDescription;
     charDescription.registerObserver("baseAttackBonus", &bab);
 
-    charDescription.addClass("wizard", 12, 6, 2, .5);
+    charDescription.addClass("wizard", 12, 6, 2, .5, std::vector<SkillType>());
 
     auto iterativeBonusList = bab.getIterativeAttackBonuses();
 
@@ -206,9 +206,9 @@ TEST(BaseAttackBonus, CalculatesComplexMulticlassBABCorrectly)
     CharacterDescription charDescription;
     charDescription.registerObserver("baseAttackBonus", &bab);
 
-    charDescription.addClass("wizard", 12, 6, 2, .5);
-    charDescription.addClass("rogue", 5, 8, 8, .75);
-    charDescription.addClass("fighter", 3, 10, 2, 1);
+    charDescription.addClass("wizard", 12, 6, 2, .5, std::vector<SkillType>());
+    charDescription.addClass("rogue", 5, 8, 8, .75, std::vector<SkillType>());
+    charDescription.addClass("fighter", 3, 10, 2, 1, std::vector<SkillType>());
 
     //wizard BAB - 6
     //rogue BAB - 3

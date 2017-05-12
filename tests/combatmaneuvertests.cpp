@@ -14,17 +14,17 @@ TEST(CombatManeuverBonus, BABFactoredCorrectly)
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
     CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
-    characterDescription.addClass("fighter", 5, 10, 2, 1);
+    characterDescription.addClass("fighter", 5, 10, 2, 1, std::vector<SkillType>());
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 10);
     characterDescription.setSizeCategory(SizeCategories::Medium);
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverBonus(), 5);
 
-    characterDescription.addClass("rogue", 5, 8, 6, .75);
+    characterDescription.addClass("rogue", 5, 8, 6, .75, std::vector<SkillType>());
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverBonus(), 8);
 
-    characterDescription.addClass("wizard", 5, 6, 4, .5);
+    characterDescription.addClass("wizard", 5, 6, 4, .5, std::vector<SkillType>());
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverBonus(), 10);
 }
@@ -100,9 +100,9 @@ TEST(CombatManeuverBonus, ComplexCharacterDerivedCorrectly)
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
     CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
-    characterDescription.addClass("fighter", 5, 10, 2, 1);
-    characterDescription.addClass("rogue", 5, 8, 6, .75);
-    characterDescription.addClass("wizard", 5, 6, 4, .5);
+    characterDescription.addClass("fighter", 5, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("rogue", 5, 8, 6, .75, std::vector<SkillType>());
+    characterDescription.addClass("wizard", 5, 6, 4, .5, std::vector<SkillType>());
 
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 18);
 
@@ -124,18 +124,18 @@ TEST(CombatManeuverDefense, BABFactoredCorrectly)
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
     CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
-    characterDescription.addClass("fighter", 5, 10, 2, 1);
+    characterDescription.addClass("fighter", 5, 10, 2, 1, std::vector<SkillType>());
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 10);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::DEX, 10);
     characterDescription.setSizeCategory(SizeCategories::Medium);
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverDefense(), 15);
 
-    characterDescription.addClass("rogue", 5, 8, 6, .75);
+    characterDescription.addClass("rogue", 5, 8, 6, .75, std::vector<SkillType>());
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverDefense(), 18);
 
-    characterDescription.addClass("wizard", 5, 6, 4, .5);
+    characterDescription.addClass("wizard", 5, 6, 4, .5, std::vector<SkillType>());
 
     EXPECT_EQ(combatManeuvers.getCombatManeuverDefense(), 20);
 }
@@ -213,9 +213,9 @@ TEST(CombatManeuverDefense, ComplexCharacterDerivedCorrectly)
     characterDescription.registerObserver("baseAttackBonus", &baseAttackBonus);
     CombatManeuvers combatManeuvers(characterDescription, abilityScores, baseAttackBonus);
 
-    characterDescription.addClass("fighter", 5, 10, 2, 1);
-    characterDescription.addClass("rogue", 5, 8, 6, .75);
-    characterDescription.addClass("wizard", 5, 6, 4, .5);
+    characterDescription.addClass("fighter", 5, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("rogue", 5, 8, 6, .75, std::vector<SkillType>());
+    characterDescription.addClass("wizard", 5, 6, 4, .5, std::vector<SkillType>());
 
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::STR, 18);
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::DEX, 6);

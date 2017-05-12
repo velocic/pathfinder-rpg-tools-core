@@ -40,6 +40,45 @@ namespace RulesEngine
             int modifierValue;
             bool enabled = false;
         };
+
+        enum class SkillType : int
+        {
+            Acrobatics,
+            Appraise,
+            Bluff,
+            Climb,
+            Craft, //Can have multiple subtypes
+            Diplomacy,
+            DisableDevice,
+            Disguise,
+            EscapeArtist,
+            Fly,
+            HandleAnimal,
+            Heal,
+            Intimidate,
+            KnowledgeArcana,
+            KnowledgeDungeoneering,
+            KnowledgeEngineering,
+            KnowledgeGeography,
+            KnowledgeHistory,
+            KnowledgeLocal,
+            KnowledgeNature,
+            KnowledgeNobility,
+            KnowledgePlanes,
+            KnowledgeReligion,
+            Linguistics,
+            Perception,
+            Perform, //Can have multiple subtypes
+            Profession, //Can have multiple subtypes
+            Ride,
+            SenseMotive,
+            SleightOfHand,
+            Spellcraft,
+            Stealth,
+            Survival,
+            Swim,
+            UseMagicDevice
+        };
     }
 }
 

@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include <common.h>
 #include <datatypes.h>
 #include <observersubject.h>
 #include <observer.h>
@@ -21,6 +22,7 @@ namespace RulesEngine
             unsigned int classLevel;
             unsigned int hitDieSize;
             unsigned int skillPointsPerLevel;
+            std::vector<SkillType> classSkills;
 
             //Multiplier * level to derive total BAB contribution from this class.
             //Options are 1, .75, and .5. Results rounded down.
@@ -91,7 +93,8 @@ namespace RulesEngine
                 void registerObserver(const std::string& observerName, Observer* observer) override;
                 void unregisterObserver(const std::string& observerName) override;
                 void addClass(const std::string& className);
-                void addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression);
+                void addClass(const std::string& className, unsigned int classLevel, unsigned int hitDieSize, unsigned int skillPointsPerLevel, float baseAttackBonusProgression, const std::vector<SkillType>& classSkills);
+                void addClassSkill(const std::string& className, SkillType classSkill);
 
                 void addTemporaryNegativeLevels(const std::string& sourceName, unsigned int amountToAdd);
                 void addPermanentNegativeLevels(const std::string& sourceName, unsigned int amountToAdd);
@@ -99,6 +102,7 @@ namespace RulesEngine
                 void addPermanentNegativeLevelDebuff(const std::string& sourceName, unsigned int numNegativeLevels, const std::string& description);
 
                 void removeClass(const std::string& className);
+                void removeClassSkill(const std::string& className, SkillType removalTarget);
                 void removeTemporaryNegativeLevels(unsigned int amountToRemove);
                 void removePermanentNegativeLevels(unsigned int amountToRemove);
                 void removeTemporaryNegativeLevelDebuff(const std::string& sourceName);
@@ -132,6 +136,7 @@ namespace RulesEngine
                 std::string getAlignment() const;
                 std::string getPlayer() const;
                 CharacterClass getClass(const std::string& className) const;
+                const std::vector<SkillType> getClassSkills(const std::string& className) const;
                 const std::unordered_map<std::string, CharacterClass>& getClasses() const;
                 TemporaryNegativeLevelDebuff getTemporaryNegativeLevelDebuff(const std::string& sourceName) const;
                 PermanentNegativeLevelDebuff getPermanentNegativeLevelDebuff(const std::string& sourceName) const;

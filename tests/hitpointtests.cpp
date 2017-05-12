@@ -14,7 +14,7 @@ TEST(HitPointGeneration, AllDieRollTotalsBetweenOneAndHDMaxWithConModifierZero)
 
     //Ridiculous level 1000 character so we can be sure we basically roll all hit die
     //amounts possible
-    characterDescription.addClass("Fighter", 1000, 10, 2, 1);
+    characterDescription.addClass("Fighter", 1000, 10, 2, 1, std::vector<SkillType>());
 
     auto& dieRollsByClass = hitPoints.getHpDieRollsByClass();
 
@@ -33,7 +33,7 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsCollectedWithSingleClass)
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
     HitPoints hitPoints(characterDescription, abilityScores);
 
-    characterDescription.addClass("Fighter", 12, 10, 2, 1);
+    characterDescription.addClass("Fighter", 12, 10, 2, 1, std::vector<SkillType>());
 
     auto& dieRollsByClass = hitPoints.getHpDieRollsByClass();
     EXPECT_EQ(12, dieRollsByClass.find("Fighter")->second.size());
@@ -46,9 +46,9 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsCollectedWithMultipleClasses)
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
     HitPoints hitPoints(characterDescription, abilityScores);
 
-    characterDescription.addClass("Fighter", 12, 10, 2, 1);
-    characterDescription.addClass("Wizard", 4, 6, 4, .5);
-    characterDescription.addClass("Rogue", 1, 8, 6, .75);
+    characterDescription.addClass("Fighter", 12, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("Wizard", 4, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Rogue", 1, 8, 6, .75, std::vector<SkillType>());
 
     auto& dieRollsByClass = hitPoints.getHpDieRollsByClass();
     EXPECT_EQ(12, dieRollsByClass.find("Fighter")->second.size());
@@ -63,9 +63,9 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsRetainedAfterClassDeletion)
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
     HitPoints hitPoints(characterDescription, abilityScores);
 
-    characterDescription.addClass("Fighter", 12, 10, 2, 1);
-    characterDescription.addClass("Wizard", 4, 6, 4, .5);
-    characterDescription.addClass("Rogue", 1, 8, 6, .75);
+    characterDescription.addClass("Fighter", 12, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("Wizard", 4, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Rogue", 1, 8, 6, .75, std::vector<SkillType>());
 
     characterDescription.removeClass("Fighter");
 
@@ -81,9 +81,9 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsRetainedAfterClassLevelReduced)
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
     HitPoints hitPoints(characterDescription, abilityScores);
 
-    characterDescription.addClass("Fighter", 12, 10, 2, 1);
-    characterDescription.addClass("Wizard", 4, 6, 4, .5);
-    characterDescription.addClass("Rogue", 1, 8, 6, .75);
+    characterDescription.addClass("Fighter", 12, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("Wizard", 4, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Rogue", 1, 8, 6, .75, std::vector<SkillType>());
 
     characterDescription.setClassLevel("Fighter", 5);
 
@@ -100,9 +100,9 @@ TEST(HitPointGeneration, ProperNumberOfDieRollsAddedAfterClassLevelIncrease)
     abilityScores.setBaseAbilityScore(AbilityScoreTypes::CON, 10); //+0 modifier
     HitPoints hitPoints(characterDescription, abilityScores);
 
-    characterDescription.addClass("Fighter", 12, 10, 2, 1);
-    characterDescription.addClass("Wizard", 4, 6, 4, .5);
-    characterDescription.addClass("Rogue", 1, 8, 6, .75);
+    characterDescription.addClass("Fighter", 12, 10, 2, 1, std::vector<SkillType>());
+    characterDescription.addClass("Wizard", 4, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Rogue", 1, 8, 6, .75, std::vector<SkillType>());
 
     characterDescription.setClassLevel("Rogue", 3);
 
@@ -120,7 +120,7 @@ TEST(HitPointGeneration, HPCalculatedCorrectlyPFSFirstLevelCharacter)
     HitPoints hitPoints(characterDescription, abilityScores);
     hitPoints.setUsePFSStyleFixedHPCalculation(true);
 
-    characterDescription.addClass("Fighter", 1, 10, 2, 1);
+    characterDescription.addClass("Fighter", 1, 10, 2, 1, std::vector<SkillType>());
 
     EXPECT_EQ(14, hitPoints.getMaxHitPoints());
 }
@@ -133,7 +133,7 @@ TEST(HitPointGeneration, HPCalculatedCorrectlyPFSSingleClass)
     HitPoints hitPoints(characterDescription, abilityScores);
     hitPoints.setUsePFSStyleFixedHPCalculation(true);
 
-    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+    characterDescription.addClass("Fighter", 8, 10, 2, 1, std::vector<SkillType>());
 
     EXPECT_EQ(84, hitPoints.getMaxHitPoints());
 }
@@ -146,8 +146,8 @@ TEST(HitPointGeneration, HPCalculatedCorrectlyPFSMultiClass)
     HitPoints hitPoints(characterDescription, abilityScores);
     hitPoints.setUsePFSStyleFixedHPCalculation(true);
 
-    characterDescription.addClass("Wizard", 3, 6, 4, .5);
-    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+    characterDescription.addClass("Wizard", 3, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Fighter", 8, 10, 2, 1, std::vector<SkillType>());
 
     EXPECT_EQ(108, hitPoints.getMaxHitPoints());
 }
@@ -162,8 +162,8 @@ TEST(HitPointGeneration, HPCalculatedCorrectlyPFSNegativeLevels)
 
     characterDescription.addTemporaryNegativeLevelDebuff("Debuff1", 2, "DebuffDescrip");
 
-    characterDescription.addClass("Wizard", 3, 6, 4, .5);
-    characterDescription.addClass("Fighter", 8, 10, 2, 1);
+    characterDescription.addClass("Wizard", 3, 6, 4, .5, std::vector<SkillType>());
+    characterDescription.addClass("Fighter", 8, 10, 2, 1, std::vector<SkillType>());
 
     EXPECT_EQ(98, hitPoints.getMaxHitPoints());
 }
