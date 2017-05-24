@@ -20,6 +20,7 @@ add_library(
     src/hitpoints.cpp
     src/initiative.cpp
     src/combatmaneuvers.cpp
+    src/skills.cpp
 )
 
 add_executable(

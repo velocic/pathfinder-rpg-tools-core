@@ -1,7 +1,16 @@
 #ifndef SKILLS_H
 #define SKILLS_H
 
+#include <string>
+#include <map>
+#include <vector>
+
+#include <abilityscores.h>
+#include <characterdescription.h>
 #include <common.h>
+#include <observer.h>
+#include <observersubject.h>
+#include <preprocessordefines.h>
 
 namespace RulesEngine
 {
@@ -29,7 +38,7 @@ namespace RulesEngine
 
         struct SkillModifier
         {
-            SkillModifierType modifierType = SkillModifierTypes::Untyped;
+            SkillModifierType modifierType = SkillModifierType::Untyped;
             std::string description;
             std::string sourceName;
             int modifierValue = 0;
@@ -40,7 +49,7 @@ namespace RulesEngine
         {
             SkillType skillType;
             unsigned int ranks;
-            std::vector<SkillModifier> modifiers;
+            std::unordered_map<std::string, SkillModifier> modifiers;
             bool canUseUntrained = true;
         };
 
@@ -54,20 +63,33 @@ namespace RulesEngine
                 int totalSpendableRanks = 0;
                 int spentRanks = 0;
 
-                void calculateTotalSpendableRanks(const characterDescription& charDescription);
+                std::map<SkillType, Skill> skills;
+                std::unordered_map<std::string, SkillModifier> globalSkillModifiers;
+                std::map<SkillType, int> totalSkillPoints;
 
-                std::unordered_map<SkillType, Skill> skills;
-                std::vector<SkillModifier> globalSkillModifiers;
-                std::unordered_map<SkillType, int> totalSkillPoints;
+                std::unordered_map<std::string, Observer*> observers;
+
+                void calculateTotalSpendableRanks(const CharacterDescription& charDescription);
+                void notifyObservers(const std::string& fieldName) override;
             public:
                 Skills(CharacterDescription& charDescription, AbilityScores& abilityScores);
                 ~Skills();
 
+                void receiveNotification(const ObserverSubject* subject, const std::string& fieldName) override;
+                void registerObserver(const std::string& observerName, Observer* observer) override;
+                void unregisterObserver(const std::string& observerName) override;
+
+                void addGlobalSkillModifier(SkillModifierType modType, const std::string& description, const std::string& sourceName, int modValue, bool enabled = true);
                 void addSkillRanks(SkillType skill, int numRanks);
                 void addSkillModifier(SkillType skill, SkillModifierType modType, const std::string& description, const std::string& sourceName, int modValue, bool enabled = true);
+                const std::unordered_map<std::string, SkillModifier>& getGlobalSkillModifiers() const;
+                const std::unordered_map<std::string, SkillModifier>& getSkillModifiers(SkillType skill) const;
+                int getTotalSkillPoints(SkillType skill) const;
+                std::map<SkillType, int> getAllTotalSkillPoints() const;
                 void calculateTotalSkillPoints();
+                void removeGlobalSkillModifier(const std::string& sourceName);
                 void removeSkillRanks(SkillType skill, int numRanks);
-                void removeSkillModifier(SkillType skill, const std::string& );
+                void removeSkillModifier(SkillType skill, const std::string& sourceName);
         };
     }
 }
