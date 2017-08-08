@@ -45,10 +45,47 @@ namespace RulesEngine
             skills[SkillType::Swim] = Skill();
             skills[SkillType::UseMagicDevice] = Skill();
 
+            skills[SkillType::Acrobatics].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::Appraise].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::Bluff].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::Climb].keyAbility = Character::AbilityScoreTypes::STR;
+            skills[SkillType::Craft].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::Diplomacy].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::DisableDevice].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::Disguise].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::EscapeArtist].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::Fly].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::HandleAnimal].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::Heal].keyAbility = Character::AbilityScoreTypes::WIS;
+            skills[SkillType::Intimidate].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::KnowledgeArcana].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeDungeoneering].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeEngineering].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeGeography].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeHistory].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeLocal].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeNature].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeNobility].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgePlanes].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::KnowledgeReligion].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::Linguistics].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::Perception].keyAbility = Character::AbilityScoreTypes::WIS;
+            skills[SkillType::Perform].keyAbility = Character::AbilityScoreTypes::CHA;
+            skills[SkillType::Profession].keyAbility = Character::AbilityScoreTypes::WIS;
+            skills[SkillType::Ride].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::SenseMotive].keyAbility = Character::AbilityScoreTypes::WIS;
+            skills[SkillType::SleightOfHand].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::Spellcraft].keyAbility = Character::AbilityScoreTypes::INT;
+            skills[SkillType::Stealth].keyAbility = Character::AbilityScoreTypes::DEX;
+            skills[SkillType::Survival].keyAbility = Character::AbilityScoreTypes::WIS;
+            skills[SkillType::Swim].keyAbility = Character::AbilityScoreTypes::STR;
+            skills[SkillType::UseMagicDevice].keyAbility = Character::AbilityScoreTypes::CHA;
+
             characterDescription.registerObserver("skills", this);
             abilityScores.registerObserver("skills", this);
 
-            calculateTotalSkillPoints();
+            calculateTotalSpendableRanks(abilityScores, characterDescription);
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
 
         Skills::~Skills()
@@ -66,7 +103,17 @@ namespace RulesEngine
 
         void Skills::receiveNotification(const ObserverSubject* subject, const std::string& fieldName)
         {
-            //TODO: listen for updates on fields we care about
+            // if (fieldName == "strength") {
+            // } else if (fieldName == "dexterity") {
+            // } else if (fieldName == "constitution") {
+            // } else if (fieldName == "intelligence") {
+            // } else if (fieldName == "wisdom") {
+            // } else if (fieldName == "charisma") {
+            // } else if (fieldName == "class") {
+            // }
+
+            calculateTotalSpendableRanks(abilityScores, characterDescription);
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
 
         void Skills::registerObserver(const std::string& observerName, Observer* observer)
@@ -98,7 +145,7 @@ namespace RulesEngine
                 mapIterator->second.ranks += numRanks;
             }
 
-            calculateTotalSkillPoints();
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
 
         void Skills::addSkillModifier(SkillType skill, SkillModifierType modType, const std::string& description, const std::string& sourceName, int modValue, bool enabled)
@@ -119,7 +166,7 @@ namespace RulesEngine
                 skillData.modifiers[sourceName] = newModifier;
             }
 
-            calculateTotalSkillPoints();
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
 
         std::map<SkillType, int> Skills::getAllTotalSkillPoints() const
@@ -184,10 +231,57 @@ namespace RulesEngine
                     totalSkillPoints += skillModifier.second.modifierValue;
                 }
             }
+
+            return totalSkillPoints;
         }
 
-        void Skills::calculateTotalSkillPoints()
+        void Skills::calculateTotalSkillPoints(const AbilityScores& abilityScores, const CharacterDescription& charDescription)
         {
+            for (const auto& skill : skills) {
+                int skillTotal = skill.second.ranks;
+
+                const auto& classes = charDescription.getClasses();
+
+                bool isClassSkill = false;
+                for (const auto& charClass : classes) {
+                    for (const auto& classSkill : charClass.second.classSkills) {
+                        if (classSkill == skill.second.skillType) {
+                            isClassSkill = true;
+                            break;
+                        }
+                    }
+                    if (isClassSkill == true) {
+                        break;
+                    }
+                }
+
+                if (skill.second.ranks > 0 && isClassSkill == true) {
+                    skillTotal += 3;
+                }
+
+                for (const auto& modifier : globalSkillModifiers) {
+                    if (modifier.second.enabled == true) {
+                        skillTotal += modifier.second.modifierValue;
+                    }
+                }
+
+                for (const auto& modifier : skill.second.modifiers) {
+                    if (modifier.second.enabled == true) {
+                        skillTotal += modifier.second.modifierValue;
+                    }
+                }
+
+                skillTotal += abilityScores.getTotalAbilityModifier(skill.second.keyAbility);
+
+                totalSkillPoints[skill.second.skillType] = skillTotal;
+            }
+        }
+
+        void Skills::calculateTotalSpendableRanks(const AbilityScores& abilityScores, const CharacterDescription& charDescription)
+        {
+            //Each level in a class must grant at minimum 1 skill point regardless of negative int mod
+            //TODO: Consider other things that grant extra points, like Favored Class Bonus, or being a human.
+            int totalRanks = 0;
         }
 
         void Skills::removeGlobalSkillModifier(const std::string& sourceName)
@@ -205,7 +299,7 @@ namespace RulesEngine
 
             mapIterator->second.ranks -= numRanks;
 
-            calculateTotalSkillPoints();
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
 
         void Skills::removeSkillModifier(SkillType skill, const std::string& sourceName)
@@ -216,7 +310,7 @@ namespace RulesEngine
                 skillMapIterator->second.modifiers.erase(sourceName);
             }
 
-            calculateTotalSkillPoints();
+            calculateTotalSkillPoints(abilityScores, characterDescription);
         }
     }
 }

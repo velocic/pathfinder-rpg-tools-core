@@ -48,9 +48,10 @@ namespace RulesEngine
         struct Skill
         {
             SkillType skillType;
-            unsigned int ranks;
+            unsigned int ranks = 0;
             std::unordered_map<std::string, SkillModifier> modifiers;
             bool canUseUntrained = true;
+            AbilityScoreTypes keyAbility;
         };
 
         class PATHFINDER_RULES_ENGINE_EXPORT Skills :
@@ -69,7 +70,7 @@ namespace RulesEngine
 
                 std::unordered_map<std::string, Observer*> observers;
 
-                void calculateTotalSpendableRanks(const CharacterDescription& charDescription);
+                void calculateTotalSpendableRanks(const AbilityScores& abilityScores, const CharacterDescription& charDescription);
                 void notifyObservers(const std::string& fieldName) override;
             public:
                 Skills(CharacterDescription& charDescription, AbilityScores& abilityScores);
@@ -86,7 +87,7 @@ namespace RulesEngine
                 const std::unordered_map<std::string, SkillModifier>& getSkillModifiers(SkillType skill) const;
                 int getTotalSkillPoints(SkillType skill) const;
                 std::map<SkillType, int> getAllTotalSkillPoints() const;
-                void calculateTotalSkillPoints();
+                void calculateTotalSkillPoints(const AbilityScores& abilityScores, const CharacterDescription& charDescription);
                 void removeGlobalSkillModifier(const std::string& sourceName);
                 void removeSkillRanks(SkillType skill, int numRanks);
                 void removeSkillModifier(SkillType skill, const std::string& sourceName);
